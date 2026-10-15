@@ -1,6 +1,40 @@
 use super::*;
 
 #[test]
+fn installed_resources_rebase_only_exact_relative_bundled_paths() {
+    let root = Path::new("/opt/talis/share/talis");
+    let mut scene = SceneSettings::default();
+    scene.resolve_resources_at(root);
+    assert_eq!(
+        scene.background,
+        root.join("assets/scenes/1440p/day/beauty.png")
+    );
+    assert_eq!(
+        scene.night.as_ref().unwrap().background,
+        root.join("assets/scenes/1440p/night/beauty.png")
+    );
+    let before = scene.clone();
+    scene.resolve_resources_at(Path::new("/different-installation"));
+    assert_eq!(scene, before, "absolute user paths are never redirected");
+    for custom in [
+        "custom/beauty.png",
+        "assets/scenes/custom/day/beauty.png",
+        "assets/scenes/1440p/day/../beauty.png",
+        "/another/checkout/assets/scenes/1440p/day/beauty.png",
+    ] {
+        let mut scene = SceneSettings {
+            background: custom.into(),
+            sleeve: None,
+            night: None,
+            ..Default::default()
+        };
+        scene.resolve_resources_at(root);
+        assert_eq!(scene.background, Path::new(custom));
+        assert!(scene.sleeve.is_none() && scene.night.is_none());
+    }
+}
+
+#[test]
 fn missing_legacy_day_and_night_paths_migrate_but_existing_files_are_authoritative() {
     let fixture = crate::autostart::Fixture::new();
     for variant in ["day", "night"] {

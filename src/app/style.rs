@@ -63,12 +63,7 @@ pub(super) fn bind_window_icon(window: &impl IsA<gtk::Window>) {
 
 pub(super) fn install_app_icon(display: &gtk::gdk::Display) {
     let theme = gtk::IconTheme::for_display(display);
-    // Scene launches already use a package working directory. Also support
-    // development launches outside it without requiring a system icon install.
-    for root in [
-        std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")),
-        std::env::current_dir().unwrap_or_default(),
-    ] {
+    if let Some(root) = crate::resources::data_directory().ok().flatten() {
         let icons = root.join("assets/ui/branding");
         if icons.join(format!("{APP_ICON_NAME}.svg")).is_file() {
             theme.add_search_path(icons);

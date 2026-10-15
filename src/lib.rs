@@ -14,6 +14,7 @@ pub mod knob_assets;
 pub mod knob_motion;
 pub mod playback;
 pub mod preferences;
+pub mod resources;
 pub mod scene;
 pub mod transport_geometry;
 

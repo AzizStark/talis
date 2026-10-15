@@ -122,6 +122,7 @@ fn run(args: Args) -> Result<()> {
         issue: loaded.issue.take(),
     };
     let mut config = loaded.config;
+    config.scene.resolve_resources()?;
     if let Some(issue) = &session.issue {
         tracing::warn!("{issue}");
     }

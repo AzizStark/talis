@@ -29,13 +29,10 @@ impl SceneSettings {
     }
 
     fn bundled_root(&self) -> Option<PathBuf> {
-        let roots = [
-            std::env::current_dir().ok(),
-            Some(PathBuf::from(env!("CARGO_MANIFEST_DIR"))),
-        ];
-        roots
-            .into_iter()
+        crate::resources::data_directory()
+            .ok()
             .flatten()
+            .into_iter()
             .find(|root| self.is_bundled_at(root))
     }
 
