@@ -89,18 +89,16 @@ pub(super) fn build(
         heading.append(&title);
         let information = gtk::Box::new(gtk::Orientation::Vertical, 3);
         information.set_valign(gtk::Align::Center);
-        let context = style::label(
-            &if options.desktop {
-                format!("Desktop · Display {}", options.monitor + 1)
-            } else {
-                "Scene preview".into()
-            },
-            "quiet-status",
-        );
-        context.set_widget_name("desktop-info");
-        context.set_xalign(1.0);
-        context.set_wrap(false);
-        information.append(&context);
+        if options.desktop {
+            let context = style::label(
+                &format!("Desktop · Display {}", options.monitor + 1),
+                "quiet-status",
+            );
+            context.set_widget_name("desktop-info");
+            context.set_xalign(1.0);
+            context.set_wrap(false);
+            information.append(&context);
+        }
         heading.append(&information);
         general.prepend(&heading);
         let fps = gtk::ComboBoxText::new();

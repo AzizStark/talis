@@ -114,6 +114,7 @@ fn scene_and_controls_are_independent_windows() {
             }
         }
         if let Some(label) = widget.downcast_ref::<gtk::Label>() {
+            assert_ne!(label.text().as_str(), "Scene preview");
             assert!(!label.text().starts_with("No cover art"));
             assert_ne!(label.text().as_str(), "Cover art ready");
         }
@@ -721,6 +722,25 @@ fn scene_and_controls_are_independent_windows() {
         assert_eq!(state.borrow().config.render.pause_when_hidden, saved);
         unsupported.controls.as_ref().unwrap().destroy();
         unsupported.window.destroy();
+    }
+
+    // Preview and GNOME-owned Settings have no standalone display identity.
+    // Omit that row entirely, but retain the independent playback information.
+    for shell_surface in [false, true] {
+        let mut without_desktop = options.clone();
+        without_desktop.desktop = false;
+        without_desktop.shell_surface = shell_surface;
+        let preview = build_window(&without_desktop);
+        let root = preview
+            .controls
+            .as_ref()
+            .unwrap()
+            .clone()
+            .upcast::<gtk::Widget>();
+        assert!(style::find_widget(&root, "desktop-info").is_none());
+        assert!(style::find_widget(&root, "now-playing-info").is_some());
+        preview.controls.as_ref().unwrap().destroy();
+        preview.window.destroy();
     }
 
     options.scene_only = true;
