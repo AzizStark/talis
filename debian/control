@@ -1,0 +1,17 @@
+Source: talis
+Section: sound
+Priority: optional
+Maintainer: AzizStark <rrahman182@gmail.com>
+Build-Depends: debhelper-compat (= 13), cargo (>= 1.85) | cargo-1.85, rustc (>= 1.85) | rustc-1.85, pkg-config, libgtk-4-dev (>= 4.8)
+Standards-Version: 4.6.2
+Homepage: https://github.com/AzizStark/talis
+Rules-Requires-Root: no
+
+Package: talis
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, curl, ca-certificates, libx11-6, libxcb1, libxcb-shape0, librsvg2-common
+Description: music-aware desktop turntable
+ Rendered day and night desktop scenes with rotating artwork, a moving tonearm,
+ and MPRIS playback controls. Includes 1080p, 1440p, and 4K scene assets.
+ This package targets native X11 desktops. GNOME Wayland requires the separate
+ companion extension; this build does not include native Wayland layer-shell.

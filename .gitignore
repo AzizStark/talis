@@ -1,4 +1,13 @@
 /target/
+/dist/
+/debian/.debhelper/
+/debian/debhelper-build-stamp
+/debian/files
+/debian/talis/
+/debian/talis-dbgsym/
+/debian/*.debhelper
+/debian/*.debhelper.log
+/debian/*.substvars
 /.local/
 /.agents/
 /.aws/

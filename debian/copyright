@@ -1,0 +1,22 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: Talis
+Source: https://github.com/AzizStark/talis
+
+Files: *
+Copyright: 2026 AzizStark and credited contributors
+License: GPL-3.0-only
+ Application source code is licensed under GPL version 3 only.
+ See /usr/share/common-licenses/GPL-3 or the bundled LICENSE.
+
+Files: assets/*
+Copyright: 2026 AzizStark and the respective credited asset authors
+License: scene-and-third-party-terms
+ Original scene artwork and third-party materials have separate terms.
+ See /usr/share/doc/talis/LICENSING.md for the applicable licenses,
+ exclusions, attributions, and the Tabler Icons MIT license notice.
+
+Files: packaging/*.metainfo.xml
+Copyright: 2026 AzizStark
+License: CC0-1.0
+ AppStream metadata is dedicated to the public domain under CC0 1.0.
+ https://creativecommons.org/publicdomain/zero/1.0/

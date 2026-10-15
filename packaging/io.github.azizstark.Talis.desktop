@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Talis
+Comment=A music-aware desktop turntable
+Exec=talis
+TryExec=talis
+Icon=io.github.azizstark.Talis
+StartupWMClass=io.github.azizstark.Talis
+Terminal=false
+StartupNotify=false
+Categories=AudioVideo;Audio;
+Keywords=music;turntable;vinyl;desktop;MPRIS;

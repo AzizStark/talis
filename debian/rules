@@ -1,0 +1,24 @@
+#!/usr/bin/make -f
+export CARGO_TARGET_DIR ?= $(CURDIR)/target
+export PATH := /usr/lib/rust-1.85/bin:$(PATH)
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	pkg-config --atleast-version=4.8 gtk4
+
+override_dh_auto_build:
+	cargo build --locked --release --bin talis --bin talis-gnome-scene
+
+override_dh_auto_test:
+	cargo test --locked --release
+
+override_dh_auto_install:
+	bash scripts/stage-release.sh "$(CURDIR)/debian/talis" "$(CARGO_TARGET_DIR)/release"
+
+# Cargo's release profile does not emit DWARF debug information.
+override_dh_dwz:
+
+override_dh_strip:
+	dh_strip --no-automatic-dbgsym
