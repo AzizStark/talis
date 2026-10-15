@@ -7,3 +7,7 @@
 .DS_Store
 /integrations/gnome/talis-gnome-scene
 /integrations/gnome/assets/
+/blender/.venv/
+/blender/output/
+*.blend[0-9]*
+__pycache__/
