@@ -93,7 +93,7 @@ fn wayland_startup_is_no_build_session_scoped_and_has_explicit_loader() {
     let entry = fs::read_to_string(&fixture.manager().entry).unwrap();
     assert!(entry.contains("--experimental-wayland") && entry.contains("--start-minimized"));
     assert!(entry.contains("OnlyShowIn=KDE;") && entry.contains("GDK_BACKEND=wayland"));
-    assert!(entry.contains(&format!("LD_PRELOAD={}", library.display())));
+    assert!(entry.contains("LD_PRELOAD=libgtk4-layer-shell.so"));
     assert!(!entry.contains("cargo") && !entry.contains("scripts/wayland-desktop.sh"));
     let invalid = fixture.root.join("bad library.so");
     fs::write(&invalid, b"fixture").unwrap();
@@ -105,6 +105,22 @@ fn wayland_startup_is_no_build_session_scoped_and_has_explicit_loader() {
         .graphics_environment
         .push(("GDK_DEBUG".into(), "gl-glx".into()));
     assert!(fixture.manager().enable(&launch).is_err());
+}
+
+#[test]
+fn wayland_startup_supports_bundle_directories_with_spaces() {
+    let fixture = Fixture::new();
+    let directory = fixture.root.join("portable with spaces");
+    fs::create_dir(&directory).unwrap();
+    let library = directory.join("libgtk4-layer-shell.so.0");
+    fs::write(&library, b"fixture").unwrap();
+    let mut launch = fixture.launch();
+    launch.wayland_library = Some(library);
+    fixture.manager().enable(&launch).unwrap();
+    let entry = fs::read_to_string(&fixture.manager().entry).unwrap();
+    assert!(entry.contains("\"LD_PRELOAD=libgtk4-layer-shell.so.0\""));
+    assert!(entry.contains(&format!("\"LD_LIBRARY_PATH={}\"", directory.display())));
+    assert!(!entry.contains("cargo") && !entry.contains("scripts/run.sh"));
 }
 #[test]
 fn enable_disable_is_idempotent_and_snapshots_absolute_paths_and_settings() {

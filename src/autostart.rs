@@ -43,9 +43,12 @@ impl Launch {
                 "Wayland layer-shell library is unavailable"
             );
             let text = path_text(library)?;
+            let name = library
+                .file_name()
+                .context("Missing layer-shell library name")?;
             ensure!(
-                !text.chars().any(|c| c.is_whitespace() || c == ':'),
-                "Wayland library path cannot contain whitespace or colons (LD_PRELOAD limitation)"
+                !text.contains(':') && !name.as_encoded_bytes().iter().any(u8::is_ascii_whitespace),
+                "Wayland library directory cannot contain colons, or its filename whitespace"
             );
             ensure!(
                 self.graphics_environment.is_empty(),
@@ -121,7 +124,14 @@ impl Launch {
                 "GDK_DISABLE".into(),
             ]);
             command.push("GDK_BACKEND=wayland".into());
-            command.push(format!("LD_PRELOAD={}", path_text(library)?));
+            command.push(format!(
+                "LD_PRELOAD={}",
+                path_text(Path::new(
+                    library
+                        .file_name()
+                        .context("Missing layer-shell library name")?
+                ))?
+            ));
             command.push(format!(
                 "LD_LIBRARY_PATH={}",
                 path_text(
