@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 # Populate a new staging root; never installs files on the running system.
 set -euo pipefail
-if (($# != 2)); then echo 'Usage: bash scripts/stage-release.sh DESTDIR RELEASE_BIN_DIR' >&2; exit 2; fi
+if (($# < 2 || $# > 3)) || [[ ${3:-} != '' && ${3:-} != --with-gnome-extension ]]; then
+  echo 'Usage: bash scripts/stage-release.sh DESTDIR RELEASE_BIN_DIR [--with-gnome-extension]' >&2
+  exit 2
+fi
 talis_repo=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
 talis_destination=$1
 talis_binaries=$2
@@ -33,5 +36,11 @@ install -m644 "$talis_repo/packaging/io.github.azizstark.Talis.desktop" "$talis_
 install -m644 "$talis_repo/packaging/io.github.azizstark.Talis.metainfo.xml" "$talis_destination/usr/share/metainfo/"
 install -m644 "$talis_repo/assets/ui/branding/io.github.azizstark.Talis.svg" "$talis_destination/usr/share/icons/hicolor/scalable/apps/"
 install -m644 "$talis_repo/LICENSE" "$talis_repo/LICENSING.md" "$talis_destination/usr/share/doc/talis/"
+if [[ ${3:-} == --with-gnome-extension ]]; then
+  talis_extension="$talis_destination/usr/share/gnome-shell/extensions/talis@azizstark"
+  install -d "$talis_extension"
+  install -m644 "$talis_repo"/integrations/gnome/*.js "$talis_repo"/integrations/gnome/*.json "$talis_extension/"
+  install -m644 "$talis_repo/LICENSE" "$talis_extension/LICENSE"
+fi
 find "$talis_destination/usr/share" -type d -exec chmod 755 {} +
 find "$talis_destination/usr/share" -type f -exec chmod 644 {} +

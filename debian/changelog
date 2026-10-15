@@ -1,3 +1,10 @@
+talis (0.1.0-2) noble; urgency=medium
+
+  * Include the opt-in GNOME Shell 48/50 Wayland companion.
+  * Show packaged companion enable instructions on GNOME Wayland.
+
+ -- AzizStark <rrahman182@gmail.com>  Fri, 16 Oct 2026 00:20:00 +0530
+
 talis (0.1.0-1) noble; urgency=medium
 
   * Initial native X11 package for Ubuntu 24.04 and Linux Mint 22.

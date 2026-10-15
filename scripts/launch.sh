@@ -18,7 +18,12 @@ if talis_session_is_gnome; then
       exit 0
     fi
     echo 'GNOME Wayland uses the Talis companion extension (GNOME Shell 48 or 50).' >&2
-    echo 'For a portable bundle, run ./setup-gnome.sh once; then follow its enable instructions.' >&2
+    if [[ -f $TALIS_DATA_DIR/../gnome-shell/extensions/talis@azizstark/metadata.json ]]; then
+      echo 'The companion is included. Log out and back in, then run:' >&2
+      echo '  gnome-extensions enable talis@azizstark' >&2
+    else
+      echo 'For a portable bundle, run ./setup-gnome.sh once; then follow its enable instructions.' >&2
+    fi
     exit 1
 fi
 # Portable bundles carry a separate feature-enabled executable. X11 packages

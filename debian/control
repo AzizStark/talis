@@ -9,9 +9,10 @@ Rules-Requires-Root: no
 
 Package: talis
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, curl, ca-certificates, libx11-6, libxcb1, libxcb-shape0, librsvg2-common
+Depends: ${shlibs:Depends}, ${misc:Depends}, curl, ca-certificates, libglib2.0-bin, libx11-6, libxcb1, libxcb-shape0, librsvg2-common
 Description: music-aware desktop turntable
  Rendered day and night desktop scenes with rotating artwork, a moving tonearm,
  and MPRIS playback controls. Includes 1080p, 1440p, and 4K scene assets.
- This package targets native X11 desktops. GNOME Wayland requires the separate
- companion extension; this build does not include native Wayland layer-shell.
+ Supports native X11 desktops and GNOME Wayland with the included companion
+ extension (GNOME Shell 48 and 50). Enable the extension after logging out and
+ back in. This build does not include native Wayland layer-shell.

@@ -15,7 +15,7 @@ override_dh_auto_test:
 	cargo test --locked --release
 
 override_dh_auto_install:
-	bash scripts/stage-release.sh "$(CURDIR)/debian/talis" "$(CARGO_TARGET_DIR)/release"
+	bash scripts/stage-release.sh "$(CURDIR)/debian/talis" "$(CARGO_TARGET_DIR)/release" --with-gnome-extension
 
 # Cargo's release profile does not emit DWARF debug information.
 override_dh_dwz:

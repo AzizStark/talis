@@ -1,6 +1,7 @@
 # Release packages
 
-The first native package targets **Ubuntu 24.04 / Linux Mint 22, X11**.
+The native package uses an **Ubuntu 24.04 / Linux Mint 22** build baseline.
+It supports X11 and includes the GNOME Wayland companion for Shell 48/50.
 The portable bundle also supports the separately tested Wayland integrations;
 this does not imply that native distro packages exist for each desktop.
 
@@ -16,6 +17,17 @@ dpkg-buildpackage -b -us -uc
 The `.deb` is written to the parent directory. Install it with `sudo apt install ./talis_<version>_<arch>.deb`.
 Installed launches need no Rust, Cargo, or Blender. Startup remains opt-in.
 Quit Talis before upgrading; saved settings are preserved.
+
+On GNOME Wayland, log out/in after installation, then enable the included companion:
+
+```sh
+gnome-extensions enable talis@azizstark
+```
+
+No separate ZIP or setup script is needed. Enabling remains per-user and opt-in;
+the package does not install GNOME on other desktops. A previous per-user copy
+of the same extension takes precedence; back it up outside the extensions directory
+before switching to the packaged copy, then log out/in.
 
 ## Manual archive
 
@@ -47,7 +59,7 @@ This builds X11/GNOME and Wayland into separate Cargo target directories, uses
 the layer-shell runtime selected by `pkg-config`, and produces:
 
 - A complete, versioned portable archive, including the GNOME companion.
-- A GNOME extension ZIP for native-package users.
+- A GNOME extension ZIP for runtimes without a packaged companion.
 - `SHA256SUMS` for both artifacts.
 
 The output directory must not exist. Failed builds or changed release inputs
@@ -64,7 +76,8 @@ Nothing installs or enables itself just by launching the app.
 
 ## GNOME companion
 
-Create the JavaScript-only extension ZIP separately:
+The `.deb` already includes the companion. For other installed runtimes, create
+the JavaScript-only extension ZIP separately:
 
 ```sh
 mkdir -p dist

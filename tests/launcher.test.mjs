@@ -126,6 +126,17 @@ cp "$FAKE_TALIS" "\${CARGO_TARGET_DIR:-target}/release/talis"
     result = installedRun({XDG_SESSION_TYPE:'wayland',XDG_CURRENT_DESKTOP:'GNOME',GNOME_CALL:gnomeCall,GNOME_CALL_STATUS:'1'});
     assert.equal(result.status,1);
     assert(result.stderr.includes('setup-gnome.sh'), 'missing companion retains actionable setup guidance');
+    const systemExtension = join(installed,'share/gnome-shell/extensions/talis@azizstark');
+    mkdirSync(systemExtension,{recursive:true});
+    writeFileSync(join(systemExtension,'metadata.json'),'{"uuid":"talis@azizstark"}');
+    result = installedRun({XDG_SESSION_TYPE:'wayland',XDG_CURRENT_DESKTOP:'ubuntu:GNOME',GNOME_CALL:gnomeCall,GNOME_CALL_STATUS:'1'});
+    assert.equal(result.status,1);
+    assert(result.stderr.includes('gnome-extensions enable talis@azizstark'));
+    assert(result.stderr.includes('Log out and back in'));
+    assert(!result.stderr.includes('setup-gnome.sh'),'native packages need no portable setup or ZIP');
+    assert(!result.stdout.includes('APP='),'a disabled companion must not launch a standalone renderer');
+    result = installedRun({XDG_SESSION_TYPE:'wayland',XDG_CURRENT_DESKTOP:'GNOME',GNOME_CALL:gnomeCall}); ok(result);
+    assert(!result.stdout.includes('APP='),'an active packaged companion still owns its renderer');
     result = installedRun({TALIS_BACKEND:'wayland',TALIS_LAYER_SHELL_LIB:'/missing/library'});
     assert.notEqual(result.status,0);
     assert(!result.stdout.includes('APP='));

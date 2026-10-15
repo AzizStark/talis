@@ -8,7 +8,12 @@ For a portable bundle, run `bash setup-gnome.sh` inside its permanent extracted
 directory as your normal user, log out/in, then enable the companion as below.
 Setup registers the Talis menu/dock entry too; no separate patches are needed.
 
-For an installed runtime, install the release extension ZIP with
+The `.deb` includes the companion. Log out/in after installation and enable it
+as below; no ZIP or setup script is needed. An older per-user copy takes
+precedence over the packaged copy: disable it and back it up outside the
+extensions directory before switching, then log out/in.
+
+For other installed runtimes without the companion, install the release extension ZIP with
 `gnome-extensions install talis.shell-extension.zip`, then log out/in and enable
 it as below. It finds the installed client and assets; no repository symlink is needed.
 
