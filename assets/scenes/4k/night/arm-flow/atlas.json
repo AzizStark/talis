@@ -1,0 +1,323 @@
+{
+  "format_version": 1,
+  "algorithm": "OpenCV DIS medium, bidirectional, static-region gated; projected rigid center-plane guide for steel tube",
+  "opencv_version": "4.12.0",
+  "width": 464,
+  "height": 540,
+  "crop_width": 928,
+  "crop_height": 1080,
+  "encoding": "rgba16_unorm_bias32768_scale256",
+  "pose_manifest_sha256": "2aab404107b755222f61d14261cbabf6f1f5c0316e793e94e814bfa5fc062deb",
+  "pose_images_sha256": [
+    "95a26030ed0c5d802dcec407db9f9263d2d4ba49fea0a6318c6b477c79bd7038",
+    "f07991cd6f309bb1f0fe6d470decbba8b2520afa8f8212c8e3e2210dcdc56b9a",
+    "d222c255beaa9bcc11972b04f7ac644e7534b2aa83e6df52631259be46b76132",
+    "cc6f72a44a815023cff57f28063abb529899544528c69479c1ffa41bc572ae37",
+    "3d6dd7a7339e1656cbba4179a18ea1c0fc47780fcfb87f80e15f91c737d4791b",
+    "dd716cea65e05e03e88bdc6e5a75375b335f59f84c4510bc9efd428438e6bf30",
+    "79fa9a6ca543a31ea60e507da4bbb3a5b99d467dda0702f5363024a6553453b1",
+    "2a3338f6f04ca37e86664d519e49d0318fd0dc28d2cfa886bb885577bb0923b5",
+    "98790dbcacb819b8c997a91d4956d4f1009773b4bbe1951ded4112a8d7041a57",
+    "30a429cd5b68af3a996756f44a07f7fc1a626441427afed246b5719f5367bdfd",
+    "c2744689bb94c0df44c3c90d4b65f4661a9ada00b8a27f2e3178baed12fb5e79",
+    "664652c199f3d98fd873d196c1e134f4c5d3d98af75f26fb92bb6aa0a6921583",
+    "8ad0b30f5c4db9fce9321e59cca743d912b0b8fbd6c77bc17f7a6adebf099da5",
+    "0a7e5e6a65ff6beaf730bd69859327321c0121664b61c32f01c92c9549b55579",
+    "c51792dbf1bb724945b1c3f91117c2a4465cad484c8506ed24963cce3688a683",
+    "fed6a556e015d8a90df2e02aae5f2c49008053e66ec3451521b9bb80c86b593f",
+    "7c0185da7a66450f0f6db23c255a7a571646146d6744ac69f2d7dd625b996a82",
+    "ceb3f00db008f13ace285fee466cacbf0cf585f4b23c2bb22750d699625c8da9",
+    "a76f46b2e4d69c4c1bf99d7c42993292e263620f5960590b0cca6ba63f873f29",
+    "6736d548f9dd584a45a1b74ff4351c6979a56c1505cdb31f91b0325da04d01d5",
+    "c2fdb18222d1eeab16a3c081be16a98a95222fa94497b32bbd696bea4e7571be",
+    "1703dd5d5834db4f5385d8caddf1ad180b4b525bee0a8efb7d9ddcb2f6ec1575",
+    "62cb26d042a768cf7ea50931ce17e27507f9a97b411fab1d8362443491dcfe7e",
+    "4c84e03fb53cbb9333d90e1a5d3572a69135a73fcc02e69514df7e020c25beb2",
+    "7b14405f7c8c278cff4f3bcf742bc8650215c6d5a61f4950a1b96bb935c07cee",
+    "9ee88099d1a9786c5c996b4952083b81668e30d53dd1469d6e1f7f4ad32bc6ca",
+    "3a3072612eab71d208b687cd5c026125bdaaf9b6369c05d4c5f00f7688be17c4",
+    "7722342d6df92f4e5c95d32e382ea0929b11e09117358c947aa6233c188a5d20",
+    "b92232ef1ed38b983253d37ab2c359ec160c95bb058ceb446f95bf73857dbacf",
+    "ba1792072db1a67c709f462657fbb7a3947ccde9efbe8e30cb99a399de3ceb80",
+    "8b4896ebe67965e18966a1fe9bfad52b327d14aa8c35642f29b37455c527e72f",
+    "65624baad66c990eaec12a8c12df4a4a4077a30fefe05a041f7117d567bee433",
+    "d574379642080bd9214d81f5eada3edb43d68a9037a8555bd8017f40718129ae"
+  ],
+  "pairs": [
+    {
+      "file": "flow-000.png",
+      "sha256": "e73cadef7f3521ddea9bc7d7eb00d0610e33736124c3f6d8616c30e1239e0829"
+    },
+    {
+      "file": "flow-001.png",
+      "sha256": "b2a14e93b8ab7b0fc6d0e99bbe20df1567fd35cf8240da374ae19c2abb8fdc8a"
+    },
+    {
+      "file": "flow-002.png",
+      "sha256": "8caed9f80720a6ff70916413edaf6307d0c2adaef1ddf7ce6a7828180a576632"
+    },
+    {
+      "file": "flow-003.png",
+      "sha256": "6c2a0414880030a937aa5be90e86b2e70f0e91a0e68a456ddd42efa9d6fac1e3"
+    },
+    {
+      "file": "flow-004.png",
+      "sha256": "7593fd04f0b895d917e5cc87a620dacca748cba1da133a979480f113f0099b1f"
+    },
+    {
+      "file": "flow-005.png",
+      "sha256": "41aff95db1cb570ed68cc069beff8f58037b516a9dd78b86b7f908e226760dd0"
+    },
+    {
+      "file": "flow-006.png",
+      "sha256": "67e8b83e8e858f4eace035a921ec9b3ebeed20bfd754ea3b124721432c5cf95a"
+    },
+    {
+      "file": "flow-007.png",
+      "sha256": "404d04c75c079934cfdebaebf075652937e84747e2f5fdc78387468c057df0db"
+    },
+    {
+      "file": "flow-008.png",
+      "sha256": "53515c2e6208308df4a7aa7cac42e4c2031e384f972da123266b279a0b465ec8"
+    },
+    {
+      "file": "flow-009.png",
+      "sha256": "11da7d542df6728973f7f03d0e1a71b13c054aafb888823b77f471f45d259dc9"
+    },
+    {
+      "file": "flow-010.png",
+      "sha256": "42bf6eb2abe7643db191e1c15c157e98b9589eab7441567aabc9b5324de05c49"
+    },
+    {
+      "file": "flow-011.png",
+      "sha256": "c7071e9cd6fef2777e6e010998b45bd9efcb2488fd3ac0f6a07419603e9ca459"
+    },
+    {
+      "file": "flow-012.png",
+      "sha256": "9a3484434f663e0d0e1ebcde1ce782d1c1af28a5f2f563a4f8c73c52790e6700"
+    },
+    {
+      "file": "flow-013.png",
+      "sha256": "aa552a40c3514b79d8b59756ef97d43b9ed405be733926675580eb579d122383"
+    },
+    {
+      "file": "flow-014.png",
+      "sha256": "149dfe4d1c18363617ea999c508998653c062ea48fd9a064a7b4f82796bcc6f3"
+    },
+    {
+      "file": "flow-015.png",
+      "sha256": "bea3f06397aba9e4b295d56bd2403962d77daf2858782c457ba163c8bcc33272"
+    },
+    {
+      "file": "flow-016.png",
+      "sha256": "3e0f073d4138a7aac7b6b921f3e80b8056192f87d0f513cf1dcd9b186f46a957"
+    },
+    {
+      "file": "flow-017.png",
+      "sha256": "39093de09217eed2712f5ed1be280f4ea3f1f54e8be99d12d6e40ecf41a9c5e5"
+    },
+    {
+      "file": "flow-018.png",
+      "sha256": "4e2a6005985f44450bdb98825bf7e73181009378070203bd28cf0e50e13f9477"
+    },
+    {
+      "file": "flow-019.png",
+      "sha256": "3613d4c4b35dc8ab6815945a1cf7a64907c82e46e868398ccd6bbdcceed8a46b"
+    },
+    {
+      "file": "flow-020.png",
+      "sha256": "043f0ad2c56a0c67280533abe63c73a635f9b2d65bab9821d9fc262408ac0eff"
+    },
+    {
+      "file": "flow-021.png",
+      "sha256": "9a8f1abc9754413296b8a67cccb14c99a60ec7946fee434636596c1cb7b046dc"
+    },
+    {
+      "file": "flow-022.png",
+      "sha256": "c9adaff5034187fb23619d45fbbbce3ba8358382f4f71fab728325b25eb8e8d8"
+    },
+    {
+      "file": "flow-023.png",
+      "sha256": "eab82959a658305ce55295b1d180c962be25341cae43e28d3750b37bf67141a5"
+    },
+    {
+      "file": "flow-024.png",
+      "sha256": "0c9b75601ec342a171c00787beb6de4416e47043595e4f6f3c003396e1723765"
+    },
+    {
+      "file": "flow-025.png",
+      "sha256": "0531a2152c1cf3df825daffba5ca9365e6fe3351e777bfdb6c81df06923b7a50"
+    },
+    {
+      "file": "flow-026.png",
+      "sha256": "5c0228c4f1961e9f05aaeae74d19f5be870f6cfd86a65f65727abbebc1a5edc3"
+    },
+    {
+      "file": "flow-027.png",
+      "sha256": "3b78c358285eca8c41273e84b1c164367b233b6eeefa8b8cf8fd5d9d66994c49"
+    },
+    {
+      "file": "flow-028.png",
+      "sha256": "85e71d4ef3e3484813494456392a61c8d2c48f852d679172fd69c7bee1c63fff"
+    },
+    {
+      "file": "flow-029.png",
+      "sha256": "ac4f292d1f336023e6c0c76eb06ea969cd8c6d63ded4e5661c289e8036a7fc37"
+    },
+    {
+      "file": "flow-030.png",
+      "sha256": "b6665217581fd352b6468fc830ed3b92fa84ddf90ea79b5675ade75671a90b75"
+    },
+    {
+      "file": "flow-031.png",
+      "sha256": "e14e0f2298e79383f2b523f04eb1171416d723db573bbb97cec404b544e9e6cd"
+    }
+  ],
+  "limitations": [
+    "Experimental image warping, not geometry interpolation",
+    "Thin edges, reflections and disocclusions may still distort or step"
+  ],
+  "tube_guide_sha256": "15166cb01c596fed34fac6d4d03c6ae396d4e29cc48f863ef5f2309448fb3a85",
+  "edge_layers": {
+    "masks": [
+      {
+        "file": "foreground-000.png",
+        "sha256": "e5a9b114b01bbc912cb4b5b3ddf25f6bf44fb8b93c9d2bad79e5fa1f081fd94a"
+      },
+      {
+        "file": "foreground-001.png",
+        "sha256": "b4682e86b6220fa73f8c069ab5d103aae03f6ff2314134bf5ccc28647b8db323"
+      },
+      {
+        "file": "foreground-002.png",
+        "sha256": "47391347a7e8d1b91c66c97c7f8761d7b02b9e098efbc15535604006d033c99c"
+      },
+      {
+        "file": "foreground-003.png",
+        "sha256": "f93eefb11fdff2172969bf2531e3b65dee3986acf6a42ba4e6cf5f816f51da23"
+      },
+      {
+        "file": "foreground-004.png",
+        "sha256": "0bbb09712eb1bf894bee78e81fdef7f1f3847b0fe0a3fa5dacde882c28570340"
+      },
+      {
+        "file": "foreground-005.png",
+        "sha256": "0fd5aa5f070811236caf3e56983079351bdd26e34ead7ebae45474199b63a116"
+      },
+      {
+        "file": "foreground-006.png",
+        "sha256": "6ce8233e64db672a51ab2e0f0afc19e5b3dbf32c0fa71aa1ae592526c911a6af"
+      },
+      {
+        "file": "foreground-007.png",
+        "sha256": "409096a29be34aa552c40cf90efbc554314952df68fc2e0756938ec7622d06a6"
+      },
+      {
+        "file": "foreground-008.png",
+        "sha256": "ab00b5b24c816e2a23defff97b3c7843da11dfbc1d5b0cf2f750d34aa8f48f66"
+      },
+      {
+        "file": "foreground-009.png",
+        "sha256": "7abd755680926a9a8425ca27b44477ed01625536f009e496a051ccd1e07aab4a"
+      },
+      {
+        "file": "foreground-010.png",
+        "sha256": "bd478a464e67cc056f88ebd9bacd0461d779e08c11c34740bd190d81dfd293a7"
+      },
+      {
+        "file": "foreground-011.png",
+        "sha256": "382270e70f3cf2e88f2fab2b8c45944db7bda3c3fe73cf6e4c8a7561301972bb"
+      },
+      {
+        "file": "foreground-012.png",
+        "sha256": "1125aa3c7305bfef7861c1189b321e62f04070b9f317132e85ace186610dca9f"
+      },
+      {
+        "file": "foreground-013.png",
+        "sha256": "000e768a13610568dec011acd061704b04a88ad9850dbdca065e78eec73e43fe"
+      },
+      {
+        "file": "foreground-014.png",
+        "sha256": "d2bb3ee5ebd94705b4612dea9d98f1f529f6934c4e5b8fb4d7759a196af7a894"
+      },
+      {
+        "file": "foreground-015.png",
+        "sha256": "be02a712c02b7c4afa99cd6fad2e50dff450025a3924941f1f779930c8bb1527"
+      },
+      {
+        "file": "foreground-016.png",
+        "sha256": "026039dc55a5926c0dc84d8727515572a482635220dc10c0f670ef50a90d9f2b"
+      },
+      {
+        "file": "foreground-017.png",
+        "sha256": "66c76e15e0086193fa7e9def1419eb0a42c9001973eda77c0c9439c64b0fed59"
+      },
+      {
+        "file": "foreground-018.png",
+        "sha256": "5345e76363e6ed2070edbc7d7e11fd87fb6efd9aece53490c0e6ff5f0689df5a"
+      },
+      {
+        "file": "foreground-019.png",
+        "sha256": "ab64bd0ed6e15695a05cf7f85ba43c0ce9c9aa3aa54dc5ab60badbebdb9e79e5"
+      },
+      {
+        "file": "foreground-020.png",
+        "sha256": "e0ded1f52621efd7860fbe61e0a9b4e38fedcd381c46bd97158178de97a0d297"
+      },
+      {
+        "file": "foreground-021.png",
+        "sha256": "5db6d5f0b86c8b19629e4891320c33e48a15ab800b916ebf251e2e3cbf9d2491"
+      },
+      {
+        "file": "foreground-022.png",
+        "sha256": "43b200da7773311a8d317327775eaa3a42cd00d7bdadec466a4ac4bb9294651c"
+      },
+      {
+        "file": "foreground-023.png",
+        "sha256": "ddb90725ab27e7a94a2d74e0612b451e67529bac62f95b22cd279d0de5a70226"
+      },
+      {
+        "file": "foreground-024.png",
+        "sha256": "c67195665dc307f0d8a33466d2bb37e9ceed86429f5fefe594acb5d657d442ed"
+      },
+      {
+        "file": "foreground-025.png",
+        "sha256": "cb1365d78c781650e65258edfcf0738bd53e37bae5d574ea259e4fd5ae29e931"
+      },
+      {
+        "file": "foreground-026.png",
+        "sha256": "865a0a8ef833970c6f201d0ce88ff130788262a1a16ed8352baba0be2b80e64e"
+      },
+      {
+        "file": "foreground-027.png",
+        "sha256": "1a12ad4a5fe29b4f32cd25785d1f664aa1c1e24d6be45811f022d6d357592b49"
+      },
+      {
+        "file": "foreground-028.png",
+        "sha256": "de82b64dc7373b2c2965afb5b87420d1cc1341afb08044cc0dcfa2ee7a6edb71"
+      },
+      {
+        "file": "foreground-029.png",
+        "sha256": "f5aecc66a31006dce8f59a0dba37f55a9db998a6ec702036e0092e836a59ad4e"
+      },
+      {
+        "file": "foreground-030.png",
+        "sha256": "51b28c107befac2dc1fff518f57247f0467fec21441529cf900fa49332f769e0"
+      },
+      {
+        "file": "foreground-031.png",
+        "sha256": "1f759f7bd41aec0e52430d5675a0f9d5471dd3bc7ec6d26152085faaf36a8d83"
+      },
+      {
+        "file": "foreground-032.png",
+        "sha256": "48c751a3cef3d0a3593e0d3805a5477f30f9157333e3caf1a92374e8f32e8f51"
+      }
+    ],
+    "background": {
+      "file": "tube-background.png",
+      "sha256": "fa793b726586e4dc5b02c83d5d3930ecad66a1fc8f8ec5bb9baabae177da052f"
+    },
+    "guide_sha256": "15166cb01c596fed34fac6d4d03c6ae396d4e29cc48f863ef5f2309448fb3a85",
+    "method": "Projected foreground coverage; median of uncovered pose pixels; scoped background correction"
+  }
+}

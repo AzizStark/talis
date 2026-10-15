@@ -1,0 +1,54 @@
+{
+  "format_version": 1,
+  "width": 1920,
+  "height": 1080,
+  "base_image_sha256": "881a80b465d6fee671dcfc914cde79d87cfb87a8e54595fde3e0f0dac7d582d4",
+  "source_sha256": "86f2154851d310384a00f72572dc0752060bcba3c57d840b3ebc451520c4caa3",
+  "source": "day.blend",
+  "image": {
+    "file": "empty.png",
+    "sha256": "6628d7ab9b5f7d1b29eb8889a8cdd10a95f1f1c54ce4423375930955df176a7e"
+  },
+  "controller": "Placeholder LP sleeve - cream",
+  "cover_visible": false,
+  "hidden_parts": [
+    "Placeholder sleeve - bottom printed board",
+    "Placeholder sleeve - folded back edge",
+    "Placeholder sleeve - folded front edge",
+    "Placeholder sleeve - folded left spine",
+    "Placeholder sleeve - inner paper sleeve",
+    "Placeholder sleeve - open right edge inner shadow",
+    "Placeholder sleeve - top printed board"
+  ],
+  "preserved_stand": "Sleeve stand - continuous rounded metal frame",
+  "frame": 1,
+  "camera": "Camera - reference framing",
+  "blender": "4.0.2",
+  "compute_backend": "OPTIX",
+  "quality": {
+    "samples": 2048,
+    "use_adaptive_sampling": true,
+    "adaptive_threshold": 0.006000000052154064,
+    "adaptive_min_samples": 64,
+    "use_denoising": true,
+    "denoiser": "OPENIMAGEDENOISE",
+    "denoising_input_passes": "RGB_ALBEDO_NORMAL",
+    "denoising_prefilter": "ACCURATE",
+    "seed": 0,
+    "use_animated_seed": false,
+    "max_bounces": 14,
+    "diffuse_bounces": 6,
+    "glossy_bounces": 6,
+    "transmission_bounces": 8,
+    "transparent_max_bounces": 24,
+    "png_color_depth": "16",
+    "view_layer_denoising": {
+      "ViewLayer": true
+    }
+  },
+  "view_transform": "AgX",
+  "look": "AgX - Medium High Contrast",
+  "exposure": 0.0,
+  "gamma": 1.0,
+  "display_device": "sRGB"
+}

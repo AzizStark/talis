@@ -1,0 +1,19 @@
+# Optional explicit 4K preview profile. Normal launches select the tier by size.
+# Like any --config launch, edits here are session-only, not preference autosaves.
+[scene]
+resolution = "4k"
+background = "assets/scenes/4k/day/beauty.png"
+arm_poses = "assets/scenes/4k/day/arm-poses/atlas.json"
+arm_flow = "assets/scenes/4k/day/arm-flow/atlas.json"
+sleeve = "assets/scenes/4k/day/sleeve/atlas.json"
+record_lighting = "assets/scenes/4k/day/record-lighting/atlas.json"
+vinyl_detail = "assets/scenes/4k/day/vinyl-detail/atlas.json"
+buttons = "assets/scenes/4k/day/buttons/atlas.json"
+[scene.night]
+background = "assets/scenes/4k/night/beauty.png"
+arm_poses = "assets/scenes/4k/night/arm-poses/atlas.json"
+arm_flow = "assets/scenes/4k/night/arm-flow/atlas.json"
+sleeve = "assets/scenes/4k/night/sleeve/atlas.json"
+record_lighting = "assets/scenes/4k/night/record-lighting/atlas.json"
+vinyl_detail = "assets/scenes/4k/night/vinyl-detail/atlas.json"
+buttons = "assets/scenes/4k/night/buttons/atlas.json"

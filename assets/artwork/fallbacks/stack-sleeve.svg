@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     width="512" height="512" viewBox="0 0 512 512">
+  <title>Talis</title>
+  <desc>A square crop of the supplied David Dintsh turntable photograph,
+    with a subtle matte paper fade and a smaller ivory wordmark at top-right.
+    No added lighting or shadows.</desc>
+  <defs>
+    <filter id="ivory" color-interpolation-filters="sRGB">
+      <feColorMatrix type="matrix" values="0 0 0 0 0.909804
+        0 0 0 0 0.866667 0 0 0 0 0.784314 0 0 0 1 0"/>
+    </filter>
+  </defs>
+  <!-- 2400px square crop, just below the shelf; keep the record and tonearm. -->
+  <svg x="0" y="0" width="512" height="512" viewBox="0 180 2400 2400">
+    <image x="0" y="0" width="2400" height="3600"
+           xlink:href="../source/david-dintsh-XdRf3vsLh5Y-unsplash.jpg"/>
+  </svg>
+  <!-- Static warm-white paper wash: soften contrast without affecting the room. -->
+  <rect width="512" height="512" fill="#F1EBE0" opacity="0.10"/>
+  <!-- Preserve the author's exact PNG silhouette and its native aspect ratio. -->
+  <image x="342.39" y="30" width="137.61" height="99"
+         xlink:href="../../ui/branding/talis-logo.png" filter="url(#ivory)"/>
+</svg>

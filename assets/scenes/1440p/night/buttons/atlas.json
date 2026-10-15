@@ -1,0 +1,47 @@
+{
+  "format_version": 1,
+  "width": 2560,
+  "height": 1440,
+  "crop": [
+    896,
+    896,
+    192,
+    64
+  ],
+  "steps": 8,
+  "order": [
+    "play_pause",
+    "previous",
+    "next"
+  ],
+  "source": "night.blend",
+  "source_sha256": "ee1252124cf476bdc511ff7673a66813cd86f77b93f3a05d266014d907a6e62f",
+  "quality": {
+    "samples": 2048,
+    "use_adaptive_sampling": true,
+    "adaptive_threshold": 0.006000000052154064,
+    "adaptive_min_samples": 64,
+    "use_denoising": true,
+    "denoiser": "OPENIMAGEDENOISE",
+    "denoising_input_passes": "RGB_ALBEDO_NORMAL",
+    "denoising_prefilter": "ACCURATE",
+    "seed": 0,
+    "use_animated_seed": false,
+    "max_bounces": 14,
+    "diffuse_bounces": 6,
+    "glossy_bounces": 6,
+    "transmission_bounces": 10,
+    "transparent_max_bounces": 24,
+    "png_color_depth": "16",
+    "view_layer_denoising": {
+      "ViewLayer": true
+    }
+  },
+  "variant": "night",
+  "encoding": "Blender display-encoded RGBA8; no runtime tonemapping",
+  "poses": {
+    "file": "poses.rgba",
+    "sha256": "0e107af864a4870a9fdb17ecf8c4b630a7425b232363422743679f1ba77f603d"
+  },
+  "base_image_sha256": "dcb681bdf792de9d755aec1e1f90887973af99eb02d3848a00f0b15e019e655b"
+}

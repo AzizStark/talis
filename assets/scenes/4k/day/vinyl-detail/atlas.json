@@ -1,0 +1,122 @@
+{
+  "format_version": 1,
+  "response_kind": "vinyl_detail",
+  "source": "day.blend",
+  "source_sha256": "86f2154851d310384a00f72572dc0752060bcba3c57d840b3ebc451520c4caa3",
+  "base_image_sha256": "8533bd9cd07f6802921b94b85ac71dd195d45ff6615183268a387411d1f58632",
+  "width": 3840,
+  "height": 2160,
+  "crop": [
+    1380,
+    945,
+    870,
+    540
+  ],
+  "corners": [
+    [
+      0.3802666664123535,
+      0.49194592237472534
+    ],
+    [
+      0.5721691846847534,
+      0.49194592237472534
+    ],
+    [
+      0.5824838280677795,
+      0.6224742829799652
+    ],
+    [
+      0.36315402388572693,
+      0.6224742829799652
+    ]
+  ],
+  "samples": 2048,
+  "blender": "4.0.2",
+  "compute_backend": "OPTIX",
+  "quality": {
+    "samples": 2048,
+    "use_adaptive_sampling": true,
+    "adaptive_threshold": 0.006000000052154064,
+    "adaptive_min_samples": 64,
+    "use_denoising": true,
+    "denoiser": "OPENIMAGEDENOISE",
+    "denoising_input_passes": "RGB_ALBEDO_NORMAL",
+    "denoising_prefilter": "ACCURATE",
+    "seed": 0,
+    "use_animated_seed": false,
+    "max_bounces": 14,
+    "diffuse_bounces": 6,
+    "glossy_bounces": 6,
+    "transmission_bounces": 8,
+    "transparent_max_bounces": 24,
+    "png_color_depth": "16",
+    "view_layer_denoising": {
+      "ViewLayer": true
+    }
+  },
+  "illumination": {
+    "file": "illumination.rgba16f",
+    "sha256": "506ed439f0664ccf31c0168d32b29137dc26d00fac8d5f325db90f90f9a4b56c"
+  },
+  "residual": {
+    "file": "residual.rgba16f",
+    "sha256": "79d5f46be8b9a65592f9737d58cb1a1a17b62a3862479b2f5b5c9a1951ad8486"
+  },
+  "view_lut": {
+    "file": "view.rgba8",
+    "sha256": "5b9985a55a695fa532a949e82c672040161c9c2df3d543cdc6e01571b8c63e52"
+  },
+  "lut_edge": 96,
+  "lut_log_min": -16.0,
+  "lut_log_max": 6.0,
+  "view_transform": "AgX",
+  "look": "AgX - Medium High Contrast",
+  "exposure": 0.0,
+  "gamma": 1.0,
+  "reference_size": 35.0,
+  "excluded_moving_objects": [
+    "Tonearm gimbal fork",
+    "Tonearm gimbal fork.001",
+    "Tonearm horizontal bearing barrel",
+    "Tonearm bearing end cap",
+    "Tonearm bearing end cap.001",
+    "Tonearm rear balance shaft",
+    "Tonearm counterweight - revised",
+    "Tonearm counterweight dial edge",
+    "Tonearm - level tube with controlled end bend",
+    "Headshell locking collar",
+    "Headshell locking collar band.001",
+    "Headshell locking collar band",
+    "Headshell inserted shank",
+    "Headshell mounting bolt shaft",
+    "Headshell mounting bolt head",
+    "Headshell screw recess",
+    "Headshell mounting bolt shaft.001",
+    "Headshell mounting bolt head.001",
+    "Headshell screw recess.001",
+    "Cartridge mounting flange",
+    "Cartridge body - satin black",
+    "Stylus cantilever - forward angled",
+    "Stylus diamond contact tip",
+    "Cartridge lead wire",
+    "Cartridge rear terminal.001",
+    "Cartridge lead wire.001",
+    "Cartridge rear terminal.002",
+    "Cartridge lead wire.002",
+    "Cartridge rear terminal.003",
+    "Cartridge lead wire.003",
+    "Cartridge rear terminal",
+    "Headshell - flat slotted mounting plate"
+  ],
+  "limitations": [
+    "Fixed lighting and approximate existing-arm-shadow attenuation",
+    "Surface marks rotate; underlying grooves, rim and reflection remain baked"
+  ],
+  "detail": {
+    "file": "detail.rgba8",
+    "sha256": "28a1f5d8b7e648461d880277aab3a52f18a47db5167966040335ad489321f880"
+  },
+  "detail_size": 2048,
+  "baked_detail": false,
+  "opacity": 1.0
+}

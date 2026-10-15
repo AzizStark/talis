@@ -1,0 +1,118 @@
+{
+  "format_version": 1,
+  "response_kind": "record_lighting",
+  "source": "night.blend",
+  "source_sha256": "50afbf548c1094c3c4fd5ad5d406022e7c4037eb10df6cfb305cebe73fba0cbb",
+  "base_image_sha256": "b49ec8732858a3286cf5b6da5724f0d4a337efa0a972b81593c72a01e0f2b332",
+  "width": 1920,
+  "height": 1080,
+  "crop": [
+    675,
+    405,
+    465,
+    405
+  ],
+  "corners": [
+    [
+      0.3802647888660431,
+      0.49183189868927
+    ],
+    [
+      0.5721703171730042,
+      0.49183189868927
+    ],
+    [
+      0.5824853181838989,
+      0.6223463416099548
+    ],
+    [
+      0.36315155029296875,
+      0.6223463416099548
+    ]
+  ],
+  "samples": 2048,
+  "blender": "4.0.2",
+  "compute_backend": "OPTIX",
+  "quality": {
+    "samples": 2048,
+    "use_adaptive_sampling": true,
+    "adaptive_threshold": 0.006000000052154064,
+    "adaptive_min_samples": 64,
+    "use_denoising": true,
+    "denoiser": "OPENIMAGEDENOISE",
+    "denoising_input_passes": "RGB_ALBEDO_NORMAL",
+    "denoising_prefilter": "ACCURATE",
+    "seed": 0,
+    "use_animated_seed": false,
+    "max_bounces": 14,
+    "diffuse_bounces": 6,
+    "glossy_bounces": 6,
+    "transmission_bounces": 10,
+    "transparent_max_bounces": 24,
+    "png_color_depth": "16",
+    "view_layer_denoising": {
+      "ViewLayer": true
+    }
+  },
+  "illumination": {
+    "file": "illumination.rgba16f",
+    "sha256": "7950fb226cdf37e44358b5db7fa3e533d9fe7155187a5a745fe4c044b13fc80b"
+  },
+  "residual": {
+    "file": "residual.rgba16f",
+    "sha256": "d073126f556a3b1d03c12f46bcf2e690f4c27c88a09f6c97067628a3680a5896"
+  },
+  "view_lut": {
+    "file": "view.rgba8",
+    "sha256": "281d4dfdca74119cc8db0d61d24cd4564d35ae4b60aa9abd04f99399946a23e9"
+  },
+  "lut_edge": 96,
+  "lut_log_min": -16.0,
+  "lut_log_max": 6.0,
+  "view_transform": "AgX",
+  "look": "AgX - Medium High Contrast",
+  "exposure": 0.5,
+  "gamma": 1.0,
+  "reference_size": 35.0,
+  "excluded_moving_objects": [
+    "Tonearm gimbal fork",
+    "Tonearm gimbal fork.001",
+    "Tonearm horizontal bearing barrel",
+    "Tonearm bearing end cap",
+    "Tonearm bearing end cap.001",
+    "Tonearm rear balance shaft",
+    "Tonearm counterweight - revised",
+    "Tonearm counterweight dial edge",
+    "Tonearm - level tube with controlled end bend",
+    "Headshell locking collar",
+    "Headshell locking collar band.001",
+    "Headshell locking collar band",
+    "Headshell inserted shank",
+    "Headshell mounting bolt shaft",
+    "Headshell mounting bolt head",
+    "Headshell screw recess",
+    "Headshell mounting bolt shaft.001",
+    "Headshell mounting bolt head.001",
+    "Headshell screw recess.001",
+    "Cartridge mounting flange",
+    "Cartridge body - satin black",
+    "Stylus cantilever - forward angled",
+    "Stylus diamond contact tip",
+    "Cartridge lead wire",
+    "Cartridge rear terminal.001",
+    "Cartridge lead wire.001",
+    "Cartridge rear terminal.002",
+    "Cartridge lead wire.002",
+    "Cartridge rear terminal.003",
+    "Cartridge lead wire.003",
+    "Cartridge rear terminal",
+    "Headshell - flat slotted mounting plate"
+  ],
+  "limitations": [
+    "Fixed scene-space lighting; only fetched artwork rotates",
+    "Moving arm is excluded: no live or frozen arm lighting/shadow on the artwork",
+    "Original scene supplies secondary-ray bounce; artwork does not relight the room",
+    "Response spans maximum label fit; circle size remains a runtime control",
+    "Calibration coverage includes fixed spindle occlusion and AA"
+  ]
+}

@@ -1,0 +1,169 @@
+/* Every selector is scoped to the controls window. Native scene stays untouched. */
+.talis-controls {
+    background: #1d1f20;
+    color: #eceeed;
+    font-family: Cantarell, "Noto Sans", sans-serif;
+    font-size: 13px;
+}
+/* Light themes can give label:backdrop its own dark foreground. Assign the
+   actual text nodes a color rather than relying on window/row inheritance.
+   More specific semantic classes below keep their muted/selected colors. */
+.talis-controls label { color: #eceeed; }
+.talis-controls .settings-notification {
+    background: #333638;
+    color: #eceeed;
+    border-radius: 6px;
+    padding: 10px 14px;
+    box-shadow: 0 2px 8px alpha(black, 0.3);
+}
+.talis-controls .settings-notification label { color: #eceeed; }
+.talis-controls .settings-sidebar {
+    background: #202324;
+    border-right: none;
+}
+.talis-controls .sidebar-brand { padding: 16px 18px; }
+.talis-controls .sidebar-footer { padding: 18px; }
+.talis-controls scrolledwindow overshoot,
+.talis-controls scrolledwindow undershoot {
+    background: none;
+    box-shadow: none;
+    border: none;
+}
+.talis-controls .settings-navigation { background: transparent; padding: 0 8px; }
+.talis-controls .settings-navigation row {
+    background: transparent;
+    color: #d5dadd;
+    border: none;
+    border-radius: 5px;
+    padding: 6px 12px;
+    margin: 2px 0;
+    outline-offset: -2px;
+}
+.talis-controls .settings-navigation row:hover { background: #292e30; }
+.talis-controls .settings-navigation row:selected { background: #323b3d; color: #ffffff; }
+.talis-controls .settings-navigation row label { color: #d5dadd; }
+.talis-controls .settings-navigation row:selected label { color: #ffffff; }
+.talis-controls .settings-navigation row image { color: #b8c3c6; }
+.talis-controls .page-title { font-size: 19px; font-weight: 500; }
+.talis-controls .section-title { color: #b6bdc0; font-size: 13px; font-weight: 500; }
+.talis-controls .settings-card {
+    background: #232627;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 0;
+}
+.talis-controls .settings-row { padding: 12px 18px; }
+.talis-controls .setting-title { font-weight: 400; }
+.talis-controls .setting-detail, .talis-controls .quiet-status {
+    color: #969fa4;
+    font-size: 12px;
+}
+.talis-controls .card-footer { padding: 8px 18px; }
+.talis-controls separator { background: transparent; min-height: 0; }
+.talis-controls spinbutton {
+    background: #272b2d;
+    color: #eceeed;
+    border: 1px solid #3b4144;
+    border-radius: 5px;
+    min-height: 30px;
+    box-shadow: none;
+}
+/* Mint-Y gives the editable child its own entry border/focus shadow. Only the
+   parent should draw the outline, otherwise the left corners overlap. */
+.talis-controls spinbutton text {
+    background: transparent;
+    /* Theme text nodes need an explicit foreground, not parent inheritance. */
+    color: #eceeed;
+    caret-color: #eceeed;
+    border: none;
+    box-shadow: none;
+    outline: none;
+    margin: 0;
+    border-radius: 4px 0 0 4px;
+    padding: 0 8px;
+    min-width: 48px;
+}
+.talis-controls spinbutton:focus-within { border-color: #268caf; }
+.talis-controls spinbutton button {
+    background: transparent;
+    box-shadow: none;
+    border: none;
+    border-left: 1px solid #3b4144;
+    border-radius: 0;
+    color: #bdc6ca;
+    min-width: 20px;
+    min-height: 0;
+    padding: 0 5px;
+}
+.talis-controls spinbutton button:last-child { border-radius: 0 4px 4px 0; }
+.talis-controls spinbutton button image { color: inherit; }
+.talis-controls spinbutton:disabled text,
+.talis-controls spinbutton button:disabled { color: #969fa4; }
+.talis-controls combobox button {
+    background: #272b2d;
+    color: #eceeed;
+    border: 1px solid #3b4144;
+    border-radius: 5px;
+    box-shadow: none;
+    /* Match spinbutton: 30px content + 1px border on each side. */
+    min-height: 30px;
+    padding: 0 10px;
+}
+.talis-controls button { text-shadow: none; }
+.talis-controls button:hover { background: #343b3e; }
+.talis-controls .subtle-button {
+    background: #2b3032;
+    color: #dce2e4;
+    border: 1px solid #3b4144;
+    border-radius: 5px;
+    box-shadow: none;
+    min-height: 30px;
+    padding: 0 12px;
+}
+.talis-controls .subtle-button:hover { background: #343b3e; }
+.talis-controls .subtle-button label { color: #dce2e4; }
+.talis-controls switch {
+    background: #41494d;
+    border: none;
+    border-radius: 12px;
+    min-width: 36px;
+    min-height: 20px;
+    padding: 0;
+}
+.talis-controls switch:checked { background: #167da1; }
+.talis-controls switch slider {
+    background: #dfe6e8;
+    border: none;
+    border-radius: 10px;
+    min-width: 16px;
+    min-height: 16px;
+    margin: 2px;
+    box-shadow: none;
+}
+.talis-controls .setting-control:focus-within { outline-color: #268caf; }
+.talis-controls .setting-control:disabled { opacity: 0.65; }
+.talis-controls combobox:disabled button { color: #969fa4; }
+.talis-controls combobox button label { color: #eceeed; }
+.talis-controls combobox:disabled button label { color: #969fa4; }
+
+/* About links are full-width, keyboard-accessible rows, not browser-styled
+   underlined buttons. Explicit child colors also protect light-theme backdrop. */
+.talis-controls .about-system { padding: 12px 18px; }
+.talis-controls .about-link {
+    background: transparent;
+    border: none;
+    border-radius: 5px;
+    box-shadow: none;
+    padding: 12px 16px;
+    margin: 0 6px;
+    min-height: 0;
+}
+.talis-controls .about-link:hover { background: #2d3335; }
+.talis-controls .about-link:focus-visible {
+    outline: 2px solid #268caf;
+    outline-offset: -2px;
+}
+.talis-controls .about-link label { color: #eceeed; text-decoration-line: none; }
+.talis-controls .about-link .setting-detail { color: #969fa4; }
+.talis-controls .about-link image { color: #b8c3c6; }
+.talis-controls .about-support image { color: #c7ab83; }

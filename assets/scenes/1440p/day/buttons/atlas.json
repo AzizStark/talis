@@ -1,0 +1,47 @@
+{
+  "format_version": 1,
+  "width": 2560,
+  "height": 1440,
+  "crop": [
+    896,
+    896,
+    192,
+    64
+  ],
+  "steps": 8,
+  "order": [
+    "play_pause",
+    "previous",
+    "next"
+  ],
+  "source": "day.blend",
+  "source_sha256": "75bb6d9993b581ab1a3f3a4c3588a693d6a6b2de818c60b01edc50b0ff31b802",
+  "quality": {
+    "samples": 2048,
+    "use_adaptive_sampling": true,
+    "adaptive_threshold": 0.006000000052154064,
+    "adaptive_min_samples": 64,
+    "use_denoising": true,
+    "denoiser": "OPENIMAGEDENOISE",
+    "denoising_input_passes": "RGB_ALBEDO_NORMAL",
+    "denoising_prefilter": "ACCURATE",
+    "seed": 0,
+    "use_animated_seed": false,
+    "max_bounces": 14,
+    "diffuse_bounces": 6,
+    "glossy_bounces": 6,
+    "transmission_bounces": 8,
+    "transparent_max_bounces": 24,
+    "png_color_depth": "16",
+    "view_layer_denoising": {
+      "ViewLayer": true
+    }
+  },
+  "variant": "day",
+  "encoding": "Blender display-encoded RGBA8; no runtime tonemapping",
+  "poses": {
+    "file": "poses.rgba",
+    "sha256": "d1c86433da2f58bec2a3f760693b837a231815bc90bbb6487d9a30e87920a10c"
+  },
+  "base_image_sha256": "2eedcbf26702c6aab835380fedc7589dd534fe543ea42152a8a079ddeb19af22"
+}

@@ -1,0 +1,44 @@
+{
+  "purpose": "Complete static Cycles beauty baseline; dynamic layers are not separated",
+  "source": "night.blend",
+  "source_sha256": "ee1252124cf476bdc511ff7673a66813cd86f77b93f3a05d266014d907a6e62f",
+  "blender": "4.0.2",
+  "engine": "CYCLES",
+  "device": "GPU",
+  "compute_backend": "OPTIX",
+  "resolution": [
+    2560,
+    1440
+  ],
+  "samples": 2048,
+  "denoising": true,
+  "camera": "Camera - reference framing",
+  "frame": 1,
+  "view_transform": "AgX",
+  "look": "AgX - Medium High Contrast",
+  "exposure": 0.5,
+  "gamma": 1.0,
+  "display_device": "sRGB",
+  "quality": {
+    "samples": 2048,
+    "use_adaptive_sampling": true,
+    "adaptive_threshold": 0.006000000052154064,
+    "adaptive_min_samples": 64,
+    "use_denoising": true,
+    "denoiser": "OPENIMAGEDENOISE",
+    "denoising_input_passes": "RGB_ALBEDO_NORMAL",
+    "denoising_prefilter": "ACCURATE",
+    "seed": 0,
+    "use_animated_seed": false,
+    "max_bounces": 14,
+    "diffuse_bounces": 6,
+    "glossy_bounces": 6,
+    "transmission_bounces": 10,
+    "transparent_max_bounces": 24,
+    "png_color_depth": "16",
+    "view_layer_denoising": {
+      "ViewLayer": true
+    }
+  },
+  "image_sha256": "dcb681bdf792de9d755aec1e1f90887973af99eb02d3848a00f0b15e019e655b"
+}

@@ -1,0 +1,82 @@
+{
+  "format_version": 1,
+  "source": "night.blend",
+  "source_sha256": "ee1252124cf476bdc511ff7673a66813cd86f77b93f3a05d266014d907a6e62f",
+  "base_image_sha256": "dcb681bdf792de9d755aec1e1f90887973af99eb02d3848a00f0b15e019e655b",
+  "width": 2560,
+  "height": 1440,
+  "crop": [
+    60,
+    360,
+    700,
+    720
+  ],
+  "corners": [
+    [
+      0.032261911779642105,
+      0.3054409623146057
+    ],
+    [
+      0.2754548192024231,
+      0.2861683964729309
+    ],
+    [
+      0.2884126305580139,
+      0.6910961866378784
+    ],
+    [
+      0.05232515558600426,
+      0.7205564677715302
+    ]
+  ],
+  "samples": 2048,
+  "blender": "4.0.2",
+  "compute_backend": "OPTIX",
+  "quality": {
+    "samples": 2048,
+    "use_adaptive_sampling": true,
+    "adaptive_threshold": 0.006000000052154064,
+    "adaptive_min_samples": 64,
+    "use_denoising": true,
+    "denoiser": "OPENIMAGEDENOISE",
+    "denoising_input_passes": "RGB_ALBEDO_NORMAL",
+    "denoising_prefilter": "ACCURATE",
+    "seed": 0,
+    "use_animated_seed": false,
+    "max_bounces": 14,
+    "diffuse_bounces": 6,
+    "glossy_bounces": 6,
+    "transmission_bounces": 10,
+    "transparent_max_bounces": 24,
+    "png_color_depth": "16",
+    "view_layer_denoising": {
+      "ViewLayer": true
+    }
+  },
+  "illumination": {
+    "file": "illumination.rgba16f",
+    "sha256": "4603c9731a5740f99ad840a59afc6111be098c6b17ee5b931494537d363e4db6"
+  },
+  "residual": {
+    "file": "residual.rgba16f",
+    "sha256": "caba1ed13cf4af08c875f52edc22d5e2d128f3960f894e259dbecd7e86175990"
+  },
+  "view_lut": {
+    "file": "view.rgba8",
+    "sha256": "281d4dfdca74119cc8db0d61d24cd4564d35ae4b60aa9abd04f99399946a23e9"
+  },
+  "lut_edge": 96,
+  "lut_log_min": -16.0,
+  "lut_log_max": 6.0,
+  "view_transform": "AgX",
+  "look": "AgX - Medium High Contrast",
+  "exposure": 0.5,
+  "gamma": 1.0,
+  "base_source_sha256": "ee1252124cf476bdc511ff7673a66813cd86f77b93f3a05d266014d907a6e62f",
+  "region_compatibility": null,
+  "limitations": [
+    "Fixed camera, lighting and paper material",
+    "Printed colour does not change secondary-ray bounce or reflections elsewhere",
+    "AA coverage is already included in illumination/residual; do not multiply it twice"
+  ]
+}

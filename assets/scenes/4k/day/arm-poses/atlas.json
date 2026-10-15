@@ -1,0 +1,256 @@
+{
+  "format_version": 1,
+  "source": "day.blend",
+  "source_sha256": "86f2154851d310384a00f72572dc0752060bcba3c57d840b3ebc451520c4caa3",
+  "base_image_sha256": "8533bd9cd07f6802921b94b85ac71dd195d45ff6615183268a387411d1f58632",
+  "width": 3840,
+  "height": 2160,
+  "crop": [
+    1740,
+    810,
+    960,
+    1080
+  ],
+  "frames": [
+    {
+      "file": "pose-000.png",
+      "progress": 0.0,
+      "angle_degrees": 6.782898697791758
+    },
+    {
+      "file": "pose-001.png",
+      "progress": 0.03125,
+      "angle_degrees": 6.0777799096760035
+    },
+    {
+      "file": "pose-002.png",
+      "progress": 0.0625,
+      "angle_degrees": 5.372661121560248
+    },
+    {
+      "file": "pose-003.png",
+      "progress": 0.09375,
+      "angle_degrees": 4.667542333444493
+    },
+    {
+      "file": "pose-004.png",
+      "progress": 0.125,
+      "angle_degrees": 3.9624235453287384
+    },
+    {
+      "file": "pose-005.png",
+      "progress": 0.15625,
+      "angle_degrees": 3.257304757212984
+    },
+    {
+      "file": "pose-006.png",
+      "progress": 0.1875,
+      "angle_degrees": 2.552185969097229
+    },
+    {
+      "file": "pose-007.png",
+      "progress": 0.21875,
+      "angle_degrees": 1.847067180981474
+    },
+    {
+      "file": "pose-008.png",
+      "progress": 0.25,
+      "angle_degrees": 1.1419483928657193
+    },
+    {
+      "file": "pose-009.png",
+      "progress": 0.28125,
+      "angle_degrees": 0.4368296047499643
+    },
+    {
+      "file": "pose-010.png",
+      "progress": 0.3125,
+      "angle_degrees": -0.26828918336579055
+    },
+    {
+      "file": "pose-011.png",
+      "progress": 0.34375,
+      "angle_degrees": -0.9734079714815462
+    },
+    {
+      "file": "pose-012.png",
+      "progress": 0.375,
+      "angle_degrees": -1.6785267595973004
+    },
+    {
+      "file": "pose-013.png",
+      "progress": 0.40625,
+      "angle_degrees": -2.3836455477130545
+    },
+    {
+      "file": "pose-014.png",
+      "progress": 0.4375,
+      "angle_degrees": -3.08876433582881
+    },
+    {
+      "file": "pose-015.png",
+      "progress": 0.46875,
+      "angle_degrees": -3.793883123944566
+    },
+    {
+      "file": "pose-016.png",
+      "progress": 0.5,
+      "angle_degrees": -4.4990019120603195
+    },
+    {
+      "file": "pose-017.png",
+      "progress": 0.53125,
+      "angle_degrees": -5.204120700176074
+    },
+    {
+      "file": "pose-018.png",
+      "progress": 0.5625,
+      "angle_degrees": -5.9092394882918295
+    },
+    {
+      "file": "pose-019.png",
+      "progress": 0.59375,
+      "angle_degrees": -6.614358276407585
+    },
+    {
+      "file": "pose-020.png",
+      "progress": 0.625,
+      "angle_degrees": -7.31947706452334
+    },
+    {
+      "file": "pose-021.png",
+      "progress": 0.65625,
+      "angle_degrees": -8.024595852639093
+    },
+    {
+      "file": "pose-022.png",
+      "progress": 0.6875,
+      "angle_degrees": -8.729714640754851
+    },
+    {
+      "file": "pose-023.png",
+      "progress": 0.71875,
+      "angle_degrees": -9.434833428870604
+    },
+    {
+      "file": "pose-024.png",
+      "progress": 0.75,
+      "angle_degrees": -10.139952216986359
+    },
+    {
+      "file": "pose-025.png",
+      "progress": 0.78125,
+      "angle_degrees": -10.845071005102113
+    },
+    {
+      "file": "pose-026.png",
+      "progress": 0.8125,
+      "angle_degrees": -11.550189793217866
+    },
+    {
+      "file": "pose-027.png",
+      "progress": 0.84375,
+      "angle_degrees": -12.255308581333624
+    },
+    {
+      "file": "pose-028.png",
+      "progress": 0.875,
+      "angle_degrees": -12.960427369449379
+    },
+    {
+      "file": "pose-029.png",
+      "progress": 0.90625,
+      "angle_degrees": -13.665546157565132
+    },
+    {
+      "file": "pose-030.png",
+      "progress": 0.9375,
+      "angle_degrees": -14.37066494568089
+    },
+    {
+      "file": "pose-031.png",
+      "progress": 0.96875,
+      "angle_degrees": -15.075783733796644
+    },
+    {
+      "file": "pose-032.png",
+      "progress": 1.0,
+      "angle_degrees": -15.780902521912397
+    }
+  ],
+  "pivot_blender": [
+    0.4463285803794861,
+    -0.3018307685852051,
+    0.8965251445770264
+  ],
+  "moving_objects": [
+    "Tonearm gimbal fork",
+    "Tonearm gimbal fork.001",
+    "Tonearm horizontal bearing barrel",
+    "Tonearm bearing end cap",
+    "Tonearm bearing end cap.001",
+    "Tonearm rear balance shaft",
+    "Tonearm counterweight - revised",
+    "Tonearm counterweight dial edge",
+    "Tonearm - level tube with controlled end bend",
+    "Headshell locking collar",
+    "Headshell locking collar band.001",
+    "Headshell locking collar band",
+    "Headshell inserted shank",
+    "Headshell mounting bolt shaft",
+    "Headshell mounting bolt head",
+    "Headshell screw recess",
+    "Headshell mounting bolt shaft.001",
+    "Headshell mounting bolt head.001",
+    "Headshell screw recess.001",
+    "Cartridge mounting flange",
+    "Cartridge body - satin black",
+    "Stylus cantilever - forward angled",
+    "Stylus diamond contact tip",
+    "Cartridge lead wire",
+    "Cartridge rear terminal.001",
+    "Cartridge lead wire.001",
+    "Cartridge rear terminal.002",
+    "Cartridge lead wire.002",
+    "Cartridge rear terminal.003",
+    "Cartridge lead wire.003",
+    "Cartridge rear terminal",
+    "Headshell - flat slotted mounting plate"
+  ],
+  "start_radius": 0.2520000171661377,
+  "end_radius": 0.10500000715255738,
+  "start_angle_degrees": 6.782898697791758,
+  "end_angle_degrees": -15.780902521912397,
+  "camera": "Camera - reference framing",
+  "samples": 2048,
+  "crop_method": "Lossless runtime packing of verified wide Cycles masters",
+  "limitations": [
+    "Fixed-camera/light/finish 2.5D pose test, not runtime 3D arm rendering",
+    "Nearest-pose playback is sharp but stepped between discrete samples",
+    "Cropped complete renders include shadows/reflections; indirect changes beyond the crop are not updated"
+  ],
+  "quality": {
+    "samples": 2048,
+    "use_adaptive_sampling": true,
+    "adaptive_threshold": 0.006000000052154064,
+    "adaptive_min_samples": 64,
+    "use_denoising": true,
+    "denoiser": "OPENIMAGEDENOISE",
+    "denoising_input_passes": "RGB_ALBEDO_NORMAL",
+    "denoising_prefilter": "ACCURATE",
+    "seed": 0,
+    "use_animated_seed": false,
+    "max_bounces": 14,
+    "diffuse_bounces": 6,
+    "glossy_bounces": 6,
+    "transmission_bounces": 8,
+    "transparent_max_bounces": 24,
+    "png_color_depth": "16",
+    "view_layer_denoising": {
+      "ViewLayer": true
+    }
+  },
+  "denoising": true,
+  "blender": "4.0.2",
+  "compute_backend": "OPTIX"
+}

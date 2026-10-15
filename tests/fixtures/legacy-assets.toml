@@ -1,0 +1,13 @@
+# Compatibility fixture: older startup snapshots used flat bundled day paths.
+[render]
+arm_interpolation = true
+
+[scene]
+mode = "arm"
+background = "assets/scenes/beauty.png"
+arm_poses = "assets/scenes/arm-poses/atlas.json"
+arm_flow = "assets/scenes/arm-flow/atlas.json"
+sleeve = "assets/scenes/sleeve/atlas.json"
+record_lighting = "assets/scenes/record-lighting/atlas.json"
+vinyl_detail = "assets/scenes/vinyl-detail/atlas.json"
+buttons = "assets/scenes/buttons/atlas.json"

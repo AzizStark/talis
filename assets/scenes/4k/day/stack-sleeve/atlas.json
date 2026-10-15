@@ -1,0 +1,84 @@
+{
+  "format_version": 1,
+  "source": "day.blend",
+  "source_sha256": "86f2154851d310384a00f72572dc0752060bcba3c57d840b3ebc451520c4caa3",
+  "response_kind": "stack",
+  "object": "Jacket 5 - top printed board",
+  "base_image_sha256": "8533bd9cd07f6802921b94b85ac71dd195d45ff6615183268a387411d1f58632",
+  "width": 3840,
+  "height": 2160,
+  "crop": [
+    2700,
+    1215,
+    1020,
+    540
+  ],
+  "corners": [
+    [
+      0.7100070118904114,
+      0.5932077169418335
+    ],
+    [
+      0.9221141338348389,
+      0.6101407706737518
+    ],
+    [
+      0.9588773846626282,
+      0.7724088132381439
+    ],
+    [
+      0.7133378386497498,
+      0.7497873306274414
+    ]
+  ],
+  "samples": 2048,
+  "blender": "4.0.2",
+  "compute_backend": "OPTIX",
+  "quality": {
+    "samples": 2048,
+    "use_adaptive_sampling": true,
+    "adaptive_threshold": 0.006000000052154064,
+    "adaptive_min_samples": 64,
+    "use_denoising": true,
+    "denoiser": "OPENIMAGEDENOISE",
+    "denoising_input_passes": "RGB_ALBEDO_NORMAL",
+    "denoising_prefilter": "ACCURATE",
+    "seed": 0,
+    "use_animated_seed": false,
+    "max_bounces": 14,
+    "diffuse_bounces": 6,
+    "glossy_bounces": 6,
+    "transmission_bounces": 8,
+    "transparent_max_bounces": 24,
+    "png_color_depth": "16",
+    "view_layer_denoising": {
+      "ViewLayer": true
+    }
+  },
+  "illumination": {
+    "file": "illumination.rgba16f",
+    "sha256": "9f500a3e1d84a43bd98d1c2f68731c4903700a04e2f5ca7f9a65240a78cb8026"
+  },
+  "residual": {
+    "file": "residual.rgba16f",
+    "sha256": "aa35dded5d97f35de316906260278e6910593ad3d18add72f367365295786592"
+  },
+  "view_lut": {
+    "file": "view.rgba8",
+    "sha256": "5b9985a55a695fa532a949e82c672040161c9c2df3d543cdc6e01571b8c63e52"
+  },
+  "lut_edge": 96,
+  "lut_log_min": -16.0,
+  "lut_log_max": 6.0,
+  "view_transform": "AgX",
+  "look": "AgX - Medium High Contrast",
+  "exposure": 0.0,
+  "gamma": 1.0,
+  "base_source_sha256": "86f2154851d310384a00f72572dc0752060bcba3c57d840b3ebc451520c4caa3",
+  "region_compatibility": null,
+  "limitations": [
+    "Fixed camera, lighting and paper material",
+    "Printed colour does not change secondary-ray bounce or reflections elsewhere",
+    "AA coverage is already included in illumination/residual; do not multiply it twice"
+  ]
+}

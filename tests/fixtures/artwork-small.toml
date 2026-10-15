@@ -1,0 +1,3 @@
+# Rendering regression fixture: same perspective fit, smaller centered circle.
+[artwork]
+size_percent = 30.0

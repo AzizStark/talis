@@ -1,0 +1,42 @@
+[package]
+name = "talis"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+description = "A music-aware turntable scene for the Linux desktop"
+license = "GPL-3.0-only"
+publish = false
+default-run = "talis"
+
+[features]
+default = ["desktop"]
+desktop = ["assets", "dep:gtk", "dep:glow", "dep:libloading", "dep:base64"]
+assets = ["dep:image", "dep:serde_json", "dep:sha2"]
+# Optional native library; normal Wayland launches also require an explicit flag.
+wayland-desktop = ["desktop", "dep:gtk4-layer-shell"]
+
+[dependencies]
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+toml = "0.8"
+libc = "0.2"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+gtk = { package = "gtk4", version = "0.10", features = ["v4_8"], optional = true }
+glow = { version = "0.16", optional = true }
+libloading = { version = "0.8", optional = true }
+gtk4-layer-shell = { version = "=0.7.1", optional = true }
+serde_json = { version = "1", optional = true }
+image = { version = "0.25", default-features = false, features = ["png", "jpeg"], optional = true }
+sha2 = { version = "0.10", optional = true }
+base64 = { version = "0.22", optional = true }
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+
+[[bin]]
+name = "talis-gnome-scene"
+path = "src/bin/talis-gnome-scene.rs"
+required-features = ["desktop"]

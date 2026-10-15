@@ -1,0 +1,64 @@
+{
+  "format_version": 1,
+  "width": 2560,
+  "height": 1440,
+  "crop": [
+    1568,
+    864,
+    96,
+    96
+  ],
+  "corners": [
+    [
+      0.641551673412323,
+      0.6297241151332855
+    ],
+    [
+      0.6239656805992126,
+      0.6297241151332855
+    ],
+    [
+      0.6225611567497253,
+      0.6178158223628998
+    ],
+    [
+      0.6399478912353516,
+      0.6178158223628998
+    ]
+  ],
+  "marker_width": 0.04166669496205714,
+  "marker_inner": 0.29166929247890283,
+  "marker_outer": 0.6250026581498253,
+  "source": "day.blend",
+  "source_sha256": "75bb6d9993b581ab1a3f3a4c3588a693d6a6b2de818c60b01edc50b0ff31b802",
+  "base_image_sha256": "2eedcbf26702c6aab835380fedc7589dd534fe543ea42152a8a079ddeb19af22",
+  "quality": {
+    "samples": 2048,
+    "use_adaptive_sampling": true,
+    "adaptive_threshold": 0.006000000052154064,
+    "adaptive_min_samples": 64,
+    "use_denoising": true,
+    "denoiser": "OPENIMAGEDENOISE",
+    "denoising_input_passes": "RGB_ALBEDO_NORMAL",
+    "denoising_prefilter": "ACCURATE",
+    "seed": 0,
+    "use_animated_seed": false,
+    "max_bounces": 14,
+    "diffuse_bounces": 6,
+    "glossy_bounces": 6,
+    "transmission_bounces": 8,
+    "transparent_max_bounces": 24,
+    "png_color_depth": "16",
+    "view_layer_denoising": {
+      "ViewLayer": true
+    }
+  },
+  "clean": {
+    "file": "clean.png",
+    "sha256": "a07c64ea38874ebfd0cbffde4506ca121d0b1e5bfad0d3a5c26d88b4b95eda59"
+  },
+  "ink": {
+    "file": "ink.png",
+    "sha256": "10b6c03267035adf330e4a8353067643c171d9ce8433919259a48f88d336dda2"
+  }
+}

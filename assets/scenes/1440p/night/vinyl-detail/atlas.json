@@ -1,0 +1,134 @@
+{
+  "format_version": 1,
+  "response_kind": "vinyl_detail",
+  "source": "night.blend",
+  "source_sha256": "ee1252124cf476bdc511ff7673a66813cd86f77b93f3a05d266014d907a6e62f",
+  "base_image_sha256": "dcb681bdf792de9d755aec1e1f90887973af99eb02d3848a00f0b15e019e655b",
+  "width": 2560,
+  "height": 1440,
+  "crop": [
+    900,
+    675,
+    620,
+    270
+  ],
+  "corners": [
+    [
+      0.3802666664123535,
+      0.49194592237472534
+    ],
+    [
+      0.5721691846847534,
+      0.49194592237472534
+    ],
+    [
+      0.5824838280677795,
+      0.6224742829799652
+    ],
+    [
+      0.36315402388572693,
+      0.6224742829799652
+    ]
+  ],
+  "samples": 2048,
+  "blender": "4.0.2",
+  "compute_backend": "OPTIX",
+  "quality": {
+    "samples": 2048,
+    "use_adaptive_sampling": true,
+    "adaptive_threshold": 0.006000000052154064,
+    "adaptive_min_samples": 64,
+    "use_denoising": true,
+    "denoiser": "OPENIMAGEDENOISE",
+    "denoising_input_passes": "RGB_ALBEDO_NORMAL",
+    "denoising_prefilter": "ACCURATE",
+    "seed": 0,
+    "use_animated_seed": false,
+    "max_bounces": 14,
+    "diffuse_bounces": 6,
+    "glossy_bounces": 6,
+    "transmission_bounces": 10,
+    "transparent_max_bounces": 24,
+    "png_color_depth": "16",
+    "view_layer_denoising": {
+      "ViewLayer": true
+    }
+  },
+  "illumination": {
+    "file": "illumination.rgba16f",
+    "sha256": "26bf50afc061465f839cba602a542935008d9197886b16b1f1f4bdc4f1480ca4"
+  },
+  "residual": {
+    "file": "residual.rgba16f",
+    "sha256": "34054c0db65aa8285c0cea6ac4fd5b2999289371caf57255b2f44a132bacd85a"
+  },
+  "view_lut": {
+    "file": "view.rgba8",
+    "sha256": "281d4dfdca74119cc8db0d61d24cd4564d35ae4b60aa9abd04f99399946a23e9"
+  },
+  "lut_edge": 96,
+  "lut_log_min": -16.0,
+  "lut_log_max": 6.0,
+  "view_transform": "AgX",
+  "look": "AgX - Medium High Contrast",
+  "exposure": 0.5,
+  "gamma": 1.0,
+  "reference_size": 35.0,
+  "excluded_moving_objects": [
+    "Tonearm gimbal fork",
+    "Tonearm gimbal fork.001",
+    "Tonearm horizontal bearing barrel",
+    "Tonearm bearing end cap",
+    "Tonearm bearing end cap.001",
+    "Tonearm rear balance shaft",
+    "Tonearm counterweight - revised",
+    "Tonearm counterweight dial edge",
+    "Tonearm - level tube with controlled end bend",
+    "Headshell locking collar",
+    "Headshell locking collar band.001",
+    "Headshell locking collar band",
+    "Headshell inserted shank",
+    "Headshell mounting bolt shaft",
+    "Headshell mounting bolt head",
+    "Headshell screw recess",
+    "Headshell mounting bolt shaft.001",
+    "Headshell mounting bolt head.001",
+    "Headshell screw recess.001",
+    "Cartridge mounting flange",
+    "Cartridge body - satin black",
+    "Stylus cantilever - forward angled",
+    "Stylus diamond contact tip",
+    "Cartridge lead wire",
+    "Cartridge rear terminal.001",
+    "Cartridge lead wire.001",
+    "Cartridge rear terminal.002",
+    "Cartridge lead wire.002",
+    "Cartridge rear terminal.003",
+    "Cartridge lead wire.003",
+    "Cartridge rear terminal",
+    "Headshell - flat slotted mounting plate"
+  ],
+  "limitations": [
+    "Fixed lighting and approximate existing-arm-shadow attenuation",
+    "Surface marks rotate; underlying grooves, rim and reflection remain baked"
+  ],
+  "detail": {
+    "file": "detail.rgba8",
+    "sha256": "17e13eccc517db7c5fb87a7f79e22ed9c1c18633a81be374b60faecae0cd6995"
+  },
+  "detail_size": 2048,
+  "baked_detail": false,
+  "opacity": 0.699999988079071,
+  "overlay_source": "night-overlay.blend",
+  "overlay_source_sha256": "50afbf548c1094c3c4fd5ad5d406022e7c4037eb10df6cfb305cebe73fba0cbb",
+  "overlay_compatibility": {
+    "scope": "vinyl-detail-texture-and-opacity-only",
+    "base_source_sha256": "ee1252124cf476bdc511ff7673a66813cd86f77b93f3a05d266014d907a6e62f",
+    "updated_source_sha256": "50afbf548c1094c3c4fd5ad5d406022e7c4037eb10df6cfb305cebe73fba0cbb",
+    "unchanged_scene_sha256": "12397ec4860c487463ea34b1837d4209cbb0efaaf49b7cbd75947bb5335d1d6d",
+    "unchanged_detail_response_sha256": "406909898f72c4112822ef2e7a2c1b2985a92a3786b1f772eb0d279e80a6a999",
+    "source_scene_matches": true,
+    "other_source_changes_excluded": false,
+    "base_response_sha256": "64d57b62cfaa331d9adf80c7ebf0703be3c258a549937e5a192cae33f028e7c1"
+  }
+}

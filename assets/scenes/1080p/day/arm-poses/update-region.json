@@ -1,0 +1,11 @@
+{
+  "format_version": 1,
+  "pose_manifest_sha256": "48f1c53ccc959db7f4fcb030d636995b6c3fecc00bf6a6a29ca0f81c83866421",
+  "flow_manifest_sha256": "d428b2318500cd6ece47d8dbf370d16fe7788e8a13527b87d751a2d5ee5559a5",
+  "crop": [
+    870,
+    405,
+    450,
+    540
+  ]
+}
