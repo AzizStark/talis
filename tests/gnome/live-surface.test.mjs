@@ -1,17 +1,21 @@
 // Logic-only lifecycle checks. These do not emulate Mutter/Wayland rendering.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
+import {resolve} from 'node:path';
+import {fileURLToPath} from 'node:url';
 import vm from 'node:vm';
 
-const source = readFileSync(new URL('../../integrations/gnome/talis@azizstark/live-surface.js', import.meta.url), 'utf8')
+const directory = new URL('../../integrations/gnome/', import.meta.url);
+const source = readFileSync(new URL('live-surface.js', directory), 'utf8')
     .replace(/^import .*;\n/gm, '').replace('export class LiveSurface', 'class LiveSurface');
-const inputSource = readFileSync(new URL('../../integrations/gnome/talis@azizstark/scene-input.js', import.meta.url), 'utf8')
+const inputSource = readFileSync(new URL('scene-input.js', directory), 'utf8')
     .replace(/^import .*;\n/gm, '').replace('export class SceneInput', 'class SceneInput');
-const visibilitySource = readFileSync(new URL('../../integrations/gnome/talis@azizstark/scene-visibility.js', import.meta.url), 'utf8')
+const visibilitySource = readFileSync(new URL('scene-visibility.js', directory), 'utf8')
     .replace(/^import .*;\n/gm, '').replace('export class SceneVisibility', 'class SceneVisibility');
 // Match GNOME 48's upstream MetaCursor enum, not invented compatibility names.
 const GNOME48_CURSOR = Object.freeze({INVALID: 0, NONE: 1, DEFAULT: 2, POINTER: 5});
-function fixture({spawnFails = false, sceneConfig = null, cursorEnum = GNOME48_CURSOR} = {}) {
+function fixture({spawnFails = false, sceneConfig = null, cursorEnum = GNOME48_CURSOR,
+    fileTest = () => true} = {}) {
     let id = 0;
     const signals = new Map();
     const timeouts = new Map();
@@ -116,7 +120,7 @@ function fixture({spawnFails = false, sceneConfig = null, cursorEnum = GNOME48_C
         GLib: {
             get_monotonic_time: () => 0,
             PRIORITY_DEFAULT: 0, SOURCE_REMOVE: false, SOURCE_CONTINUE: true, FileTest: {IS_EXECUTABLE: 1},
-            build_filenamev: parts => parts.join('/'), file_test: () => true,
+            build_filenamev: parts => parts.join('/'), file_test: fileTest,
             timeout_add_seconds: (_priority, _seconds, callback) => {
                 const key = ++id; timeouts.set(key, callback); return key;
             },
@@ -133,6 +137,22 @@ function fixture({spawnFails = false, sceneConfig = null, cursorEnum = GNOME48_C
     return {LiveSurface, Actor, signals, timeouts, overlays, stats, process, stage, inputPipe,
         shield, overview, workspaceManager, get output() { return output; }};
 }
+
+// Source checkout paths follow the flattened layout. Packaged extension paths
+// stay relative to the UUID installation directory, independent of the repo.
+const sceneConfig = JSON.parse(readFileSync(new URL('scene.json', directory), 'utf8'));
+const sourceLayout = fixture({sceneConfig, fileTest: () => false});
+const extensionPath = fileURLToPath(directory);
+assert.equal(resolve(sourceLayout.LiveSurface.sceneSource(extensionPath).assets),
+    fileURLToPath(new URL('../../assets', directory)));
+assert.equal(resolve(sourceLayout.LiveSurface.binary(extensionPath)),
+    fileURLToPath(new URL('../../target/release/talis-gnome-scene', directory)));
+const metadata = JSON.parse(readFileSync(new URL('metadata.json', directory), 'utf8'));
+assert.equal(metadata.uuid, 'talis@azizstark', 'source reorganization must not change installed identity');
+const installedPath = `/example/gnome-shell/extensions/${metadata.uuid}`;
+const installedLayout = fixture({sceneConfig});
+assert.equal(installedLayout.LiveSurface.sceneSource(installedPath).assets, `${installedPath}/assets`);
+assert.equal(installedLayout.LiveSurface.binary(installedPath), `${installedPath}/talis-gnome-scene`);
 
 const f = fixture();
 const live = new f.LiveSurface('/probe');

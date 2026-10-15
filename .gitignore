@@ -5,5 +5,5 @@
 /.codex/
 *.log
 .DS_Store
-/integrations/gnome/*/talis-gnome-scene
-/integrations/gnome/*/assets/
+/integrations/gnome/talis-gnome-scene
+/integrations/gnome/assets/

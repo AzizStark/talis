@@ -37,7 +37,7 @@ export class LiveSurface {
             throw new Error('Unsupported scene configuration');
         const packagedAssets = GLib.build_filenamev([path, 'assets']);
         const assets = GLib.file_test(packagedAssets, GLib.FileTest.IS_DIR)
-            ? packagedAssets : GLib.build_filenamev([path, '..', '..', '..', 'assets']);
+            ? packagedAssets : GLib.build_filenamev([path, '..', '..', 'assets']);
         return {scene: config.scene, mode: config.mode,
             assets};
     }
@@ -53,7 +53,7 @@ export class LiveSurface {
         const name = 'talis-gnome-scene';
         const packaged = GLib.build_filenamev([path, name]);
         if (GLib.file_test(packaged, GLib.FileTest.IS_EXECUTABLE)) return packaged;
-        return GLib.build_filenamev([path, '..', '..', '..', 'target', 'release', name]);
+        return GLib.build_filenamev([path, '..', '..', 'target', 'release', name]);
     }
 
     start(scenes) {

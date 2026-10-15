@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
-const directory = new URL('../../integrations/gnome/talis@azizstark/', import.meta.url);
+const directory = new URL('../../integrations/gnome/', import.meta.url);
 const source = name => readFileSync(new URL(name, directory), 'utf8')
     .replace(/^import .*;\n/gm, '').replace(/export class /g, 'class ');
 let next = 0;
