@@ -20,7 +20,7 @@ let actors = [];
 let monotonic = 0;
 const logs = [];
 const SceneVisibility = vm.runInNewContext(`${source('scene-input.js')}\n${source('scene-visibility.js')}\nSceneVisibility;`, {
-    Cogl: {TextureComponents: {RGB, RGBA}}, Meta: {WindowClientType: {WAYLAND: 0, X11: 1}},
+    Cogl: {TextureComponents: {RGB, RGBA}}, Meta: {WindowClientType: {WAYLAND: 0, X11: 1}, WindowType: {DESKTOP: 1}},
     Main: {screenShield: shield, overview},
     console: {log(message) { logs.push(message); }},
     global: {workspace_manager: manager, get_window_actors: () => actors},
@@ -41,11 +41,11 @@ for (let mask = 0; mask < 256; mask++) {
     assert.equal(covered([0, 0, 4, 2], rects), mask === 255);
 }
 
-function actor({components = RGB, opacity = 255, client = 0, minimized = false,
+function actor({components = RGB, opacity = 255, client = 0, minimized = false, windowType = 0,
     onWorkspace = true, visible = true, effect = false, transition = false, transformed = false,
     rect = {x: 100, y: 100, width: 900, height: 600}} = {}) {
     return {
-        meta_window: {minimized, get_client_type: () => client,
+        meta_window: {minimized, get_client_type: () => client, get_window_type: () => windowType,
             located_on_workspace: () => onWorkspace, showing_on_its_workspace: () => visible,
             get_buffer_rect: () => rect, get_frame_rect: () => rect},
         is_visible: () => visible, get_paint_opacity: () => opacity,
@@ -62,6 +62,7 @@ const noTextureQuery = actor();
 noTextureQuery.get_texture = () => { throw new Error('texture queries are not needed'); };
 assert(SceneVisibility.coveringRect(noTextureQuery, workspace));
 for (const [options, reason] of [
+    [{windowType: 1}, 'desktop-window'],
     [{opacity: 250}, 'actor-opacity'], [{client: 1}, 'non-wayland-client'],
     [{minimized: true}, 'minimized'], [{onWorkspace: false}, 'other-workspace'],
     [{visible: false}, 'not-showing'], [{effect: true}, 'actor-effects'],
@@ -95,6 +96,8 @@ actors = [actor({components: RGBA})];
 visibility.poll(); assert.equal(events.at(-1).hidden, false, 'new coverage still requires two samples');
 visibility.poll(); assert.equal(events.at(-1).hidden, true);
 actors = [owned]; visibility.poll(); visibility.poll(); assert.equal(events.at(-1).hidden, false);
+actors = [actor({windowType: 1})]; visibility.poll(); visibility.poll();
+assert.equal(events.at(-1).hidden, false, 'a DING desktop must never suspend the animation');
 actors = [actor()]; visibility.poll(); visibility.poll();
 assert(events.at(-1).hidden);
 workspaceIndex++;
@@ -124,6 +127,8 @@ assert(target && target[0] > 900 && target[1] > 400, 'coverage uses the same con
 snapshot.layout.animation = null; assert.equal(SceneVisibility.target(snapshot, scene), null);
 const count = events.length;
 // Diagnostics are bounded, identify actual method failures and never log titles.
+assert(!logs.some(line => line.startsWith('Talis visibility diagnostic: ')), 'detailed coverage logging is opt-in');
+visibility._diagnostics = true;
 snapshot.layout.animation = [900, 400, 600, 450];
 actors = [actor({components: RGBA})];
 monotonic = 5_000_000; visibility.poll();

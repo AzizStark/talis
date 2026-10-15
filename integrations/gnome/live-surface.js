@@ -5,7 +5,7 @@ import Meta from 'gi://Meta';
 import {SceneInput} from './scene-input.js';
 import {SceneVisibility} from './scene-visibility.js';
 
-// GNOME 48 owned surface transport. No frame readback or image-file polling.
+// GNOME owned surface transport. No frame readback or image-file polling.
 // The compositor owns the Wayland buffers; a Clone references their actor.
 export class LiveSurface {
     constructor(path) {
@@ -33,12 +33,17 @@ export class LiveSurface {
             throw new Error('Invalid or oversized scene configuration');
         const config = JSON.parse(new TextDecoder().decode(bytes));
         if (config.version !== 3 || !['day', 'night'].includes(config.scene)
-            || !['music', 'demo', 'static'].includes(config.mode))
+            || !['music', 'demo', 'static'].includes(config.mode)
+            || (config.diagnostics !== undefined && typeof config.diagnostics !== 'boolean'))
             throw new Error('Unsupported scene configuration');
         const packagedAssets = GLib.build_filenamev([path, 'assets']);
-        const assets = GLib.file_test(packagedAssets, GLib.FileTest.IS_DIR)
-            ? packagedAssets : GLib.build_filenamev([path, '..', '..', 'assets']);
-        return {scene: config.scene, mode: config.mode,
+        const sourceAssets = GLib.build_filenamev([path, '..', '..', 'assets']);
+        const installedAssets = GLib.build_filenamev([GLib.get_user_data_dir(), 'talis', 'assets']);
+        const systemAssets = GLib.get_system_data_dirs().map(dir => GLib.build_filenamev([dir, 'talis', 'assets']));
+        const assets = [packagedAssets, sourceAssets, installedAssets, ...systemAssets]
+            .find(dir => GLib.file_test(dir, GLib.FileTest.IS_DIR))
+            ?? GLib.build_filenamev([path, '..', '..', 'assets']);
+        return {scene: config.scene, mode: config.mode, diagnostics: config.diagnostics === true,
             assets};
     }
 
@@ -53,7 +58,11 @@ export class LiveSurface {
         const name = 'talis-gnome-scene';
         const packaged = GLib.build_filenamev([path, name]);
         if (GLib.file_test(packaged, GLib.FileTest.IS_EXECUTABLE)) return packaged;
-        return GLib.build_filenamev([path, '..', '..', 'target', 'release', name]);
+        const source = GLib.build_filenamev([path, '..', '..', 'target', 'release', name]);
+        if (GLib.file_test(source, GLib.FileTest.IS_EXECUTABLE)) return source;
+        const installed = GLib.find_program_in_path(name);
+        if (installed) return installed;
+        return source;
     }
 
     start(scenes) {
@@ -66,7 +75,6 @@ export class LiveSurface {
         for (const variable of ['LD_PRELOAD', 'GDK_DEBUG', 'GDK_DISABLE'])
             launcher.unsetenv(variable);
         try {
-            this._client = Meta.WaylandClient.new(global.context, launcher);
             this._mapId = global.window_manager.connect_after('map', (_wm, actor) => {
                 try {
                     this._attach(actor);
@@ -78,21 +86,29 @@ export class LiveSurface {
             const argv = [this._binary];
             if (this._scene) {
                 if (scenes.length !== 1)
-                    throw new Error('The real-scene milestone currently requires exactly one monitor');
+                    throw new Error('GNOME desktop presentation currently requires exactly one monitor');
                 const {width, height} = scenes[0];
                 if (![width, height].every(n => Number.isInteger(n) && n >= 1 && n <= 8192))
                     throw new Error('Monitor geometry is outside the scene limits');
                 argv.push('--asset-root', this._scene.assets, '--scene', this._scene.scene,
                     '--mode', this._scene.mode, '--size', `${width}x${height}`);
             }
-            this._process = this._client.spawnv(global.display, argv);
+            if (typeof Meta.WaylandClient.new_subprocess === 'function') {
+                // Mutter 49+ creates the owned client and subprocess together.
+                this._client = Meta.WaylandClient.new_subprocess(global.context, launcher, argv);
+                this._process = this._client.get_subprocess();
+            } else {
+                // Preserve the tested Mutter 48 launch path.
+                this._client = Meta.WaylandClient.new(global.context, launcher);
+                this._process = this._client.spawnv(global.display, argv);
+            }
         } finally {
             launcher.close();
         }
         this._cancel = new Gio.Cancellable();
         if (this._scene) {
             this._inputPipe = this._process.get_stdin_pipe();
-            this._input = new SceneInput(event => this._sendInput(event), () => this.openSettings());
+            this._input = new SceneInput(event => this._sendInput(event), () => this.openSettings(), this._scene.diagnostics);
             this._signals.push([global.display, global.display.connect('notify::focus-window', () => this._input?.cancel())]);
             this._visibility = new SceneVisibility(() => this._inputLayout,
                 () => this._ready && this._scenes.length === 1 ? this._scenes[0] : null,
@@ -101,7 +117,7 @@ export class LiveSurface {
                     if (this._inputBlocked === blocked) return;
                     this._inputBlocked = blocked;
                     this._updateInput();
-                });
+                }, this._scene.diagnostics);
             this._visibility.start();
         }
         this._output = new Gio.DataInputStream({base_stream: this._process.get_stdout_pipe()});
@@ -151,7 +167,10 @@ export class LiveSurface {
                         this.setScenes(this._scenes);
                     }
                 }
-                console.log(`Talis renderer: ${line}`);
+                // FRAME/INPUT remain protocol messages even when their verbose
+                // journal copies are disabled. Never gate readiness or controls.
+                if (this._scene?.diagnostics || (!match && !line.startsWith('INPUT ')))
+                    console.log(`Talis renderer: ${line}`);
                 this._readOutput();
             } catch (error) {
                 if (!this._stopped) {
@@ -163,9 +182,13 @@ export class LiveSurface {
     }
 
     _attach(actor) {
-        if (this._stopped || !this._client.owns_window(actor.meta_window))
-            return;
         const window = actor.meta_window;
+        // owns_window() rejects Xwayland windows. Unrelated application maps
+        // must never terminate the renderer or change those windows' state.
+        if (this._stopped || !window || !this._client
+            || window.get_client_type() !== Meta.WindowClientType.WAYLAND
+            || !this._client.owns_window(window))
+            return;
         if (this._scene && window.get_title() === 'Talis · Settings') {
             if (this._settingsWindow !== window) {
                 this._settingsWindow = window;
@@ -210,14 +233,14 @@ export class LiveSurface {
                 // Mutter 48's skip-taskbar flag disables can_minimize(). Restore
                 // it before minimizing; hiding from lists must happen LAST.
                 // This also handles an external unminimize without a retry loop.
-                this._client.show_in_window_list(window);
+                this._setWindowListed(window, true);
                 if (!window.can_minimize())
                     throw new Error('Owned renderer window does not permit minimization');
                 window.minimize();
                 if (!window.minimized)
                     throw new Error('Owned renderer window did not become minimized');
             }
-            this._client.hide_from_window_list(window);
+            this._setWindowListed(window, false);
             return true;
         } catch (error) {
             console.error(`Talis renderer: concealment failed: ${error.message}; static scene remains`);
@@ -226,6 +249,15 @@ export class LiveSurface {
         } finally {
             this._concealing = false;
         }
+    }
+
+    _setWindowListed(window, listed) {
+        const method = listed ? 'show_in_window_list' : 'hide_from_window_list';
+        // These operations moved from WaylandClient to Window in Mutter 49.
+        if (typeof window[method] === 'function')
+            window[method]();
+        else
+            this._client[method](window);
     }
 
     setScenes(scenes) {

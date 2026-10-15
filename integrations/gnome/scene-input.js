@@ -6,14 +6,20 @@ import St from 'gi://St';
 // Only ellipse scanlines are reactive, not a fullscreen transparent input plane.
 // Commands/availability remain authoritative in Rust, including stale gestures.
 export class SceneInput {
-    constructor(send, openSettings) {
+    constructor(send, openSettings, diagnostics = false) {
         this._send = send;
         this._openSettings = openSettings;
+        this._diagnostics = diagnostics;
         this._actors = [];
         this._capture = null;
         this._captureTimeout = 0;
         this._generation = 0;
         this._hovered = false;
+        this._layer = null;
+        // Mutter can lower all managed windows after a workspace switch. Keep
+        // only the tiny input spans above desktop windows, below ordinary apps.
+        // No timer or redraw is requested; reorder only when the stack changed.
+        this._paintId = global.stage.connect_after('before-paint', () => this._restack());
         this._stageId = global.stage.connect('captured-event', (_stage, event) => {
             if (!this._capture)
                 return Clutter.EVENT_PROPAGATE;
@@ -87,7 +93,8 @@ export class SceneInput {
         // GNOME 48 uses POINTER, not POINTING_HAND. GJS can coerce a missing
         // enum member to 0 (INVALID), which aborts Mutter's native cursor loader.
         // A try/catch cannot recover from that abort: validate before calling.
-        if (!Number.isInteger(cursor) || cursor <= 1 || cursor === Meta.Cursor.NONE)
+        if (typeof global.display.set_cursor !== 'function'
+            || !Number.isInteger(cursor) || cursor <= 1 || cursor === Meta.Cursor?.NONE)
             return false;
         global.display.set_cursor(cursor);
         return true;
@@ -119,7 +126,16 @@ export class SceneInput {
         const mapping = SceneInput.presentation(snapshot, scene);
         if (!mapping)
             return;
-        console.log(`Talis input: mapped ${layout.hotspots.length} controls from ${layout.width}x${layout.height} to ${scene.width}x${scene.height}`);
+        const [stageX, stageY] = scene.get_transformed_position();
+        const [stageW, stageH] = scene.get_transformed_size();
+        this._layer = new Clutter.Actor({reactive: false, x: stageX, y: stageY,
+            width: scene.width, height: scene.height,
+            scale_x: stageW / scene.width, scale_y: stageH / scene.height});
+        this._layer.set_clip_to_allocation(true);
+        global.window_group.add_child(this._layer);
+        this._restack();
+        if (this._diagnostics)
+            console.log(`Talis input: mapped ${layout.hotspots.length} controls from ${layout.width}x${layout.height} to ${scene.width}x${scene.height}`);
         for (const hotspot of layout.hotspots) {
             const [sourceX, sourceY, sourceW, sourceH] = hotspot.rect;
             const x = mapping.x + sourceX * mapping.scaleX;
@@ -127,7 +143,7 @@ export class SceneInput {
             const w = sourceW * mapping.scaleX;
             const h = sourceH * mapping.scaleY;
             const group = new Clutter.Actor({reactive: false, width: scene.width, height: scene.height});
-            scene.add_child(group);
+            this._layer.add_child(group);
             this._actors.push(group);
             for (let row = Math.max(0, Math.floor(y)); row < Math.min(scene.height, Math.ceil(y + h)); row++) {
                 const dy = (row + 0.5 - y - h / 2) / (h / 2);
@@ -140,14 +156,22 @@ export class SceneInput {
                     continue;
                 const span = new St.Widget({reactive: true, can_focus: false,
                     x: left, y: row, width: right - left + 1, height: 1});
+                // Newer Mutter handles cursor inheritance on the reactive actor.
+                // Removing the span then restores the cursor without a global
+                // display override. Keep the guarded legacy callbacks for 48.
+                const pointer = Clutter.CursorType?.POINTER;
+                if (typeof span.set_cursor_type === 'function'
+                    && Number.isInteger(pointer) && pointer > 1
+                    && pointer !== Clutter.CursorType.NONE)
+                    span.set_cursor_type(pointer);
                 group.add_child(span);
                 span.connect('enter-event', () => {
-                    this._hovered = this._setCursor(Meta.Cursor.POINTER);
+                    this._hovered = this._setCursor(Meta.Cursor?.POINTER);
                     return Clutter.EVENT_PROPAGATE;
                 });
                 span.connect('leave-event', () => {
                     this._hovered = false;
-                    this._setCursor(Meta.Cursor.DEFAULT);
+                    this._setCursor(Meta.Cursor?.DEFAULT);
                     return Clutter.EVENT_PROPAGATE;
                 });
                 span.connect('button-press-event', (_actor, event) => {
@@ -192,6 +216,33 @@ export class SceneInput {
         }
     }
 
+    _restack() {
+        if (!this._layer)
+            return;
+        const parent = global.window_group;
+        const children = parent.get_children();
+        // Recheck visibility when painting: minimized/off-workspace clients
+        // can be lower than DING, and their visibility can change without a map.
+        let firstApp;
+        try {
+            firstApp = children.find(actor => actor.meta_window
+                && actor.meta_window.get_window_type() !== Meta.WindowType.DESKTOP
+                && !actor.meta_window.minimized && actor.is_visible());
+        } catch {
+            // Window destruction must not throw from Shell's paint callback.
+            this._layer.visible = false;
+            return;
+        }
+        this._layer.visible = true;
+        const index = children.indexOf(this._layer);
+        if (firstApp) {
+            if (index !== children.indexOf(firstApp) - 1)
+                parent.set_child_below_sibling(this._layer, firstApp);
+        } else if (index !== children.length - 1) {
+            parent.set_child_above_sibling(this._layer, null);
+        }
+    }
+
     cancel() {
         if (this._capture)
             this._send({event: 'cancel'});
@@ -211,14 +262,20 @@ export class SceneInput {
         for (const actor of this._actors)
             actor.destroy();
         this._actors = [];
+        this._layer?.destroy();
+        this._layer = null;
         if (this._hovered) {
-            this._setCursor(Meta.Cursor.DEFAULT);
+            this._setCursor(Meta.Cursor?.DEFAULT);
             this._hovered = false;
         }
     }
 
     stop() {
         this.clear();
+        if (this._paintId) {
+            global.stage.disconnect(this._paintId);
+            this._paintId = 0;
+        }
         if (this._stageId) {
             global.stage.disconnect(this._stageId);
             this._stageId = 0;

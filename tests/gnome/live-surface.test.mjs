@@ -15,19 +15,32 @@ const visibilitySource = readFileSync(new URL('scene-visibility.js', directory),
 // Match GNOME 48's upstream MetaCursor enum, not invented compatibility names.
 const GNOME48_CURSOR = Object.freeze({INVALID: 0, NONE: 1, DEFAULT: 2, POINTER: 5});
 function fixture({spawnFails = false, sceneConfig = null, cursorEnum = GNOME48_CURSOR,
-    fileTest = () => true} = {}) {
+    fileTest = () => true, installedProgram = null,
+    modern = process.env.TALIS_TEST_GNOME_API === '50',
+    actorCursorEnum = {INHERIT: 0, NONE: 1, DEFAULT: 2, POINTER: 5}} = {}) {
     let id = 0;
     const signals = new Map();
     const timeouts = new Map();
     const overlays = [];
-    const stats = {spawn: 0, terminate: 0, close: 0, reads: 0, cancel: 0, conceal: [], writes: [], cursors: []};
+    const stats = {spawn: 0, terminate: 0, close: 0, reads: 0, cancel: 0, conceal: [], writes: [], cursors: [], constructors: [], actorCursors: [], logs: []};
     class Actor {
         constructor(props = {}) { Object.assign(this, props); this.children = []; this.destroyed = false; }
-        add_child(child) { this.children.push(child); }
+        add_child(child) { this.children.push(child); child.parent = this; }
         insert_child_at_index(child, index) { this.children.splice(index, 0, child); }
+        get_children() { return [...this.children]; }
+        set_clip_to_allocation() {}
+        set_child_below_sibling(child, sibling) {
+            this.children = this.children.filter(c => c !== child);
+            this.children.splice(sibling ? this.children.indexOf(sibling) : 0, 0, child);
+        }
+        set_child_above_sibling(child, sibling) {
+            this.children = this.children.filter(c => c !== child);
+            this.children.splice(sibling ? this.children.indexOf(sibling) + 1 : this.children.length, 0, child);
+        }
         destroy() {
             assert.equal(this.destroyed, false); this.destroyed = true;
-            for (const child of this.children) child.destroy();
+            for (const child of [...this.children]) child.destroy();
+            if (this.parent) this.parent.children = this.parent.children.filter(c => c !== this);
             for (const [key, value] of signals) if (value.object === this) signals.delete(key);
         }
         set_text(text) { this.text = text; }
@@ -35,6 +48,11 @@ function fixture({spawnFails = false, sceneConfig = null, cursorEnum = GNOME48_C
         connect_after(name, callback) { return this.connect(name, callback); }
         disconnect(key) { assert(signals.delete(key)); }
         get_title() { return this.title ?? 'Talis · Scene'; }
+        get_client_type() { return this.clientType ?? 0; }
+        get_window_type() { return this.windowType ?? 0; }
+        is_visible() { return this.visible !== false; }
+        get_transformed_position() { return [this.x ?? 0, this.y ?? 0]; }
+        get_transformed_size() { return [this.width * (this.scale_x ?? 1), this.height * (this.scale_y ?? 1)]; }
         transform_stage_point(x, y) {
             if (this.badTransform)
                 return [false, NaN, NaN];
@@ -57,6 +75,7 @@ function fixture({spawnFails = false, sceneConfig = null, cursorEnum = GNOME48_C
     }
     const wm = new Actor();
     const stage = new Actor();
+    const windowGroup = new Actor();
     const display = new Actor();
     display.set_cursor = cursor => {
         assert(Number.isInteger(cursor) && [GNOME48_CURSOR.DEFAULT, GNOME48_CURSOR.POINTER].includes(cursor),
@@ -64,6 +83,14 @@ function fixture({spawnFails = false, sceneConfig = null, cursorEnum = GNOME48_C
         stats.cursor = cursor;
         stats.cursors.push(cursor);
     };
+    if (modern) {
+        delete display.set_cursor;
+        Actor.prototype.set_cursor_type = function (cursor) {
+            assert.equal(cursor, 5, 'invalid cursor must not reach a native actor setter');
+            this.cursor_type = cursor;
+            stats.actorCursors.push(cursor);
+        };
+    }
     const inputPipe = {
         write_all_async(bytes, _priority, _cancel, callback) {
             stats.writes.push(JSON.parse(new TextDecoder().decode(bytes)));
@@ -96,7 +123,10 @@ function fixture({spawnFails = false, sceneConfig = null, cursorEnum = GNOME48_C
         },
     };
     const client = {
-        owns_window: window => window.owned === true,
+        owns_window: window => {
+            assert.equal(window.get_client_type(), 0, 'must not pass Xwayland windows to owns_window');
+            return window.owned === true;
+        },
         hide_from_window_list: window => { stats.conceal.push('hide'); window.hidden = true; },
         show_in_window_list: window => { stats.conceal.push('show'); window.hidden = false; },
         spawnv: (_display, argv) => {
@@ -104,22 +134,49 @@ function fixture({spawnFails = false, sceneConfig = null, cursorEnum = GNOME48_C
             stats.spawn++; if (spawnFails) throw new Error('spawn failed'); return process;
         },
     };
+    let WaylandClient;
+    if (modern) {
+        const spawn = client.spawnv;
+        delete client.spawnv;
+        delete client.hide_from_window_list;
+        delete client.show_in_window_list;
+        client.get_subprocess = () => process;
+        Actor.prototype.hide_from_window_list = function () { stats.conceal.push('hide'); this.hidden = true; };
+        Actor.prototype.show_in_window_list = function () { stats.conceal.push('show'); this.hidden = false; };
+        WaylandClient = {new_subprocess: (context, launcher, argv) => {
+            assert(context);
+            assert(launcher instanceof Gio.SubprocessLauncher);
+            stats.constructors.push('new_subprocess');
+            spawn(null, argv);
+            return client;
+        }};
+    } else {
+        WaylandClient = {new: (context, launcher) => {
+            assert(context);
+            assert(launcher instanceof Gio.SubprocessLauncher);
+            stats.constructors.push('new');
+            return client;
+        }};
+    }
     const shield = new Actor({active: false, locked: false});
     const overview = new Actor({visible: false});
     const workspace = {index: () => 0};
     const workspaceManager = new Actor({get_active_workspace: () => workspace});
     const Main = {screenShield: shield, overview};
     const LiveSurface = vm.runInNewContext(`${inputSource}\n${visibilitySource}\n${source}\nLiveSurface;`, {
-        Clutter: {Actor, EVENT_PROPAGATE: false, EVENT_STOP: true,
+        Clutter: {Actor, CursorType: modern ? actorCursorEnum : undefined, EVENT_PROPAGATE: false, EVENT_STOP: true,
             EventType: {BUTTON_RELEASE: 'release', BUTTON_PRESS: 'press', MOTION: 'motion'},
             ScrollDirection: {UP: 'up', DOWN: 'down', SMOOTH: 'smooth'},
             Clone: class extends Actor { constructor(props) { super(props); overlays.push(this); } }},
         St: {Widget: Actor, Label: class extends Actor { constructor(props) { super(props); overlays.push(this); } }},
         Gio, Main, Cogl: {TextureComponents: {RGB: 2, RGBA: 3}},
-        Meta: {WaylandClient: {new: () => client}, Cursor: cursorEnum, WindowClientType: {WAYLAND: 0, X11: 1}},
+        Meta: {WaylandClient, Cursor: modern ? undefined : cursorEnum, WindowClientType: {WAYLAND: 0, X11: 1}, WindowType: {DESKTOP: 1}},
         GLib: {
             get_monotonic_time: () => 0,
-            PRIORITY_DEFAULT: 0, SOURCE_REMOVE: false, SOURCE_CONTINUE: true, FileTest: {IS_EXECUTABLE: 1},
+            get_user_data_dir: () => '/example/user-data',
+            get_system_data_dirs: () => ['/usr/local/share','/usr/share'],
+            find_program_in_path: () => installedProgram,
+            PRIORITY_DEFAULT: 0, SOURCE_REMOVE: false, SOURCE_CONTINUE: true, FileTest: {IS_EXECUTABLE: 1, IS_DIR: 2},
             build_filenamev: parts => parts.join('/'), file_test: fileTest,
             timeout_add_seconds: (_priority, _seconds, callback) => {
                 const key = ++id; timeouts.set(key, callback); return key;
@@ -129,13 +186,13 @@ function fixture({spawnFails = false, sceneConfig = null, cursorEnum = GNOME48_C
             },
             source_remove: key => { assert(timeouts.delete(key)); },
         },
-        global: {context: {}, display, stage, window_manager: wm, workspace_manager: workspaceManager,
+        global: {context: {}, display, stage, window_group: windowGroup, window_manager: wm, workspace_manager: workspaceManager,
             get_window_actors: () => [], get_current_time: () => 42},
         TextDecoder, TextEncoder,
-        console: {log() {}, warn() {}, error() {}},
+        console: {log(message) { stats.logs.push(message); }, warn() {}, error() {}},
     });
-    return {LiveSurface, Actor, signals, timeouts, overlays, stats, process, stage, inputPipe,
-        shield, overview, workspaceManager, get output() { return output; }};
+    return {LiveSurface, Actor, signals, timeouts, overlays, stats, process, stage, inputPipe, modern,
+        shield, overview, workspaceManager, windowGroup, get output() { return output; }};
 }
 
 // Source checkout paths follow the flattened layout. Packaged extension paths
@@ -149,10 +206,15 @@ assert.equal(resolve(sourceLayout.LiveSurface.binary(extensionPath)),
     fileURLToPath(new URL('../../target/release/talis-gnome-scene', directory)));
 const metadata = JSON.parse(readFileSync(new URL('metadata.json', directory), 'utf8'));
 assert.equal(metadata.uuid, 'talis@azizstark', 'source reorganization must not change installed identity');
+assert.deepEqual(metadata['shell-version'], ['48', '50']);
 const installedPath = `/example/gnome-shell/extensions/${metadata.uuid}`;
 const installedLayout = fixture({sceneConfig});
 assert.equal(installedLayout.LiveSurface.sceneSource(installedPath).assets, `${installedPath}/assets`);
 assert.equal(installedLayout.LiveSurface.binary(installedPath), `${installedPath}/talis-gnome-scene`);
+const systemLayout = fixture({sceneConfig, installedProgram:'/usr/bin/talis-gnome-scene',
+    fileTest:path => path === '/usr/share/talis/assets'});
+assert.equal(systemLayout.LiveSurface.sceneSource(installedPath).assets,'/usr/share/talis/assets');
+assert.equal(systemLayout.LiveSurface.binary(installedPath),'/usr/bin/talis-gnome-scene');
 
 const f = fixture();
 const live = new f.LiveSurface('/probe');
@@ -162,6 +224,11 @@ assert.equal(f.stats.close, 1);
 const unrelated = new f.Actor({meta_window: new f.Actor({owned: false})});
 live._attach(unrelated);
 assert.equal(unrelated.meta_window.hidden, undefined);
+live._attach(new f.Actor()); // Missing/tearing-down window must be ignored.
+const xwayland = new f.Actor({meta_window: new f.Actor({owned: true, clientType: 1})});
+live._attach(xwayland);
+assert.equal(xwayland.meta_window.hidden, undefined);
+assert.equal(f.stats.terminate, 0);
 const owned = new f.Actor({meta_window: new f.Actor({owned: true})});
 live._attach(owned);
 assert.equal(owned.meta_window.hidden, true);
@@ -283,7 +350,29 @@ const inputLayout = {version: 1, generation: 1, layout: {width: 1920, height: 10
     hotspots: [{id: 'play_pause', rect: [600, 600, 20, 12]}, {id: 'volume', rect: [900, 600, 20, 30]}]}};
 full.output.pending(full.output, `INPUT ${JSON.stringify(inputLayout)}`);
 assert.equal(real._input._actors.length, 2);
+assert(!full.stats.logs.some(line => /^Talis (input:|visibility diagnostic:)|^Talis renderer: (FRAME|INPUT) /.test(line)),
+    'normal readiness/input/visibility must work without verbose journal output');
 const spans = real._input._actors[0].children;
+// DING's fullscreen transparent window must be below the input-only layer.
+// Ordinary app windows stay above it, including after Mutter lowers its stack.
+const ding = new full.Actor({meta_window: new full.Actor({windowType: 1})});
+const ordinary = new full.Actor({meta_window: new full.Actor()});
+const minimized = new full.Actor({meta_window: new full.Actor({minimized: true})});
+const offWorkspace = new full.Actor({visible: false, meta_window: new full.Actor()});
+full.windowGroup.add_child(ding);
+full.windowGroup.add_child(ordinary);
+full.windowGroup.add_child(minimized);
+full.windowGroup.add_child(offWorkspace);
+const layer = real._input._layer;
+const beforePaint = [...full.signals.values()].find(s => s.name === 'before-paint');
+for (let i = 0; i < 3; i++) {
+    // Simulate the compositor's workspace restacking, not just appending maps.
+    full.windowGroup.children = [minimized, offWorkspace, ding, ordinary, layer];
+    beforePaint.callback();
+    assert.deepEqual(full.windowGroup.children, [minimized, offWorkspace, ding, layer, ordinary]);
+}
+assert.equal(layer.reactive, false, 'only ellipse scanlines may intercept desktop input');
+assert(!desktop.children.includes(layer), 'DING must not cover the input spans');
 assert(spans.length > 0 && spans.every(a => a.reactive && !a.can_focus));
 assert(spans[0].width < 20, 'ellipse corners must stay click-through');
 const press = [...full.signals.values()].find(s => s.object === spans[5] && s.name === 'button-press-event');
@@ -353,6 +442,7 @@ assert(shown.x + 28 * scaleX <= 1e-8, 'left letterbox must be outside the scene'
 assert(shown.x + (28 + 1991) * scaleX >= 2048 - 1e-8);
 assert(shown.y <= 1e-8 && shown.y + 1120 * scaleY >= 1152 - 1e-8);
 const scaledSpans = real._input._actors[0].children;
+assert.equal(real._input._layer.scale_x, 1.25);
 const rect = constrained.layout.hotspots[0].rect;
 const sourcePoint = [rect[0] + rect[2] / 2, rect[1] + rect[3] / 2];
 const localPoint = [shown.x + sourcePoint[0] * scaleX, shown.y + sourcePoint[1] * scaleY];
@@ -362,10 +452,12 @@ const stagePoint = p => [offsetDesktop.x + p[0] * 1.25, offsetDesktop.y + p[1] *
 const scaledPress = [...full.signals.values()].find(s => s.object === scaledSpans[5] && s.name === 'button-press-event');
 const hover = [...full.signals.values()].find(s => s.object === scaledSpans[5] && s.name === 'enter-event');
 hover.callback();
-assert.equal(full.stats.cursor, GNOME48_CURSOR.POINTER, 'enabled scaled hotspot advertises clickability');
+assert.equal(full.modern ? scaledSpans[5].cursor_type : full.stats.cursor,
+    GNOME48_CURSOR.POINTER, 'enabled scaled hotspot advertises clickability');
 const leave = [...full.signals.values()].find(s => s.object === scaledSpans[5] && s.name === 'leave-event');
 leave.callback();
-assert.equal(full.stats.cursor, GNOME48_CURSOR.DEFAULT);
+if (!full.modern)
+    assert.equal(full.stats.cursor, GNOME48_CURSOR.DEFAULT);
 hover.callback();
 scaledPress.callback(scaledSpans[5], event('press', ...stagePoint(localPoint)));
 const assertPoint = (kind, point) => {
@@ -400,7 +492,8 @@ offsetDesktop.badTransform = false;
 // Empty allocations fail closed. A source viewport outside the surface is invalid.
 real.setScenes([new full.Actor({width: 0, height: 720})]);
 assert.equal(real._input._actors.length, 0);
-assert.equal(full.stats.cursor, GNOME48_CURSOR.DEFAULT, 'rebuild resets a valid hover cursor');
+if (!full.modern)
+    assert.equal(full.stats.cursor, GNOME48_CURSOR.DEFAULT, 'rebuild resets a valid hover cursor');
 assert.throws(() => real._input.constructor.validate({...constrained,
     layout: {...constrained.layout, viewport: [0, 0, 3000, 1120]}}), /viewport/);
 console.log('PASS: constrained source viewport, bar-free aspect-preserving clone, scaled/offset picking and inverse press/release/motion/scroll, invalid transforms');
@@ -496,9 +589,70 @@ for (const cursorEnum of [GNOME48_CURSOR,
     cursorLive.stop();
     assert.equal(cursorFixture.signals.size, 0);
     assert.equal(cursorFixture.timeouts.size, 0);
-    if (cursorEnum === GNOME48_CURSOR)
+    if (cursorFixture.modern) {
+        assert.equal(cursorFixture.stats.cursors.length, 0, 'removed display cursor API must never be called');
+        assert(cursorFixture.stats.actorCursors.length > 0);
+    } else if (cursorEnum === GNOME48_CURSOR)
         assert.deepEqual(cursorFixture.stats.cursors, [5, 2, 5, 2]);
     else if (!Number.isInteger(cursorEnum.POINTER) || cursorEnum.POINTER <= 1)
         assert(!cursorFixture.stats.cursors.includes(GNOME48_CURSOR.POINTER));
 }
 console.log('PASS: GNOME 48 cursor enum, hover/leave/rebuild/disable, missing/INVALID/NONE/nonfinite enum refusal; click delivery independent of cursor');
+
+for (const modern of [false, true]) {
+    const compat = fixture({modern, sceneConfig: {version: 3, scene: 'day', mode: 'music'}});
+    const surface = new compat.LiveSurface('/probe');
+    surface.start([new compat.Actor({width: 1280, height: 720})]);
+    assert.deepEqual(compat.stats.constructors, [modern ? 'new_subprocess' : 'new']);
+    assert.equal(compat.stats.spawn, 1);
+    assert.equal(compat.stats.close, 1);
+    const scene = new compat.Actor({owned: true});
+    surface._attach(new compat.Actor({meta_window: scene}));
+    assert.deepEqual(compat.stats.conceal, ['show', 'minimize', 'hide']);
+    assert(scene.minimized && scene.hidden);
+    compat.output.pending(compat.output, 'FRAME 1');
+    assert(surface._overlays[0].clone);
+    const settings = new compat.Actor({owned: true, title: 'Talis · Settings'});
+    surface._attach(new compat.Actor({meta_window: settings}));
+    assert.equal(settings.hidden, undefined);
+    surface.stop();
+    assert.equal(compat.stats.terminate, 1);
+    assert.equal(compat.signals.size, 0);
+    assert.equal(compat.timeouts.size, 0);
+}
+console.log('PASS: GNOME 48 legacy and GNOME 50 subprocess/window APIs, native-window ownership isolation and complete cleanup');
+
+for (const actorCursorEnum of [{}, {POINTER: undefined}, {POINTER: NaN},
+    {POINTER: 0}, {POINTER: 1, NONE: 1}, {POINTER: -1}]) {
+    const guarded = fixture({modern: true, actorCursorEnum,
+        sceneConfig: {version: 3, scene: 'day', mode: 'music'}});
+    const surface = new guarded.LiveSurface('/probe');
+    surface.start([new guarded.Actor({width: 1920, height: 1080})]);
+    surface._attach(new guarded.Actor({meta_window: new guarded.Actor({owned: true})}));
+    guarded.output.pending(guarded.output, 'FRAME 1');
+    guarded.output.pending(guarded.output, `INPUT ${JSON.stringify(inputLayout)}`);
+    const widget = surface._input._actors[0].children[5];
+    const callback = name => [...guarded.signals.values()].find(s => s.object === widget && s.name === name).callback;
+    callback('enter-event')();
+    callback('button-press-event')(widget, event('press', 610, 606));
+    assert.equal(guarded.stats.writes.at(-1).event, 'press');
+    callback('leave-event')();
+    assert.equal(guarded.stats.actorCursors.length, 0);
+    surface.stop();
+    assert.equal(guarded.signals.size, 0);
+}
+console.log('PASS: actor-based pointer cursors with no Meta.Cursor/display.set_cursor, invalid enum refusal and independent click delivery');
+
+const debug = fixture({sceneConfig: {version: 3, scene: 'day', mode: 'music', diagnostics: true}});
+const debugLive = new debug.LiveSurface('/probe');
+debugLive.start([new debug.Actor({width: 1920, height: 1080})]);
+debugLive._attach(new debug.Actor({meta_window: new debug.Actor({owned: true})}));
+debug.output.pending(debug.output, 'FRAME 1');
+debug.output.pending(debug.output, `INPUT ${JSON.stringify(inputLayout)}`);
+assert(debug.stats.logs.includes('Talis renderer: FRAME 1'));
+assert(debug.stats.logs.some(line => line.startsWith('Talis renderer: INPUT ')));
+assert(debug.stats.logs.some(line => line.startsWith('Talis input: mapped ')));
+assert.equal(debugLive._input._actors.length, 2);
+debugLive.stop();
+const invalidDebug = fixture({sceneConfig: {version: 3, scene: 'day', mode: 'music', diagnostics: 'true'}});
+assert.throws(() => new invalidDebug.LiveSurface('/probe'), /Unsupported scene configuration/);

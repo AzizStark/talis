@@ -8,7 +8,11 @@ import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {LiveSurface} from './live-surface.js';
 
-// GNOME 48 desktop presentation. The renderer owns music and controls.
+const CONTROL_INTERFACE = `<node><interface name="io.github.azizstark.Talis">
+    <method name="OpenSettings"/>
+</interface></node>`;
+
+// GNOME desktop presentation. The renderer owns music and controls.
 // No wallpaper changes. Shell's hierarchy is not public API.
 export default class TalisDesktopExtension extends Extension {
     enable() {
@@ -23,6 +27,12 @@ export default class TalisDesktopExtension extends Extension {
                 this._live = new LiveSurface(this.path);
                 this._live.start(this._actors);
             }
+            // Portable menu/dock activation reuses the owned renderer. Do not
+            // launch a second client or expose arbitrary Shell evaluation.
+            this._control = Gio.DBusExportedObject.wrapJSObject(CONTROL_INTERFACE, {
+                OpenSettings: () => this._live?.openSettings(),
+            });
+            this._control.export(Gio.DBus.session, '/io/github/azizstark/Talis');
             console.log('Talis: extension enabled');
         } catch (error) {
             this.disable();
@@ -31,6 +41,8 @@ export default class TalisDesktopExtension extends Extension {
     }
 
     disable() {
+        this._control?.unexport();
+        this._control = null;
         this._live?.stop();
         this._live = null;
         if (this._startupCompleteId) {

@@ -3,11 +3,11 @@ import Meta from 'gi://Meta';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {SceneInput} from './scene-input.js';
 
-// GNOME 48 only. No pixel readback, foreign-client IPC or per-frame polling.
+// No pixel readback, foreign-client IPC or per-frame polling.
 export class SceneVisibility {
-    constructor(snapshot, scene, owns, send, inputBlocked) {
+    constructor(snapshot, scene, owns, send, inputBlocked, diagnostics = false) {
         Object.assign(this, {_snapshot: snapshot, _scene: scene, _owns: owns,
-            _send: send, _inputBlocked: inputBlocked});
+            _send: send, _inputBlocked: inputBlocked, _diagnostics: diagnostics});
         this._signals = [];
         this._previous = null;
         this._count = 0;
@@ -93,6 +93,8 @@ export class SceneVisibility {
         const window = actor.meta_window;
         // Native Wayland only: X11 shapes/masks are not exposed by this API.
         if (!window) return reject('no-window');
+        // DING's transparent, fullscreen desktop is not an occluding app.
+        if (window.get_window_type() === Meta.WindowType.DESKTOP) return reject('desktop-window');
         if (Meta.WindowClientType?.WAYLAND === undefined) return reject('client-enum-unavailable');
         detail.stage = 'get_client_type';
         if (window.get_client_type() !== Meta.WindowClientType.WAYLAND) return reject('non-wayland-client');
@@ -137,6 +139,8 @@ export class SceneVisibility {
     }
 
     _diagnose(diagnostic) {
+        if (!this._diagnostics)
+            return;
         // Maximum one bounded summary per five seconds, with a 30-second
         // heartbeat for unchanged results. No titles, URLs, paths or app data.
         const now = GLib.get_monotonic_time();
