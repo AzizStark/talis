@@ -14,8 +14,8 @@ const LINKS: [(&str, &str, &str, &str, &str); 3] = [
     (
         "about-email",
         "Email",
-        "rrahman182@gmail.com",
-        "mailto:rrahman182@gmail.com",
+        "theazizstark@gmail.com",
+        "mailto:theazizstark@gmail.com",
         include_str!("../../assets/ui/icons/mail.svg"),
     ),
     (

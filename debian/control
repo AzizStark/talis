@@ -1,7 +1,7 @@
 Source: talis
 Section: sound
 Priority: optional
-Maintainer: AzizStark <rrahman182@gmail.com>
+Maintainer: AzizStark <theazizstark@gmail.com>
 Build-Depends: debhelper-compat (= 13), cargo (>= 1.85) | cargo-1.85, rustc (>= 1.85) | rustc-1.85, pkg-config, libgtk-4-dev (>= 4.8)
 Standards-Version: 4.6.2
 Homepage: https://github.com/AzizStark/talis

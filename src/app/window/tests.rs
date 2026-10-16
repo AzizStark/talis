@@ -598,7 +598,7 @@ fn scene_and_controls_are_independent_windows() {
             }
             for (name, expected) in [
                 ("about-github", "https://github.com/AzizStark/talis"),
-                ("about-email", "mailto:rrahman182@gmail.com"),
+                ("about-email", "mailto:theazizstark@gmail.com"),
                 ("about-support", "https://buymeacoffee.com/azizstark"),
             ] {
                 let link = style::find_widget(&root, name)
