@@ -1,4 +1,76 @@
 use super::*;
+
+#[test]
+#[ignore = "Requires an isolated X11 display, Xfwm4 and xprop"]
+fn xfwm_scene_and_patch_keep_their_layer_and_order_after_map_and_remap() {
+    gtk::init().expect("isolated GTK display");
+    assert!(xfwm_desktop_stacking(), "fixture needs Xfwm4");
+    let app = gtk::Application::builder()
+        .application_id("io.github.azizstark.Talis.VisualLayerTest")
+        .flags(gtk::gio::ApplicationFlags::NON_UNIQUE)
+        .build();
+    app.register(None::<&gtk::gio::Cancellable>).unwrap();
+    gtk::glib::MainContext::default().block_on(async {
+        let desktop = DesktopPlacement::new(0).unwrap();
+        let scene = gtk::ApplicationWindow::builder()
+            .application(&app)
+            .title("Talis visual layer test scene")
+            .build();
+        scene.set_child(Some(&gtk::Label::new(Some("Scene"))));
+        desktop.configure(&scene).unwrap();
+        let patch = gtk::ApplicationWindow::builder()
+            .application(&app)
+            .title("Talis visual layer test patch")
+            .default_width(200)
+            .default_height(100)
+            .build();
+        let placement =
+            ButtonInputPlacement::configure_visual_patch_with_overlay(&patch, false).unwrap();
+        patch.set_child(Some(&gtk::Label::new(Some("Patch"))));
+        for _ in 0..2 {
+            scene.set_visible(true);
+            patch.set_visible(true);
+            gtk::glib::timeout_future(std::time::Duration::from_millis(300)).await;
+            placement.stack_above_scene(&patch, &scene).unwrap();
+            gtk::glib::timeout_future(std::time::Duration::from_millis(100)).await;
+            let scene_below = desktop.backend.is_below(&scene).unwrap();
+            let patch_below = placement.backend.is_below(&patch).unwrap();
+            let output = std::process::Command::new("xprop")
+                .args(["-root", "_NET_CLIENT_LIST_STACKING"])
+                .output()
+                .unwrap();
+            assert!(output.status.success());
+            let stack = String::from_utf8(output.stdout).unwrap();
+            let stack: Vec<_> = stack
+                .split("0x")
+                .skip(1)
+                .filter_map(|part| {
+                    c_ulong::from_str_radix(part.trim_end_matches([',', '\n', ' ']), 16).ok()
+                })
+                .collect();
+            let scene_index = stack
+                .iter()
+                .position(|id| *id == desktop.backend.xid(&scene).unwrap())
+                .unwrap();
+            let patch_index = stack
+                .iter()
+                .position(|id| *id == placement.backend.xid(&patch).unwrap())
+                .unwrap();
+            patch.set_visible(false);
+            scene.set_visible(false);
+            assert!(scene_below, "scene lost BELOW while mapping");
+            assert!(patch_below, "patch lost BELOW while mapping");
+            assert!(
+                scene_index < patch_index,
+                "background covered its animation"
+            );
+            gtk::glib::timeout_future(std::time::Duration::from_millis(100)).await;
+        }
+        patch.destroy();
+        scene.destroy();
+    });
+}
+
 #[test]
 #[ignore = "Opt-in native WM probe, empty input only; TALIS_DESKTOP_LAYER_PROBE=1"]
 fn transparent_receiver_is_below_apps_above_desktop_without_focus() {

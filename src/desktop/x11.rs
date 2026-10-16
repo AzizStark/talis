@@ -12,7 +12,7 @@ use std::{
 
 type Display = *mut c_void;
 
-/// GTK's cached EWMH window-manager name, queried only when About is built.
+/// GTK's cached EWMH window-manager name, for diagnostics and WM quirks.
 /// Keep the native API inside this adapter and never invoke it on Wayland.
 pub(crate) fn window_manager_name() -> Option<String> {
     let display = gdk::Display::default()?;
@@ -71,6 +71,7 @@ type SetHints = unsafe extern "C" fn(Display, Window, *mut WmHints) -> c_int;
 type GetHints = unsafe extern "C" fn(Display, Window) -> *mut WmHints;
 type GetProtocols = unsafe extern "C" fn(Display, Window, *mut *mut Atom, *mut c_int) -> c_int;
 type SetProtocols = unsafe extern "C" fn(Display, Window, *mut Atom, c_int) -> c_int;
+type SetTransientFor = unsafe extern "C" fn(Display, Window, Window) -> c_int;
 type Free = unsafe extern "C" fn(*mut c_void) -> c_int;
 type GetDisplay = unsafe extern "C" fn(*mut c_void) -> Display;
 type GetXid = unsafe extern "C" fn(*mut c_void) -> Window;
@@ -152,6 +153,7 @@ struct X11 {
     get_hints: GetHints,
     get_protocols: GetProtocols,
     set_protocols: SetProtocols,
+    set_transient_for: SetTransientFor,
     free: Free,
     root: RootWindow,
     translate: Translate,
@@ -210,6 +212,7 @@ impl X11 {
                 get_hints: *xlib.get(b"XGetWMHints\0")?,
                 get_protocols: *xlib.get(b"XGetWMProtocols\0")?,
                 set_protocols: *xlib.get(b"XSetWMProtocols\0")?,
+                set_transient_for: *xlib.get(b"XSetTransientForHint\0")?,
                 free: *xlib.get(b"XFree\0")?,
                 root: *xlib.get(b"XDefaultRootWindow\0")?,
                 translate: *xlib.get(b"XTranslateCoordinates\0")?,
@@ -496,6 +499,10 @@ fn visual_role(overlay: bool) -> &'static CStr {
         c"_NET_WM_WINDOW_TYPE_DESKTOP"
     }
 }
+
+fn xfwm_desktop_stacking() -> bool {
+    window_manager_name().is_some_and(|name| name.eq_ignore_ascii_case("Xfwm4"))
+}
 impl ButtonInputPlacement {
     /// Experimental opaque visual patch. Keep it immediately above its own
     /// desktop background. The MATE overlay intentionally covers desktop icons;
@@ -505,7 +512,11 @@ impl ButtonInputPlacement {
         overlay: bool,
     ) -> Result<Self> {
         let placement = Self::configure(window)?;
-        placement.backend.prepare(window, visual_role(overlay))?;
+        // Xfwm ignores relative stacking requests for DESKTOP windows. A
+        // below-applications dock can stay above its own background instead.
+        placement
+            .backend
+            .prepare(window, visual_role(overlay || xfwm_desktop_stacking()))?;
         placement.backend.bind_visual_input(window)?;
         Ok(placement)
     }
@@ -514,6 +525,16 @@ impl ButtonInputPlacement {
         window: &gtk::ApplicationWindow,
         scene: &gtk::ApplicationWindow,
     ) -> Result<()> {
+        let xid = self.backend.xid(window)?;
+        let scene_xid = self.backend.xid(scene)?;
+        if xfwm_desktop_stacking() {
+            // Let the WM keep the pair ordered when the scene's post-map BELOW
+            // acknowledgement moves it to another layer. Set the native hint:
+            // GTK set_transient_for() would also change our role to DIALOG.
+            unsafe {
+                (self.backend.set_transient_for)(self.backend.native, xid, scene_xid);
+            }
+        }
         let mut event = XEvent { pad: [0; 24] };
         event.configure = std::mem::ManuallyDrop::new(ConfigureRequest {
             event_type: 23,
@@ -521,13 +542,13 @@ impl ButtonInputPlacement {
             send_event: 1,
             display: self.backend.native,
             parent: unsafe { (self.backend.root)(self.backend.native) },
-            window: self.backend.xid(window)?,
+            window: xid,
             x: 0,
             y: 0,
             width: 0,
             height: 0,
             border_width: 0,
-            above: self.backend.xid(scene)?,
+            above: scene_xid,
             detail: 0,                       // Above
             value_mask: (1 << 5) | (1 << 6), // CWSibling | CWStackMode
         });
@@ -906,18 +927,22 @@ impl DesktopPlacement {
             // work, with a weak window so shutdown cannot keep the surface alive.
             let weak = window.downgrade();
             let backend = placement.backend.clone();
-            let overlay = placement.overlay.clone();
+            let below = placement.overlay.get() || xfwm_desktop_stacking();
             gtk::glib::idle_add_local_once(move || {
                 if let Some(window) = weak.upgrade() {
                     if window.is_mapped() {
+                        // The scene and animated patch must retain the same
+                        // state after GTK maps them. Otherwise Xfwm can raise
+                        // its desktop between them on a click, exposing only
+                        // the small patch over the original wallpaper.
                         if let Err(error) = backend.disable_focus(&window).and_then(|_| {
-                            if overlay.get() {
+                            if below {
                                 backend.request_below(&window)
                             } else {
                                 Ok(())
                             }
                         }) {
-                            tracing::error!("Cannot disable desktop focus: {error:#}");
+                            tracing::error!("Cannot configure desktop scene: {error:#}");
                             if let Some(app) = window.application() {
                                 app.quit();
                             }
