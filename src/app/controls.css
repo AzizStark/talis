@@ -167,3 +167,8 @@
 .talis-controls .about-link .setting-detail { color: #969fa4; }
 .talis-controls .about-link image { color: #b8c3c6; }
 .talis-controls .about-support image { color: #c7ab83; }
+.talis-controls .debug-report,
+.talis-controls .debug-report text {
+    background: #232627;
+    color: #eceeed;
+}

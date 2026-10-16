@@ -26,9 +26,23 @@ pub struct Renderer {
     _epoxy: Library,
     source: beauty::GpuBeauty,
     pub gpu_ms: Option<f64>,
+    info: RendererInfo,
+}
+
+/// Captured once with the owning context current; reading it never invokes GL.
+#[derive(Clone, Debug)]
+pub(crate) struct RendererInfo {
+    pub version: String,
+    pub shading_language: String,
+    pub vendor: String,
+    pub renderer: String,
+    pub scene_size: (u32, u32),
 }
 
 impl Renderer {
+    pub(crate) fn info(&self) -> &RendererInfo {
+        &self.info
+    }
     /// Output-pixel bounds, bottom-left origin. None selects the full-frame fallback.
     pub fn regional_rect(&self, width: i32, height: i32, scale: i32) -> Option<[i32; 4]> {
         self.source.regional_rect(width, height, scale)
@@ -186,11 +200,21 @@ impl Renderer {
                 }
             })
         });
+        let info = RendererInfo {
+            version: unsafe { gl.get_parameter_string(glow::VERSION) },
+            shading_language: unsafe { gl.get_parameter_string(glow::SHADING_LANGUAGE_VERSION) },
+            vendor: unsafe { gl.get_parameter_string(glow::VENDOR) },
+            renderer: unsafe { gl.get_parameter_string(glow::RENDERER) },
+            scene_size: match &asset.scene {
+                crate::preview::PreviewScene::Beauty(image) => image.dimensions(),
+                crate::preview::PreviewScene::Arm(assets) => assets.base.dimensions(),
+            },
+        };
         tracing::info!(
-            version = unsafe { gl.get_parameter_string(glow::VERSION) },
-            shading_language = unsafe { gl.get_parameter_string(glow::SHADING_LANGUAGE_VERSION) },
-            vendor = unsafe { gl.get_parameter_string(glow::VENDOR) },
-            renderer = unsafe { gl.get_parameter_string(glow::RENDERER) },
+            version = %info.version,
+            shading_language = %info.shading_language,
+            vendor = %info.vendor,
+            renderer = %info.renderer,
             "OpenGL initialized"
         );
         let mut source = match asset.scene {
@@ -246,6 +270,7 @@ impl Renderer {
             _epoxy: epoxy,
             source,
             gpu_ms: None,
+            info,
         })
     }
 

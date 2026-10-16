@@ -41,7 +41,7 @@ fn wayland_manager(desktop: &str) -> &'static str {
     }
 }
 
-pub(super) fn details() -> [(&'static str, &'static str, String); 4] {
+pub(in crate::app) fn details() -> [(&'static str, &'static str, String); 4] {
     let os = gtk::glib::os_info("PRETTY_NAME")
         .or_else(|| gtk::glib::os_info("NAME"))
         .map(|name| name.to_string())

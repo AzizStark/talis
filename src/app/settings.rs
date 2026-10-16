@@ -195,6 +195,7 @@ pub(super) fn build(
             &overlay,
         ));
         advanced_page.append(&style::section("Compatibility", &advanced));
+        advanced_page.append(&super::debug_info::controls());
         mate_overlay = Some(overlay);
         let defaults = super::defaults::controls(controls, state.clone(), scene_ui.as_ref());
         general.append(&style::section("Settings", &defaults.widget));

@@ -95,6 +95,51 @@ fn scene_and_controls_are_independent_windows() {
     let controls = preview.controls.as_ref().unwrap();
     assert!(!controls.has_css_class("talis-controls"));
     assert!(controls.child().unwrap().has_css_class("talis-controls"));
+    assert!(style::find_widget(&controls.clone().upcast(), "debug-info").is_some());
+    // Exercise the real Advanced callback before any renderer/context exists.
+    let debug_renderer = Rc::new(RefCell::new(None));
+    let debug_running = Rc::new(Cell::new(false));
+    super::super::debug_info::attach(
+        controls,
+        &preview.area,
+        &debug_renderer,
+        &state,
+        &debug_running,
+        &options,
+    );
+    let debug = style::find_widget(&controls.clone().upcast(), "debug-info")
+        .unwrap()
+        .downcast::<gtk::Button>()
+        .unwrap();
+    debug.emit_clicked();
+    let support = gtk::Window::list_toplevels()
+        .into_iter()
+        .find_map(|widget| {
+            widget
+                .downcast::<gtk::Window>()
+                .ok()
+                .filter(|window| window.widget_name() == "debug-info-window")
+        })
+        .unwrap();
+    let report = style::find_widget(&support.clone().upcast(), "debug-info-report")
+        .unwrap()
+        .downcast::<gtk::TextView>()
+        .unwrap();
+    let buffer = report.buffer();
+    let text = buffer.text(&buffer.start_iter(), &buffer.end_iter(), false);
+    assert!(text.contains("Renderer initialized: false"));
+    assert!(text.contains("Scene: day"));
+    debug.emit_clicked();
+    assert_eq!(
+        gtk::Window::list_toplevels()
+            .into_iter()
+            .filter(|widget| widget.widget_name() == "debug-info-window")
+            .count(),
+        1
+    );
+    support.close();
+    assert_eq!(Rc::strong_count(&debug_renderer), 1);
+    assert_eq!(Rc::strong_count(&debug_running), 1);
     assert_ne!(controls, &preview.window);
     assert!(controls.transient_for().is_none());
     assert_eq!(preview.window.child(), Some(preview.area.clone().upcast()));

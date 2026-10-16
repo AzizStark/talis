@@ -1,6 +1,6 @@
 //! Static About content; no polling, settings writes or scene work.
 use super::style;
-mod system;
+pub(super) mod system;
 use gtk::prelude::*;
 
 const LINKS: [(&str, &str, &str, &str, &str); 3] = [

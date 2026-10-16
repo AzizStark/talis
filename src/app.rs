@@ -2,6 +2,7 @@
 mod about;
 mod artwork;
 mod controls;
+mod debug_info;
 mod defaults;
 mod feedback;
 mod gnome_setup;
@@ -234,6 +235,16 @@ pub fn run_with_preferences(
                 running: running.clone(),
             },
         );
+        if let Some(controls) = &preview.controls {
+            debug_info::attach(
+                controls,
+                &preview.area,
+                &renderer,
+                &state,
+                &running,
+                &options,
+            );
+        }
         if let Some(placement) = &placement {
             if let Err(error) = placement.configure_scene(&preview.window) {
                 let message = format!("Desktop placement failed: {error:#}");
