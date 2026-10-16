@@ -135,7 +135,7 @@ fn row(description: &str) -> (gtk::Box, gtk::Switch, gtk::Label) {
     let body = gtk::Box::new(gtk::Orientation::Vertical, 0);
     let toggle = gtk::Switch::new();
     toggle.set_widget_name("run-on-startup");
-    toggle.set_tooltip_text(Some("Launch the desktop scene at sign-in with your latest saved settings. Re-enable after moving the executable or scene files."));
+    toggle.set_tooltip_text(Some("Start Talis automatically when you sign in."));
     body.append(&style::row("Run on startup", description, &toggle));
     let status = style::label("", "quiet-status");
     status.add_css_class("card-footer");

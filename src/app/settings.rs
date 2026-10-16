@@ -129,9 +129,6 @@ pub(super) fn build(
         let scene = super::scenes::controls(&state.borrow(), options);
         if options.shell_surface {
             scene.choice.set_sensitive(false);
-            scene
-                .choice
-                .set_tooltip_text(Some("This test bundle contains only the selected scene"));
         }
         display.append(&scene.widget);
         scene_ui = Some(scene);
@@ -192,7 +189,7 @@ pub(super) fn build(
         overlay.set_active(available && config.render.experimental_mate_overlay);
         advanced.append(&style::row(
             "MATE compatibility",
-            "Required on MATE to show Talis. Hides desktop icons.",
+            "Required on MATE to show Talis on the desktop.",
             &overlay,
         ));
         advanced_page.append(&style::section("Compatibility", &advanced));

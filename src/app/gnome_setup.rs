@@ -150,7 +150,7 @@ impl Ui {
         let (title, message, button, action) = match status {
             Status::EnableNow => (
                 "Enable Talis on your desktop",
-                "Enable the GNOME companion to show Talis behind your windows. Talis will also start when you sign in.",
+                "Enable the GNOME companion to show Talis on your desktop. Talis will also start when you sign in.",
                 "Enable Talis",
                 Action::Enable,
             ),

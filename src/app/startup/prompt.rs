@@ -51,8 +51,8 @@ fn dialog(parent: &gtk::Window, toggle: &gtk::Switch, manager: Manager) -> gtk::
         .transient_for(parent)
         .destroy_with_parent(true)
         .modal(true)
-        .text("Start Talis when you sign in?")
-        .secondary_text("You can change this later in General settings.")
+        .text("Do you want to start Talis when you sign in?")
+        .secondary_text("You can change this later in settings.")
         .build();
     dialog.set_widget_name("startup-first-run-prompt");
     dialog.add_buttons(&[

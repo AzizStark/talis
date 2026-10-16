@@ -75,7 +75,7 @@ pub(super) fn controls(state: &AppState, options: &super::Options) -> SceneUi {
         if resolution.is_sensitive() {
             "Higher resolution uses more GPU memory"
         } else {
-            "Defined by the scene package"
+            ""
         },
         &resolution,
     ));

@@ -94,6 +94,14 @@ fn first_run_dialog_is_mapped_once_with_settings_and_released_after_response() {
         assert!(std::time::Instant::now() < until);
     };
     assert_eq!(prompt.transient_for().as_ref(), Some(&parent));
+    assert_eq!(
+        prompt.text().as_deref(),
+        Some("Do you want to start Talis when you sign in?")
+    );
+    assert_eq!(
+        prompt.secondary_text().as_deref(),
+        Some("You can change this later in settings.")
+    );
     assert!(prompt.is_modal());
     assert!(!manager.enabled().unwrap());
     let weak = prompt.downgrade();

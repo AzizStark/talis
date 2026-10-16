@@ -87,7 +87,7 @@ pub(super) fn controls(
         spin.set_tooltip_text(Some(if is_opacity {
             "Adjust dust/stain and scratch visibility without changing the record or shadows."
         } else {
-            "Brighten or dim dust/stain and scratches only. 100 is the original brightness."
+            "Brighten or dim dust/stain and scratches only."
         }));
         row.append(&style::row(title, detail, &spin));
         let state = state.clone();
@@ -118,9 +118,7 @@ pub(super) fn controls(
     shadows.set_widget_name("sleeve-shadow-lift");
     shadows.set_digits(0);
     shadows.set_value(state.borrow().config.artwork.sleeve_shadow_lift * 100.0);
-    shadows.set_tooltip_text(Some(
-        "Lighten shadows on the sleeve only. Set to 0 for the original shading.",
-    ));
+    shadows.set_tooltip_text(Some("Lighten shadows on the sleeve only."));
     row.append(&style::row(
         "Shadow lift (%)",
         "Lighten shadows on the sleeve",
@@ -183,6 +181,10 @@ mod tests {
                 .downcast::<gtk::SpinButton>()
                 .unwrap();
             assert_eq!((opacity.value(), brightness.value()), (100.0, 100.0));
+            assert_eq!(
+                brightness.tooltip_text().as_deref(),
+                Some("Brighten or dim dust/stain and scratches only.")
+            );
             opacity.set_value(40.0);
             brightness.set_value(150.0);
             assert_eq!(state.borrow().config.artwork.vinyl_opacity, 0.4);
@@ -199,6 +201,10 @@ mod tests {
                 .downcast::<gtk::SpinButton>()
                 .unwrap();
             assert_eq!(shadows.value(), 25.0);
+            assert_eq!(
+                shadows.tooltip_text().as_deref(),
+                Some("Lighten shadows on the sleeve only.")
+            );
             shadows.set_value(40.0);
             assert_eq!(state.borrow().config.artwork.sleeve_shadow_lift, 0.4);
             assert_eq!(state.borrow().config.artwork.corners, fit);
