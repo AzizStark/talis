@@ -192,6 +192,16 @@ async fn pointer_button_at(
 #[test]
 #[ignore = "requires isolated Xvfb + window manager/private bus; TALIS_MPRIS_TEST_BUS=1"]
 fn scene_gestures_and_desktop_input_shape_control_only_selected_player() {
+    exercise_desktop_input(false);
+}
+
+#[test]
+#[ignore = "requires isolated Xvfb + window manager/private bus; TALIS_MPRIS_TEST_BUS=1"]
+fn visual_patch_does_not_intercept_desktop_controls_after_map_resize_or_remap() {
+    exercise_desktop_input(true);
+}
+
+fn exercise_desktop_input(with_visual_patch: bool) {
     assert_eq!(std::env::var("TALIS_MPRIS_TEST_BUS").as_deref(), Ok("1"));
     assert_ne!(std::env::var("DISPLAY").as_deref(), Ok(":0"));
     gtk::init().unwrap();
@@ -347,6 +357,25 @@ fn scene_gestures_and_desktop_input_shape_control_only_selected_player() {
                 );
                 let receiver = ui.receiver.as_ref().unwrap();
                 let input_window = receiver.window.upgrade().unwrap();
+                // Match native_patch::install: configure before adding content,
+                // then map the visual surface above the scene. An empty client
+                // input shape alone does not prove its WM frame is click-through.
+                let visual_patch = with_visual_patch.then(|| {
+                    let patch = gtk::ApplicationWindow::builder()
+                        .application(&app)
+                        .title("Talis test animated patch")
+                        .build();
+                    let placement = host.configure_animation(&patch).unwrap();
+                    patch.set_child(Some(&host.input_widget()));
+                    patch.set_default_size(2560, 1440);
+                    patch.set_visible(true);
+                    placement
+                        .position(&patch, &window, [0, 0, 2560, 1440])
+                        .unwrap();
+                    placement.stack_above_scene(&patch, &window).unwrap();
+                    (patch, placement)
+                });
+                glib::timeout_future(Duration::from_millis(150)).await;
                 assert!(!input_window.is_focusable());
                 assert_eq!(input_window.opacity(), 1.0);
                 let shape = input_shape(&input_window);
@@ -483,6 +512,18 @@ fn scene_gestures_and_desktop_input_shape_control_only_selected_player() {
                 .await;
                 assert_eq!(*fixture.commands.borrow(), ["Play", "Pause"]);
                 assert_eq!(icon_clicks.get(), 0, "desktop swallowed the button click");
+                if let Some((patch, placement)) = &visual_patch {
+                    assert!(input_shape(patch).is_empty(), "visual client accepts input");
+                    patch.set_visible(false);
+                    glib::timeout_future(Duration::from_millis(30)).await;
+                    patch.set_default_size(2528, 1408);
+                    patch.set_visible(true);
+                    placement
+                        .position(patch, &window, [16, 16, 2528, 1408])
+                        .unwrap();
+                    placement.stack_above_scene(patch, &window).unwrap();
+                    glib::timeout_future(Duration::from_millis(150)).await;
+                }
                 // Stay clear of real desktop panels in the private Xfce/MATE
                 // sessions; a top-panel click is not a click-through failure.
                 pointer_click(&icons, 80.0, 80.0).await;
@@ -801,6 +842,9 @@ fn scene_gestures_and_desktop_input_shape_control_only_selected_player() {
                 );
                 assert_eq!(fixture.commands.borrow().len(), 8);
                 settings.destroy();
+                if let Some((patch, _)) = visual_patch {
+                    patch.destroy();
+                }
                 monitor.stop();
                 area.make_current();
                 unsafe {

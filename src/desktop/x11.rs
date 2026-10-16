@@ -65,6 +65,8 @@ struct ConfigureRequest {
 }
 type Lower = unsafe extern "C" fn(Display, Window) -> c_int;
 type Flush = unsafe extern "C" fn(Display) -> c_int;
+type ShapeRectangles =
+    unsafe extern "C" fn(Display, Window, c_int, c_int, c_int, *const c_void, c_int, c_int, c_int);
 type SetHints = unsafe extern "C" fn(Display, Window, *mut WmHints) -> c_int;
 type GetHints = unsafe extern "C" fn(Display, Window) -> *mut WmHints;
 type GetProtocols = unsafe extern "C" fn(Display, Window, *mut *mut Atom, *mut c_int) -> c_int;
@@ -136,6 +138,7 @@ struct X11 {
     // Keep both dispatch libraries and the borrowed native display alive.
     _gtk: Library,
     _xlib: Library,
+    _shape: Library,
     display: gdk::Display,
     native: Display,
     get_xid: GetXid,
@@ -144,6 +147,7 @@ struct X11 {
     move_resize: MoveResize,
     lower: Lower,
     flush: Flush,
+    shape_rectangles: ShapeRectangles,
     set_hints: SetHints,
     get_hints: GetHints,
     get_protocols: GetProtocols,
@@ -187,6 +191,8 @@ impl X11 {
         unsafe {
             let gtk = Library::new("libgtk-4.so.1").context("Cannot load GTK X11 adapter")?;
             let xlib = Library::new("libX11.so.6").context("Desktop mode needs libX11.so.6")?;
+            let shape = Library::new("libXext.so.6").context("Desktop mode needs libXext.so.6")?;
+            let shape_rectangles = *shape.get(b"XShapeCombineRectangles\0")?;
             let get_display: GetDisplay = *gtk.get(b"gdk_x11_display_get_xdisplay\0")?;
             let get_xid = *gtk.get(b"gdk_x11_surface_get_xid\0")?;
             let native = get_display(display.as_ptr().cast());
@@ -211,6 +217,8 @@ impl X11 {
                 get_property: *xlib.get(b"XGetWindowProperty\0")?,
                 _gtk: gtk,
                 _xlib: xlib,
+                _shape: shape,
+                shape_rectangles,
             })
         }
     }
@@ -391,6 +399,70 @@ impl X11 {
         Ok(())
     }
 
+    fn refresh_visual_input(&self, window: &gtk::ApplicationWindow) -> Result<()> {
+        const SHAPE_INPUT: c_int = 2;
+        const SHAPE_SET: c_int = 0;
+        const UNSORTED: c_int = 0;
+        self.click_through(window)?;
+        // Xfwm can create/resize its frame after the client's initial empty
+        // shape. Reissue ShapeInput so it refreshes that frame too. GDK skips
+        // equal regions, so another set_input_region(empty) alone is insufficient.
+        // Modify only our client XID; never edit the WM's frame or desktop.
+        unsafe {
+            (self.shape_rectangles)(
+                self.native,
+                self.xid(window)?,
+                SHAPE_INPUT,
+                0,
+                0,
+                std::ptr::null(),
+                0,
+                SHAPE_SET,
+                UNSORTED,
+            );
+            (self.flush)(self.native);
+        }
+        Ok(())
+    }
+
+    fn bind_visual_input(self: &Rc<Self>, window: &gtk::ApplicationWindow) -> Result<()> {
+        let surface = window.surface().context("Missing visual desktop surface")?;
+        let weak = window.downgrade();
+        let backend = self.clone();
+        let refresh: Rc<dyn Fn()> = Rc::new(move || {
+            if let Some(window) = weak.upgrade().filter(|w| w.is_mapped()) {
+                if let Err(error) = backend.refresh_visual_input(&window) {
+                    tracing::error!("Cannot keep desktop visual click-through: {error:#}");
+                    window.set_visible(false);
+                }
+            }
+        });
+        let dimensions = Rc::new(Cell::new(None));
+        surface.connect_layout({
+            let dimensions = dimensions.clone();
+            let refresh = refresh.clone();
+            move |surface, width, height| {
+                let size = (width, height, surface.scale_factor());
+                if dimensions.replace(Some(size)) != Some(size) {
+                    refresh();
+                }
+            }
+        });
+        surface
+            .dynamic_cast::<gdk::Toplevel>()
+            .map_err(|_| anyhow::anyhow!("Visual desktop surface is not a toplevel"))?
+            .connect_notify_local(Some("state"), {
+                let refresh = refresh.clone();
+                move |_, _| refresh()
+            });
+        window.connect_map(move |_| {
+            dimensions.set(None);
+            let refresh = refresh.clone();
+            gtk::glib::idle_add_local_once(move || refresh());
+        });
+        Ok(())
+    }
+
     fn position(&self, window: &gtk::ApplicationWindow, monitor: &gdk::Monitor) -> Result<()> {
         let geometry = monitor.geometry();
         let (x, y, width, height) = physical_geometry(&geometry, monitor.scale_factor())?;
@@ -434,6 +506,7 @@ impl ButtonInputPlacement {
     ) -> Result<Self> {
         let placement = Self::configure(window)?;
         placement.backend.prepare(window, visual_role(overlay))?;
+        placement.backend.bind_visual_input(window)?;
         Ok(placement)
     }
     pub(crate) fn stack_above_scene(
@@ -820,6 +893,7 @@ impl DesktopPlacement {
         self.backend
             .prepare(window, visual_role(self.overlay.get()))?;
         self.backend.position(window, &self.monitor)?;
+        self.backend.bind_visual_input(window)?;
         let placement = self.clone();
         window.connect_map(move |window| {
             if let Err(error) = placement.backend.position(window, &placement.monitor) {
