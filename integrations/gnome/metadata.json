@@ -1,7 +1,7 @@
 {
   "uuid": "talis@azizstark",
   "name": "Talis",
-  "description": "Desktop companion for the Talis music-aware turntable",
+  "description": "An interactive, animated and music-aware desktop turntable",
   "shell-version": ["48", "50"],
   "session-modes": ["user", "unlock-dialog"]
 }

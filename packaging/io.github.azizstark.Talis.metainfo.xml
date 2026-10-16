@@ -4,11 +4,11 @@
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0-only</project_license>
   <name>Talis</name>
-  <summary>A music-aware desktop turntable</summary>
+  <summary>An interactive, animated and music-aware desktop turntable</summary>
   <developer id="io.github.azizstark"><name>AzizStark</name></developer>
   <description>
-    <p>A rendered turntable scene for the Linux desktop with rotating artwork, a moving tonearm, and MPRIS playback controls.</p>
-    <p>Includes day and night scenes at 1080p, 1440p, and 4K. Desktop integration depends on your session; GNOME Wayland requires the companion extension.</p>
+    <p>An interactive music-aware turntable wallpaper for the Linux desktop with animated mechanical parts and music playback controls.</p>
+    <p>Includes day and night scenes at resolutions up to 4K.</p>
   </description>
   <launchable type="desktop-id">io.github.azizstark.Talis.desktop</launchable>
   <url type="homepage">https://github.com/AzizStark/talis</url>

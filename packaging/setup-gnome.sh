@@ -47,7 +47,7 @@ desktop_string() {
 mkdir -p -- "$talis_applications"
 talis_desktop_temporary=$(mktemp "$talis_applications/.talis-setup.XXXXXX")
 {
-  printf '[Desktop Entry]\nType=Application\nName=Talis\nComment=A music-aware desktop turntable\n'
+  printf '[Desktop Entry]\nType=Application\nName=Talis\nComment=An interactive, animated and music-aware desktop turntable\n'
   # env keeps the executable token unquoted for GLib's application lookup;
   # the relocated bundle path remains a correctly escaped, single argument.
   printf 'Exec=/usr/bin/env %s\nIcon=%s\n' "$(desktop_string "$talis_exec")" "$(desktop_string "$talis_icon")"

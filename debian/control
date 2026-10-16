@@ -10,9 +10,9 @@ Rules-Requires-Root: no
 Package: talis
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, curl, ca-certificates, libglib2.0-bin, libx11-6, libxext6, libxcb1, libxcb-shape0, librsvg2-common
-Description: music-aware desktop turntable
- Rendered day and night desktop scenes with rotating artwork, a moving tonearm,
- and MPRIS playback controls. Includes 1080p, 1440p, and 4K scene assets.
- Supports native X11 desktops and GNOME Wayland with the included companion
- extension. Launch Talis to finish setup; new installations may need one
- logout/login. This build does not include native Wayland layer-shell.
+Description: An interactive music-aware live turntable on desktop
+ Bring your music to life with an interactive turntable on your desktop.
+ Watch the record spin and the tonearm move as your music plays, and control
+ playback right from the turntable.
+ .
+ Choose between day and night scenes, available in resolutions up to 4K.

@@ -171,7 +171,7 @@ impl Launch {
             ""
         };
         Ok(format!(
-            "[Desktop Entry]\nType=Application\nName=Talis\nComment=Your listening corner\nIcon={}\nStartupWMClass=io.github.azizstark.Talis\nExec={exec}\nTryExec={}\nPath={}\nTerminal=false\nStartupNotify=false\n{OWNER}\n",
+            "[Desktop Entry]\nType=Application\nName=Talis\nComment=An interactive music-aware live turntable on desktop\nIcon={}\nStartupWMClass=io.github.azizstark.Talis\nExec={exec}\nTryExec={}\nPath={}\nTerminal=false\nStartupNotify=false\n{OWNER}\n",
             escape_value(&icon)?,
             escape_value(&path_text(&self.executable)?)?,
             escape_value(&path_text(&self.directory)?)?
