@@ -1,61 +1,54 @@
 # GNOME Wayland
 
-Companion extension, currently one monitor. GNOME Shell 48 has prior
-live-session validation. Fresh-account setup was verified on
-Ubuntu 26.04.1 / GNOME 50.1 / Wayland, with desktop icons enabled.
-Other Shell versions can attempt startup: setup registers the current version
-for Talis only and reports actual load failures. Global extension validation
-and other extensions are unchanged.
+Talis uses a companion extension to display the turntable on the GNOME desktop.
+Desktop icons can remain enabled. The integration currently supports one
+monitor; scene and resolution switching are not yet available.
 
-For a portable bundle, run `bash setup-gnome.sh` inside its permanent extracted
-directory as your normal user, then launch `./talis` to finish setup.
-Setup registers the Talis menu/dock entry too; no separate patches are needed.
+## Debian and Arch packages
 
-The `.deb` includes the companion. Launch Talis for its consent-based setup
-dialog; a new system installation normally needs one logout/login. No terminal
-command, ZIP or setup script is needed. On versions absent from the shipped
-metadata, setup creates per-user metadata linking to the packaged code, then
-requests the usual logout/login. Package updates still update that code.
-Manual enabling remains available below after setup.
-An older per-user copy takes
-precedence over the packaged copy: disable it and back it up outside the
-extensions directory before switching, then log out/in.
+The companion is included—no separate download or terminal setup is needed.
 
-For other installed runtimes without the companion, install the release extension ZIP with
-`gnome-extensions install talis.shell-extension.zip`, then launch Talis to finish
-setup. It finds the installed client and assets; no repository symlink is needed.
+1. Install the Talis package and open **Talis** from your application menu.
+2. Follow the setup prompt to enable it on your desktop.
+3. If asked, log out and sign back in to finish setup. Save your work first.
 
-For source development, run the following from the repository root:
+Once enabled, the companion starts Talis when you sign in. Opening Talis from
+the menu brings up Settings rather than starting another turntable.
+
+## Portable archive
+
+Extract the archive into a permanent folder. Open a terminal in that folder
+and run these commands as your normal user:
 
 ```sh
-bash scripts/build.sh gnome
-talis_extension="$HOME/.local/share/gnome-shell/extensions/talis@azizstark"
-mkdir -p "$talis_extension"
-install -m644 integrations/gnome/*.js integrations/gnome/*.json "$talis_extension/"
-install -m755 target/release/talis-gnome-scene "$talis_extension/"
-ln -sfnT "$PWD/assets" "$talis_extension/assets"
+bash setup-gnome.sh
+./talis
 ```
 
-Log out and back in so GNOME discovers the extension, then enable it:
+Follow the setup prompt, including logout/login if requested. Setup also adds
+Talis to your application menu. Keep the extracted folder in place.
 
-```sh
-gnome-extensions enable talis@azizstark
-```
+## Startup and troubleshooting
 
-The extension starts the renderer; do not also launch `scripts/run.sh`.
-Login startup is managed by enabling/disabling the companion in Extensions.
-Desktop-icons extensions can remain enabled; only the turntable's control
-hotspots are placed above desktop windows, below ordinary application windows.
-The concealed renderer retains a full-size 16:9 camera surface, cropped to cover
-the monitor without work-area upscaling. It does not request fullscreen mode.
-Keep the repository in place while using the asset symlink. Disable the extension
-before updating its files:
+- To stop Talis from starting at sign-in, disable its companion in GNOME's
+  **Extensions** app. Enable it again to restore the turntable.
+- If setup asks for a logout/login, signing out lets GNOME discover the new
+  companion files. Try opening Talis again after signing back in.
+- If an older manually installed companion conflicts with a packaged one,
+  disable it and back it up outside the extensions directory, then log out/in.
+  A per-user copy takes precedence over the packaged copy.
+- For help, share **Advanced → Debug info → Copy debug info** and any setup
+  error in a [bug report](https://github.com/AzizStark/talis/issues).
 
-```sh
-gnome-extensions disable talis@azizstark
-```
+GNOME Shell 48 and 50 have been tested. Other versions can attempt setup;
+Talis reports actual load failures rather than refusing untested versions.
 
-For troubleshooting, set `"diagnostics": true` in the installed extension's
-`scene.json`, then log out/in. This enables detailed frame/input/coverage logs;
-errors and visibility transitions remain logged normally. Restore `false` when
-finished. Keep the field boolean; old configurations without it default to quiet.
+## Other installations and development
+
+If your installed runtime does not include the companion, install its matching
+release extension ZIP with `gnome-extensions install talis-gnome-VERSION.shell-extension.zip`,
+then open Talis to finish setup. Replace the example filename with the actual
+downloaded filename; the ZIP still needs the installed Talis runtime and assets.
+
+For source installation, implementation notes and detailed diagnostic logging,
+see [GNOME companion development](../../DEVELOPMENT.md#gnome-companion-development).

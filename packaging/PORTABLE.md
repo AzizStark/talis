@@ -16,7 +16,7 @@ No compiler, root installation, or backend selection is needed.
 
 GTK, graphics drivers and base system libraries are not bundled. On CachyOS:
 `sudo pacman -S --needed gtk4 librsvg curl ca-certificates`.
-This is a test bundle, not an AppImage or a claim to support every Linux release.
+This portable archive is not an AppImage; the system requirements above still apply.
 
 Preferences stay in your normal XDG configuration directory. Close Talis before
 switching builds. Keep the extracted directory in place; if moved, re-enable
