@@ -93,6 +93,8 @@ fn scene_and_controls_are_independent_windows() {
         |options: &Options| build(&app, options, state.clone(), Rc::new(Cell::new(false)));
     let preview = build_window(&options);
     let controls = preview.controls.as_ref().unwrap();
+    assert!(!controls.has_css_class("talis-controls"));
+    assert!(controls.child().unwrap().has_css_class("talis-controls"));
     assert_ne!(controls, &preview.window);
     assert!(controls.transient_for().is_none());
     assert_eq!(preview.window.child(), Some(preview.area.clone().upcast()));

@@ -1,4 +1,4 @@
-/* Every selector is scoped to the controls window. Native scene stays untouched. */
+/* Scope to Settings content, never the window or its native decorations. */
 .talis-controls {
     background: #1d1f20;
     color: #eceeed;

@@ -68,7 +68,6 @@ pub(super) fn build(
     preferences_error.set_visible(false);
     if let Some(controls) = controls {
         style::install(&gtk::prelude::WidgetExt::display(controls));
-        controls.add_css_class("talis-controls");
         let stack = gtk::Stack::new();
         stack.set_widget_name("settings-pages");
         stack.set_hexpand(true);
@@ -274,7 +273,10 @@ pub(super) fn build(
         sidebar.append(&footer);
         shell.append(&sidebar);
         shell.append(&stack);
-        controls.set_child(Some(&super::feedback::wrap(&shell)));
+        let content = super::feedback::wrap(&shell);
+        // Keep application colors and button states out of native decorations.
+        content.add_css_class("talis-controls");
+        controls.set_child(Some(&content));
         let fps_area = area.clone();
         fps.connect_changed(move |combo| {
             if let Some(value) = combo

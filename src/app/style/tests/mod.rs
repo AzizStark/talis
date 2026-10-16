@@ -1,3 +1,4 @@
+mod decorations;
 #[path = "scroll.rs"]
 mod scroll_tests;
 
@@ -193,9 +194,9 @@ fn settings_foregrounds_survive_real_focus_loss() {
     );
     super::install(&display);
     let settings = gtk::Window::new();
-    settings.add_css_class("talis-controls");
     settings.set_default_size(400, 400);
     let body = gtk::Box::new(gtk::Orientation::Vertical, 12);
+    body.add_css_class("talis-controls");
     let mut labels = Vec::new();
     for class in [
         "page-title",

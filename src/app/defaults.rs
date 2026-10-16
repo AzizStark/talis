@@ -47,7 +47,7 @@ pub(super) fn controls(
             .secondary_text("This resets appearance, player selection and desktop settings, and turns off Run on startup. Music playback and scene files are not changed.")
             .build();
         dialog.set_widget_name("restore-defaults-confirmation");
-        dialog.add_css_class("talis-controls");
+        dialog.content_area().add_css_class("talis-controls");
         dialog.add_button("Cancel", gtk::ResponseType::Cancel);
         dialog.add_button("Restore defaults", gtk::ResponseType::Accept);
         dialog.set_default_response(gtk::ResponseType::Cancel);
