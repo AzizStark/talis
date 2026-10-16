@@ -4,10 +4,6 @@ set -euo pipefail
 [[ $EUID != 0 ]] || { echo 'Run this as your desktop user, not root.' >&2; exit 1; }
 talis_bundle=$(cd -- "$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")" && pwd)
 command -v gnome-shell >/dev/null || { echo 'GNOME Shell is not installed.' >&2; exit 1; }
-talis_shell_version=$(gnome-shell --version)
-[[ $talis_shell_version =~ ^GNOME\ Shell\ (48|50)(\.[0-9]+)*$ ]] || {
-  echo 'This companion supports GNOME Shell 48 and 50.' >&2; exit 1;
-}
 talis_data=${XDG_DATA_HOME:-${HOME:?}/.local/share}
 [[ $talis_data == /* ]] || { echo 'XDG_DATA_HOME must be absolute.' >&2; exit 1; }
 talis_extensions=$talis_data/gnome-shell/extensions
@@ -66,4 +62,4 @@ mv -T -n -- "$talis_desktop_temporary" "$talis_desktop"
 trap - EXIT
 echo 'Installed the companion without enabling it. Keep this bundle in place.'
 echo 'Added the Talis menu/dock entry. The enabled extension manages login startup.'
-echo 'Log out/in, then run: gnome-extensions enable talis@azizstark'
+echo 'Launch ./talis to finish setup, then follow its logout/login instructions.'

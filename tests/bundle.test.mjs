@@ -61,10 +61,13 @@ try {
     if (process.getuid() === 0) {
         assert.notEqual(setup().status,0,'setup refuses root');
     } else {
-        assert.notEqual(setup({FAKE_GNOME_VERSION:'49.0'}).status,0,'no untested Shell versions');
-        assert(!existsSync(data));
-        assert.notEqual(setup({FAKE_GNOME_VERSION:'51.0'}).status,0);
-        assert.notEqual(setup({FAKE_GNOME_VERSION:'50.alpha'}).status,0);
+        for (const version of ['46.0','49.0','51.0','50.alpha','99.0']) {
+            const versionData=join(temporary,`shell-${version}`);
+            const result=setup({FAKE_GNOME_VERSION:version,XDG_DATA_HOME:versionData});
+            ok(result);
+            assert(result.stdout.includes('Launch ./talis to finish setup'));
+            assert(existsSync(join(versionData,'gnome-shell/extensions/talis@azizstark/extension.js')));
+        }
         ok(setup());
         const extension = join(data,'gnome-shell/extensions/talis@azizstark');
         assert.equal(readlinkSync(join(extension,'assets')),join(destination,'usr/share/talis/assets'));

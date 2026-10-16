@@ -1,7 +1,8 @@
 # Release packages
 
 The native package uses an **Ubuntu 24.04 / Linux Mint 22** build baseline.
-It supports X11 and includes the GNOME Wayland companion for Shell 48/50.
+It supports X11 and includes the GNOME Wayland companion, tested on Shell 48/50.
+Other Shell versions can attempt startup; actual load failures are reported.
 The portable bundle also supports the separately tested Wayland integrations;
 this does not imply that native distro packages exist for each desktop.
 
@@ -18,16 +19,18 @@ The `.deb` is written to the parent directory. Install it with `sudo apt install
 Installed launches need no Rust, Cargo, or Blender. Startup remains opt-in.
 Quit Talis before upgrading; saved settings are preserved.
 
-On GNOME Wayland, log out/in after installation, then enable the included companion:
-
-```sh
-gnome-extensions enable talis@azizstark
-```
+On GNOME Wayland, launch Talis and follow its setup dialog. With your consent it
+enables the companion immediately when GNOME recognizes it, or saves enablement
+for your next sign-in. New system installations normally need one logout/login;
+the optional **Log Out…** button requests GNOME's normal confirmation.
+You can also enable it manually after login with `gnome-extensions enable talis@azizstark`.
 
 No separate ZIP or setup script is needed. Enabling remains per-user and opt-in;
 the package does not install GNOME on other desktops. A previous per-user copy
 of the same extension takes precedence; back it up outside the extensions directory
-before switching to the packaged copy, then log out/in.
+before switching to the packaged copy, then log out/in. When the current Shell
+is absent from shipped metadata, setup registers it in per-user metadata linked
+to the packaged code; it never disables GNOME's global version validation.
 
 ## Manual archive
 
@@ -69,8 +72,8 @@ release assembly, not a claim of bit-for-bit reproducible compiler output.
 `CARGO_TARGET_DIR` may relocate the two build caches. Cross-compilation is not
 supported by this x86-64 release command. `.deb` builds remain separate above.
 
-Extract and run `./talis` inside the bundle. GNOME Shell 48/50 instead needs
-`bash setup-gnome.sh` once, log out/in, then extension enabling; the bundle's
+Extract and run `./talis` inside the bundle. GNOME Wayland first needs
+`bash setup-gnome.sh` once, then `./talis` to finish setup; the bundle's
 README has details. No separate patches or backend selection are needed.
 Nothing installs or enables itself just by launching the app.
 
@@ -84,7 +87,8 @@ mkdir -p dist
 zip -j dist/talis.shell-extension.zip integrations/gnome/*.js integrations/gnome/*.json LICENSE
 ```
 
-It requires the installed `talis-gnome-scene` client and scene assets. Current
-targets are GNOME Shell 48 and 50, one monitor. Fresh-account installation was
+It requires the installed Talis runtime and scene assets. Validated
+Shell versions are 48 and 50, one monitor; other versions are not blocked by
+Talis. Fresh-account installation was
 verified on Ubuntu 26.04.1 / GNOME 50.1 / Wayland. Installation does not enable it;
 see the [GNOME instructions](../integrations/gnome/README.md).

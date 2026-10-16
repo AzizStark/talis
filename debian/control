@@ -14,5 +14,5 @@ Description: music-aware desktop turntable
  Rendered day and night desktop scenes with rotating artwork, a moving tonearm,
  and MPRIS playback controls. Includes 1080p, 1440p, and 4K scene assets.
  Supports native X11 desktops and GNOME Wayland with the included companion
- extension (GNOME Shell 48 and 50). Enable the extension after logging out and
- back in. This build does not include native Wayland layer-shell.
+ extension. Launch Talis to finish setup; new installations may need one
+ logout/login. This build does not include native Wayland layer-shell.

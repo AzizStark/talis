@@ -17,14 +17,7 @@ if talis_session_is_gnome; then
       --method io.github.azizstark.Talis.OpenSettings >/dev/null 2>&1; then
       exit 0
     fi
-    echo 'GNOME Wayland uses the Talis companion extension (GNOME Shell 48 or 50).' >&2
-    if [[ -f $TALIS_DATA_DIR/../gnome-shell/extensions/talis@azizstark/metadata.json ]]; then
-      echo 'The companion is included. Log out and back in, then run:' >&2
-      echo '  gnome-extensions enable talis@azizstark' >&2
-    else
-      echo 'For a portable bundle, run ./setup-gnome.sh once; then follow its enable instructions.' >&2
-    fi
-    exit 1
+    exec "$talis_binary" --gnome-setup
 fi
 # Portable bundles carry a separate feature-enabled executable. X11 packages
 # remain independent of layer-shell, and source launches keep their override.

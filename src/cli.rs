@@ -5,6 +5,9 @@ use std::path::PathBuf;
 #[derive(Parser)]
 #[command(version, about = "Talis — a music-aware Linux desktop turntable")]
 pub(crate) struct Args {
+    /// First-launch GNOME companion setup; never creates a scene or loads preferences.
+    #[arg(long, hide = true, exclusive = true)]
+    pub(crate) gnome_setup: bool,
     /// Load a TOML configuration; otherwise use built-in defaults.
     #[arg(long)]
     pub(crate) config: Option<PathBuf>,
@@ -113,6 +116,18 @@ fn parse_size(value: &str) -> std::result::Result<(i32, i32), String> {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn gnome_setup_is_an_exclusive_non_rendering_entry_point() {
+        use clap::Parser;
+        assert!(
+            super::Args::try_parse_from(["talis", "--gnome-setup"])
+                .unwrap()
+                .gnome_setup
+        );
+        for extra in ["--desktop", "--check", "--no-user-settings"] {
+            assert!(super::Args::try_parse_from(["talis", "--gnome-setup", extra]).is_err());
+        }
+    }
     #[test]
     fn preference_isolation_and_owned_startup_flags_are_explicit() {
         use clap::Parser;

@@ -4,6 +4,7 @@ mod artwork;
 mod controls;
 mod defaults;
 mod feedback;
+mod gnome_setup;
 mod instance;
 mod launch;
 mod lifecycle;
@@ -35,6 +36,11 @@ use std::{
     rc::Rc,
     time::Instant,
 };
+
+/// First-launch setup only: no scene decoding, player observation or scene GL context.
+pub fn run_gnome_setup() -> Result<()> {
+    gnome_setup::run()
+}
 
 #[derive(Clone)]
 pub struct Options {

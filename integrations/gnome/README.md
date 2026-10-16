@@ -1,21 +1,29 @@
 # GNOME Wayland
 
-Experimental companion extension for **GNOME Shell 48 and 50**, currently one monitor.
-48 has prior live-session validation. Fresh-account setup was verified on
+Companion extension, currently one monitor. GNOME Shell 48 has prior
+live-session validation. Fresh-account setup was verified on
 Ubuntu 26.04.1 / GNOME 50.1 / Wayland, with desktop icons enabled.
+Other Shell versions can attempt startup: setup registers the current version
+for Talis only and reports actual load failures. Global extension validation
+and other extensions are unchanged.
 
 For a portable bundle, run `bash setup-gnome.sh` inside its permanent extracted
-directory as your normal user, log out/in, then enable the companion as below.
+directory as your normal user, then launch `./talis` to finish setup.
 Setup registers the Talis menu/dock entry too; no separate patches are needed.
 
-The `.deb` includes the companion. Log out/in after installation and enable it
-as below; no ZIP or setup script is needed. An older per-user copy takes
+The `.deb` includes the companion. Launch Talis for its consent-based setup
+dialog; a new system installation normally needs one logout/login. No terminal
+command, ZIP or setup script is needed. On versions absent from the shipped
+metadata, setup creates per-user metadata linking to the packaged code, then
+requests the usual logout/login. Package updates still update that code.
+Manual enabling remains available below after setup.
+An older per-user copy takes
 precedence over the packaged copy: disable it and back it up outside the
 extensions directory before switching, then log out/in.
 
 For other installed runtimes without the companion, install the release extension ZIP with
-`gnome-extensions install talis.shell-extension.zip`, then log out/in and enable
-it as below. It finds the installed client and assets; no repository symlink is needed.
+`gnome-extensions install talis.shell-extension.zip`, then launch Talis to finish
+setup. It finds the installed client and assets; no repository symlink is needed.
 
 For source development, run the following from the repository root:
 

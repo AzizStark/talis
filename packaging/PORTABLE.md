@@ -6,10 +6,11 @@ No compiler, root installation, or backend selection is needed.
 - x86-64 Linux with glibc 2.39+, GTK 4.8+ (including its SVG loader), and OpenGL 3.3.
 - X11: Cinnamon, MATE, Xfce and other supported X11 hosts.
 - Wayland: Plasma, Sway and Hyprland. GTK4 layer-shell is included.
-- GNOME Wayland: Shell 48 or 50, one monitor. Fresh setup tested on
+- GNOME Wayland: one monitor; Shell 48/50 tested, other versions may attempt startup.
+  Fresh setup tested on
   Ubuntu 26.04.1 / GNOME 50.1 with desktop icons enabled.
   Run `bash setup-gnome.sh` once and
-  follow its instructions. The enabled companion starts Talis at login;
+  launch `./talis` to finish setup. The enabled companion starts Talis at login;
   `./talis` and the Talis menu entry open its Settings, not a second renderer.
 - `curl` and CA certificates are required for remote artwork.
 
