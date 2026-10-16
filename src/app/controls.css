@@ -17,6 +17,8 @@
     box-shadow: 0 2px 8px alpha(black, 0.3);
 }
 .talis-controls .settings-notification label { color: #eceeed; }
+.talis-controls .settings-notification button,
+.talis-controls .settings-notification button image { color: #eceeed; }
 .talis-controls .settings-sidebar {
     background: #202324;
     border-right: none;

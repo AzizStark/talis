@@ -23,6 +23,8 @@ pub(super) fn wrap(content: &gtk::Box) -> gtk::Overlay {
             label.set_ellipsize(gtk::pango::EllipsizeMode::End);
             let row = gtk::Box::new(gtk::Orientation::Horizontal, 10);
             row.add_css_class("settings-notification");
+            // Size each toast independently instead of filling the widest row.
+            row.set_halign(gtk::Align::End);
             row.set_visible(label.get_visible());
             row.append(&label);
             let close = gtk::Button::from_icon_name("window-close-symbolic");
@@ -67,6 +69,58 @@ fn collect(widget: &gtk::Widget, sources: &mut Vec<gtk::Label>) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    #[ignore = "Requires a private GTK display"]
+    fn notifications_size_to_their_own_message() {
+        gtk::init().unwrap();
+        super::super::style::install(&gtk::gdk::Display::default().unwrap());
+        let page = gtk::Box::new(gtk::Orientation::Vertical, 0);
+        page.add_css_class("talis-controls");
+        let short = super::super::graphics_notice::source();
+        let long = gtk::Label::new(Some(&"Long error details ".repeat(30)));
+        long.add_css_class("settings-feedback-source");
+        long.set_visible(false);
+        page.append(&short);
+        page.append(&long);
+        let overlay = wrap(&page);
+        overlay.add_css_class("talis-controls");
+        let window = gtk::Window::new();
+        window.set_default_size(800, 300);
+        window.set_child(Some(&overlay));
+        short.set_visible(true);
+        long.set_visible(true);
+        window.present();
+        let context = gtk::glib::MainContext::default();
+        let until = std::time::Instant::now() + std::time::Duration::from_millis(200);
+        while std::time::Instant::now() < until {
+            context.iteration(false);
+        }
+        let short_row = short.parent().unwrap();
+        let long_row = long.parent().unwrap();
+        eprintln!(
+            "short row={} label={} text={:?}; long row={} label={} text={:?}",
+            short_row.width(),
+            short.width(),
+            short.layout().pixel_size(),
+            long_row.width(),
+            long.width(),
+            long.layout().pixel_size()
+        );
+        if let Some(path) = std::env::var_os("TALIS_TOAST_TEST_CAPTURE") {
+            let paintable = gtk::WidgetPaintable::new(Some(&window));
+            let snapshot = gtk::Snapshot::new();
+            paintable.snapshot(&snapshot, window.width() as f64, window.height() as f64);
+            let texture = window
+                .renderer()
+                .unwrap()
+                .render_texture(snapshot.to_node().unwrap(), None);
+            texture.save_to_png(std::path::PathBuf::from(path)).unwrap();
+        }
+        assert!(short_row.width() < long_row.width());
+        assert!(short.width() <= short.layout().pixel_size().0 + 16);
+        window.destroy();
+    }
+
     #[test]
     #[ignore = "Requires a private GTK display"]
     fn error_notifications_do_not_change_page_measurement_and_release_sources() {
