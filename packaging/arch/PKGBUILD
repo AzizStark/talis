@@ -1,0 +1,48 @@
+# Maintainer: AzizStark <theazizstark@gmail.com>
+# Package the verified portable release; do not build or download at install time.
+pkgname=talis-bin
+pkgver=0.1.0
+pkgrel=3
+pkgdesc='A music-aware turntable scene for the Linux desktop'
+arch=('x86_64')
+url='https://github.com/AzizStark/talis'
+license=('GPL-3.0-only' 'CC-BY-4.0' 'MIT' 'LicenseRef-Talis-Artwork')
+depends=('bash' 'glibc>=2.39' 'gcc-libs' 'gtk4>=4.8' 'gtk4-layer-shell'
+         'librsvg' 'libglvnd' 'libx11' 'libxext' 'curl' 'ca-certificates' 'hicolor-icon-theme')
+optdepends=('gnome-shell: GNOME Wayland companion host')
+provides=("talis=$pkgver")
+conflicts=('talis')
+# These are release binaries; do not create a misleading empty debug package.
+options=('!debug' '!strip')
+source=("talis-$pkgver-portable-linux-x86_64.tar.gz")
+sha256sums=('d744c81baded9009758774bf5642457c47c5c4e9f274f8e53bd498f8b452e75c')
+
+package() {
+    local _runtime="$srcdir/talis-linux-x86_64/usr"
+    local _name
+
+    install -d "$pkgdir/usr/bin" "$pkgdir/usr/lib/talis" \
+        "$pkgdir/usr/share/talis" "$pkgdir/usr/share/doc/talis" \
+        "$pkgdir/usr/share/licenses/$pkgname"
+    for _name in talis-bin talis-wayland-bin talis-gnome-scene launch.sh; do
+        install -m755 "$_runtime/lib/talis/$_name" "$pkgdir/usr/lib/talis/"
+    done
+    install -m644 "$_runtime/lib/talis/session.sh" "$pkgdir/usr/lib/talis/"
+    ln -s ../lib/talis/launch.sh "$pkgdir/usr/bin/talis"
+    ln -s ../lib/talis/talis-gnome-scene "$pkgdir/usr/bin/talis-gnome-scene"
+
+    # Use Arch's layer-shell library, not the portable bundle's private copy.
+    cp -r "$_runtime/share/talis/assets" "$pkgdir/usr/share/talis/"
+    for _name in applications icons metainfo; do
+        cp -r "$_runtime/share/$_name" "$pkgdir/usr/share/"
+    done
+    install -d "$pkgdir/usr/share/gnome-shell/extensions/talis@azizstark"
+    install -m644 "$_runtime/share/talis/gnome/"*.js \
+        "$_runtime/share/talis/gnome/"*.json "$_runtime/share/talis/gnome/LICENSE" \
+        "$pkgdir/usr/share/gnome-shell/extensions/talis@azizstark/"
+    install -m644 "$_runtime/share/doc/talis/LICENSE" \
+        "$_runtime/share/doc/talis/LICENSING.md" "$pkgdir/usr/share/doc/talis/"
+    install -m644 "$_runtime/share/doc/talis/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/"
+    install -m644 "$_runtime/share/doc/talis/LICENSING.md" \
+        "$pkgdir/usr/share/licenses/$pkgname/LICENSING.md"
+}

@@ -1,10 +1,9 @@
 # Release packages
 
-The native package uses an **Ubuntu 24.04 / Linux Mint 22** build baseline.
+The Debian package uses an **Ubuntu 24.04 / Linux Mint 22** build baseline.
 It supports X11 and includes the GNOME Wayland companion, tested on Shell 48/50.
 Other Shell versions can attempt startup; actual load failures are reported.
-The portable bundle also supports the separately tested Wayland integrations;
-this does not imply that native distro packages exist for each desktop.
+The Arch package and portable bundle also include the native Wayland backend.
 
 ## Debian package
 
@@ -31,6 +30,27 @@ of the same extension takes precedence; back it up outside the extensions direct
 before switching to the packaged copy, then log out/in. When the current Shell
 is absent from shipped metadata, setup registers it in per-user metadata linked
 to the packaged code; it never disables GNOME's global version validation.
+
+## Arch / CachyOS package
+
+Install the release package:
+
+```sh
+sudo pacman -U ./talis-bin-0.1.0-3-x86_64.pkg.tar.zst
+```
+
+To assemble it, copy `packaging/arch/PKGBUILD` and the matching portable release
+archive into an empty directory on Arch/CachyOS and run `makepkg -s`. This
+packages checksum-verified release binaries, not the current source checkout.
+No Rust or Blender is needed. The package uses system libraries,
+includes both X11 and native Wayland backends, and adds the launcher and icon.
+GNOME setup follows the same opt-in flow as the Debian package. Neither package
+changes startup preferences. Quit Talis before upgrading; settings are preserved.
+Uninstall with `sudo pacman -R talis-bin` (saved settings are kept).
+
+For each new portable release, update `pkgver` and `sha256sums` in the PKGBUILD;
+increment `pkgrel` for packaging-only changes. This is a local release recipe,
+not an AUR submission or a published package repository.
 
 ## Manual archive
 
@@ -79,7 +99,7 @@ Nothing installs or enables itself just by launching the app.
 
 ## GNOME companion
 
-The `.deb` already includes the companion. For other installed runtimes, create
+The `.deb` and Arch package already include the companion. For other runtimes, create
 the JavaScript-only extension ZIP separately:
 
 ```sh
