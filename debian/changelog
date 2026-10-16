@@ -1,3 +1,30 @@
+talis (0.1.0-6) noble; urgency=medium
+
+  * Preserve full-size GNOME scene rendering without work-area upscaling.
+
+ -- AzizStark <rrahman182@gmail.com>  Fri, 16 Oct 2026 17:30:00 +0530
+
+talis (0.1.0-5) noble; urgency=medium
+
+  * Attempt GNOME companion startup beyond the tested versions and report load errors.
+  * Add reviewable, copyable debug information in Advanced settings.
+  * Describe MATE compatibility as required rather than experimental.
+
+ -- AzizStark <rrahman182@gmail.com>  Fri, 16 Oct 2026 15:41:00 +0530
+
+talis (0.1.0-4) noble; urgency=medium
+
+  * Add a rounded background to launcher and window icons; keep tray icons symbolic.
+  * Preserve native title-bar styling by scoping Settings CSS to its content.
+
+ -- AzizStark <rrahman182@gmail.com>  Fri, 16 Oct 2026 12:50:00 +0530
+
+talis (0.1.0-3) noble; urgency=medium
+
+  * Add consent-based GNOME setup with optional normal logout confirmation.
+
+ -- AzizStark <rrahman182@gmail.com>  Fri, 16 Oct 2026 01:00:00 +0530
+
 talis (0.1.0-2) noble; urgency=medium
 
   * Include the opt-in GNOME Shell 48/50 Wayland companion.
