@@ -46,6 +46,8 @@ The extension starts the renderer; do not also launch `scripts/run.sh`.
 Login startup is managed by enabling/disabling the companion in Extensions.
 Desktop-icons extensions can remain enabled; only the turntable's control
 hotspots are placed above desktop windows, below ordinary application windows.
+The concealed renderer retains a full-size 16:9 camera surface, cropped to cover
+the monitor without work-area upscaling. It does not request fullscreen mode.
 Keep the repository in place while using the asset symlink. Disable the extension
 before updating its files:
 

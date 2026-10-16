@@ -497,6 +497,28 @@ if (!full.modern)
 assert.throws(() => real._input.constructor.validate({...constrained,
     layout: {...constrained.layout, viewport: [0, 0, 3000, 1120]}}), /viewport/);
 console.log('PASS: constrained source viewport, bar-free aspect-preserving clone, scaled/offset picking and inverse press/release/motion/scroll, invalid transforms');
+
+// The owned renderer now supplies a camera-sized minimum, not a work-area
+// preview. Cover/crop must not enlarge it, including the reported 1280x768 VM.
+for (const [width, height, sourceWidth, sourceHeight] of [
+    [1280, 720, 1280, 720], [1280, 768, 1376, 774],
+    [1920, 1080, 1920, 1080], [3840, 2160, 3840, 2160],
+    [1920, 1200, 2144, 1206], [3440, 1440, 3440, 1935],
+]) {
+    const snapshot = {layout: {width: sourceWidth, height: sourceHeight,
+        viewport: [0, 0, sourceWidth, sourceHeight]}};
+    const mapping = real._input.constructor.presentation(snapshot, {width, height});
+    assert(mapping.scaleX <= 1 && mapping.scaleY <= 1, 'never upscale the source');
+    assert.equal(mapping.scaleX, mapping.scaleY);
+    assert(mapping.x <= 1e-8 && mapping.y <= 1e-8);
+    assert(mapping.x + mapping.width >= width - 1e-8);
+    assert(mapping.y + mapping.height >= height - 1e-8);
+    const [x, y] = [sourceWidth * 0.4, sourceHeight * 0.65];
+    const shown = [mapping.x + x * mapping.scaleX, mapping.y + y * mapping.scaleY];
+    assert(Math.abs((shown[0] - mapping.x) / mapping.scaleX - x) < 1e-8);
+    assert(Math.abs((shown[1] - mapping.y) / mapping.scaleY - y) < 1e-8);
+}
+console.log('PASS: camera-sized source avoids upscaling and retains cover/crop and input alignment');
 // Serialized async writes: never overlap, motion is coalesced, backlog bounded.
 real._sendInput({event: 'motion', generation: 1, x: 1, y: 1});
 for (let i = 0; i < 100; i++) real._sendInput({event: 'motion', generation: 1, x: i, y: 1});

@@ -104,6 +104,11 @@ pub(super) fn build(
         window.set_decorated(false);
         window.set_focusable(false);
         window.set_resizable(false);
+        // This owned, concealed source is cloned onto the desktop, not used as
+        // an ordinary window. A default size alone is reduced to the work area
+        // by Mutter; its minimum must retain the full camera-sized framebuffer.
+        // Do not use fullscreen: it can affect panels and other applications.
+        window.set_size_request(width, height);
     }
     let area = if options.regional_presenter || options.native_patch {
         super::presenter::new()

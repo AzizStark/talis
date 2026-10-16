@@ -777,7 +777,17 @@ fn scene_and_controls_are_independent_windows() {
         let mut without_desktop = options.clone();
         without_desktop.desktop = false;
         without_desktop.shell_surface = shell_surface;
+        without_desktop.size = Some((1376, 774));
         let preview = build_window(&without_desktop);
+        assert_eq!(
+            (
+                preview.window.width_request(),
+                preview.window.height_request()
+            ),
+            if shell_surface { (1376, 774) } else { (-1, -1) },
+            "only the concealed Shell source must resist work-area shrinking"
+        );
+        assert!(!preview.window.is_fullscreen());
         let root = preview
             .controls
             .as_ref()
