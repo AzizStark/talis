@@ -191,7 +191,7 @@ pub(super) fn build(
         overlay.set_active(available && config.render.experimental_mate_overlay);
         advanced.append(&style::row(
             "MATE compatibility",
-            "Experimental · keeps the scene visible, but hides desktop icons. MATE only.",
+            "Required on MATE to show Talis. Hides desktop icons.",
             &overlay,
         ));
         advanced_page.append(&style::section("Compatibility", &advanced));
