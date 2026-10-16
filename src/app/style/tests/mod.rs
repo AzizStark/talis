@@ -1,5 +1,34 @@
 #[path = "scroll.rs"]
 mod scroll_tests;
+
+#[test]
+fn app_icon_background_renders_at_window_icon_sizes() {
+    let bytes = gtk::glib::Bytes::from_static(include_bytes!(
+        "../../../../assets/ui/branding/io.github.azizstark.Talis.svg"
+    ));
+    for size in [16, 24, 32, 48, 64, 128] {
+        let stream = gtk::gio::MemoryInputStream::from_bytes(&bytes);
+        let pixbuf = gtk::gdk_pixbuf::Pixbuf::from_stream_at_scale(
+            &stream,
+            size,
+            size,
+            true,
+            None::<&gtk::gio::Cancellable>,
+        )
+        .unwrap();
+        assert_eq!((pixbuf.width(), pixbuf.height()), (size, size));
+        assert!(pixbuf.has_alpha());
+        let pixels = pixbuf.read_pixel_bytes();
+        assert_eq!(pixels[3], 0, "rounded corners stay transparent");
+        let background = (size / 8 * pixbuf.rowstride() + size / 2 * 4) as usize;
+        assert_eq!(
+            &pixels[background..background + 4],
+            &[118, 92, 76, 255],
+            "matte background at {size}px"
+        );
+    }
+}
+
 #[test]
 #[ignore = "Requires a GTK display and SVG icon loader"]
 fn app_icon_is_available_to_native_windows() {

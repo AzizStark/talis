@@ -39,7 +39,7 @@ pub(super) fn bind_window_icon(window: &impl IsA<gtk::Window>) {
                     .into_iter()
                     .filter_map(|size| {
                         let bytes = gtk::glib::Bytes::from_static(include_bytes!(
-                            "../../assets/ui/branding/talis-monogram-light.svg"
+                            "../../assets/ui/branding/io.github.azizstark.Talis.svg"
                         ));
                         let stream = gtk::gio::MemoryInputStream::from_bytes(&bytes);
                         match gtk::gdk_pixbuf::Pixbuf::from_stream_at_scale(
