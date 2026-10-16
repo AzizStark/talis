@@ -29,7 +29,7 @@ pub(super) fn wrap(content: &gtk::Box) -> gtk::Overlay {
             close.set_widget_name("dismiss-settings-notification");
             close.add_css_class("flat");
             close.set_valign(gtk::Align::Center);
-            close.set_tooltip_text(Some("Dismiss error"));
+            close.set_tooltip_text(Some("Dismiss notification"));
             let weak_label = label.downgrade();
             close.connect_clicked(move |_| {
                 if let Some(label) = weak_label.upgrade() {

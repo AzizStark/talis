@@ -77,6 +77,7 @@ pub(super) fn build(
         let appearance = style::page("Appearance");
         let general = style::page("General");
         general.append(&preferences_error);
+        general.append(&super::graphics_notice::source());
         let advanced_page = style::page("Advanced");
         let about = super::about::page();
         let heading = gtk::Box::new(gtk::Orientation::Horizontal, 16);

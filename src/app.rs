@@ -6,6 +6,7 @@ mod debug_info;
 mod defaults;
 mod feedback;
 mod gnome_setup;
+mod graphics_notice;
 mod instance;
 mod launch;
 mod lifecycle;
@@ -236,6 +237,7 @@ pub fn run_with_preferences(
             },
         );
         if let Some(controls) = &preview.controls {
+            graphics_notice::attach(controls, &preview.area, &renderer);
             debug_info::attach(
                 controls,
                 &preview.area,

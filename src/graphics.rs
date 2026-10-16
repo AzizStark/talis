@@ -1,5 +1,7 @@
 //! Backend selection before GTK initialization; one X11 context-failure retry.
+mod diagnostics;
 use anyhow::{Context, Result, bail};
+pub(crate) use diagnostics::software_renderer;
 use std::{ffi::OsStr, os::unix::process::CommandExt, process::Command};
 
 /// Only failure to create the scene's actual GL context may select a fallback.

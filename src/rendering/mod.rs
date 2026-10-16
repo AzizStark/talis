@@ -39,6 +39,12 @@ pub(crate) struct RendererInfo {
     pub scene_size: (u32, u32),
 }
 
+impl RendererInfo {
+    pub(crate) fn software_rendering(&self) -> bool {
+        crate::graphics::software_renderer(&self.renderer)
+    }
+}
+
 impl Renderer {
     pub(crate) fn info(&self) -> &RendererInfo {
         &self.info
@@ -215,6 +221,7 @@ impl Renderer {
             shading_language = %info.shading_language,
             vendor = %info.vendor,
             renderer = %info.renderer,
+            software_rendering = info.software_rendering(),
             "OpenGL initialized"
         );
         let mut source = match asset.scene {

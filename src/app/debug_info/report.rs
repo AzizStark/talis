@@ -19,6 +19,14 @@ impl Report {
     }
     pub fn graphics(&mut self, info: Option<&RendererInfo>) {
         self.field("Renderer initialized", info.is_some());
+        self.field(
+            "Software rendering",
+            match info {
+                Some(info) if info.software_rendering() => "Detected (CPU)",
+                Some(_) => "Not detected",
+                None => "Unavailable",
+            },
+        );
         if let Some(info) = info {
             self.field("OpenGL", &info.version);
             self.field("GLSL", &info.shading_language);

@@ -64,6 +64,7 @@ fn report_uses_an_allowlist_not_raw_settings_player_metadata_or_errors() {
         "Play / pause available: true",
         "Previous available: false",
         "Renderer initialized: false",
+        "Software rendering: Unavailable",
     ] {
         assert!(text.contains(expected), "missing {expected}");
     }
@@ -98,5 +99,19 @@ fn graphics_snapshot_includes_loaded_pixels_without_requesting_a_context() {
     }));
     let text = report.finish();
     assert!(text.contains("GPU renderer: llvmpipe"));
+    assert!(text.contains("Software rendering: Detected (CPU)"));
     assert!(text.contains("Loaded scene pixels: 3840x2160"));
+    let mut hardware = Report::new();
+    hardware.graphics(Some(&RendererInfo {
+        version: "4.6".into(),
+        shading_language: "4.60".into(),
+        vendor: "Mesa/X.org".into(),
+        renderer: "SVGA3D; build: RELEASE; LLVM;".into(),
+        scene_size: (1920, 1080),
+    }));
+    assert!(
+        hardware
+            .finish()
+            .contains("Software rendering: Not detected")
+    );
 }
