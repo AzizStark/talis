@@ -1,114 +1,79 @@
 # Release packages
 
-The Debian package uses an **Ubuntu 24.04 / Linux Mint 22** build baseline.
-It supports X11 and includes the GNOME Wayland companion, tested on Shell 48/50.
-Other Shell versions can attempt startup; actual load failures are reported.
-The Arch package and portable bundle also include the native Wayland backend.
+Maintainer build instructions. For installation, see the [main README](../README.md#install),
+[portable guide](PORTABLE.md) or [GNOME setup guide](../integrations/gnome/README.md).
+
+Run commands from the repository root unless noted. Source builds need the
+[development dependencies](../DEVELOPMENT.md#build-requirements) and a Linux filesystem.
+
+## Portable archive and GNOME ZIP
+
+Build on x86-64 Linux with the release baseline of glibc 2.39 and GTK 4.8.
+Also install GTK4 layer-shell development/runtime packages and `zip`.
+
+```sh
+bash scripts/release.sh "$PWD/dist/0.1.0" /path/to/gtk4-layer-shell/LICENSE
+```
+
+This builds both backends and produces the portable `.tar.gz`, GNOME extension
+ZIP and their `SHA256SUMS`. It does **not** build Debian, Arch or RPM packages.
+The portable archive includes GTK4 layer-shell; GTK and graphics drivers remain
+system dependencies.
+
+Use a new output directory and keep source files unchanged during the build.
+The script refuses to replace existing output or publish changed inputs.
+`CARGO_TARGET_DIR` can relocate its separate X11 and Wayland build caches.
+Cross-compilation is not supported by this release script.
 
 ## Debian package
 
-Build on a Linux/POSIX filesystem, not NTFS. On Ubuntu 24.04:
+Build from source on Ubuntu 24.04:
 
 ```sh
 sudo apt install build-essential debhelper pkg-config libgtk-4-dev rustc-1.85 cargo-1.85
 dpkg-buildpackage -b -us -uc
 ```
 
-The `.deb` is written to the parent directory. Install it with `sudo apt install ./talis_<version>_<arch>.deb`.
-Installed launches need no Rust, Cargo, or Blender. Startup remains opt-in.
-Quit Talis before upgrading; saved settings are preserved.
-
-On GNOME Wayland, launch Talis and follow its setup dialog. With your consent it
-enables the companion immediately when GNOME recognizes it, or saves enablement
-for your next sign-in. New system installations normally need one logout/login;
-the optional **Log Out…** button requests GNOME's normal confirmation.
-You can also enable it manually after login with `gnome-extensions enable talis@azizstark`.
-
-No separate ZIP or setup script is needed. Enabling remains per-user and opt-in;
-the package does not install GNOME on other desktops. A previous per-user copy
-of the same extension takes precedence; back it up outside the extensions directory
-before switching to the packaged copy, then log out/in. When the current Shell
-is absent from shipped metadata, setup registers it in per-user metadata linked
-to the packaged code; it never disables GNOME's global version validation.
+The `.deb` is written to the parent directory. It includes X11 and the GNOME
+companion, but not the native Wayland backend.
 
 ## Arch / CachyOS package
 
-Install the release package:
+On Arch/CachyOS with `base-devel` installed, copy
+[`arch/PKGBUILD`](arch/PKGBUILD) and its matching portable release archive into
+an empty directory. Run there:
 
 ```sh
-sudo pacman -U ./talis-bin-0.1.0-3-x86_64.pkg.tar.zst
+makepkg -s
 ```
 
-To assemble it, copy `packaging/arch/PKGBUILD` and the matching portable release
-archive into an empty directory on Arch/CachyOS and run `makepkg -s`. This
-packages checksum-verified release binaries, not the current source checkout.
-No Rust or Blender is needed. The package uses system libraries,
-includes both X11 and native Wayland backends, and adds the launcher and icon.
-GNOME setup follows the same opt-in flow as the Debian package. Neither package
-changes startup preferences. Quit Talis before upgrading; settings are preserved.
-Uninstall with `sudo pacman -R talis-bin` (saved settings are kept).
+The `.pkg.tar.zst` is written to that directory. This packages checksum-verified
+release binaries, not the current source checkout.
 
-For each new portable release, update `pkgver` and `sha256sums` in the PKGBUILD;
-increment `pkgrel` for packaging-only changes. This is a local release recipe,
-not an AUR submission or a published package repository.
+## Fedora RPM
 
-## Manual archive
-
-From the repository root, with the normal source-build dependencies installed:
+Use the portable release archive matching [`rpm/talis.spec`](rpm/talis.spec):
 
 ```sh
-bash scripts/build.sh gnome
-bash scripts/stage-release.sh "$PWD/dist/runtime" "$PWD/target/release"
-tar -C dist/runtime -czf dist/talis-linux-x86_64.tar.gz usr
+sudo dnf install rpm-build desktop-file-utils
+mkdir -p dist/rpm/SOURCES
+cp /path/to/talis-0.1.0-portable-linux-x86_64.tar.gz dist/rpm/SOURCES/
+rpmbuild -bb packaging/rpm/talis.spec --define "_topdir $PWD/dist/rpm"
 ```
 
-Extract into a permanent directory and run `./usr/bin/talis`. This archive still
-requires compatible system libraries; it is not an AppImage. Use a new/empty
-staging directory for each build.
+Output is in `dist/rpm/RPMS/x86_64/`. The spec checks the archive before
+extracting and retains automatic ELF dependencies.
 
-## Portable X11 + Wayland bundle
+Both Arch and RPM packages include X11, native Wayland and the GNOME companion.
+They use the system layer-shell library rather than the portable private copy.
+All native packages leave startup and companion enablement opt-in.
 
-This adds the native Wayland backend and its GTK4 layer-shell library; GTK and
-graphics drivers still come from the system. Build on the oldest supported
-system (current test baseline: x86-64, glibc 2.39 / GTK 4.8+).
+## Before publishing
 
-With GTK4 layer-shell development/runtime packages and `zip` installed, run:
-
-```sh
-bash scripts/release.sh "$PWD/dist/0.1.0" /path/to/gtk4-layer-shell/LICENSE
-```
-
-This builds X11/GNOME and Wayland into separate Cargo target directories, uses
-the layer-shell runtime selected by `pkg-config`, and produces:
-
-- A complete, versioned portable archive, including the GNOME companion.
-- A GNOME extension ZIP for runtimes without a packaged companion.
-- `SHA256SUMS` for both artifacts.
-
-The output directory must not exist. Failed builds or changed release inputs
-do not publish artifacts; existing releases are never replaced. Uncommitted
-source is supported, but keep it unchanged during the build. This is consistent
-release assembly, not a claim of bit-for-bit reproducible compiler output.
-`CARGO_TARGET_DIR` may relocate the two build caches. Cross-compilation is not
-supported by this x86-64 release command. `.deb` builds remain separate above.
-
-Extract and run `./talis` inside the bundle. GNOME Wayland first needs
-`bash setup-gnome.sh` once, then `./talis` to finish setup; the bundle's
-README has details. No separate patches or backend selection are needed.
-Nothing installs or enables itself just by launching the app.
-
-## GNOME companion
-
-The `.deb` and Arch package already include the companion. For other runtimes, create
-the JavaScript-only extension ZIP separately:
-
-```sh
-mkdir -p dist
-zip -j dist/talis.shell-extension.zip integrations/gnome/*.js integrations/gnome/*.json LICENSE
-```
-
-It requires the installed Talis runtime and scene assets. Validated
-Shell versions are 48 and 50, one monitor; other versions are not blocked by
-Talis. Fresh-account installation was
-verified on Ubuntu 26.04.1 / GNOME 50.1 / Wayland. Installation does not enable it;
-see the [GNOME instructions](../integrations/gnome/README.md).
+- Update package versions and revisions, including `debian/changelog`.
+- Whenever the portable archive changes, refresh its checksum in both the
+  PKGBUILD and RPM spec. Increment `pkgrel` / `Release` for packaging-only changes.
+- Include checksums for every published artifact; `release.sh` covers only its
+  portable archive and GNOME ZIP.
+- Check installation, upgrade, removal and saved settings. Record desktop
+  results in the [test matrix](../docs/testing-matrix.md).

@@ -4,9 +4,10 @@ Talis uses a companion extension to display the turntable on the GNOME desktop.
 Desktop icons can remain enabled. The integration currently supports one
 monitor; scene and resolution switching are not yet available.
 
-## Debian and Arch packages
+## Native packages
 
-The companion is included—no separate download or terminal setup is needed.
+The `.deb`, RPM and Arch packages include the companion—no separate download
+or terminal setup is needed.
 
 1. Install the Talis package and open **Talis** from your application menu.
 2. Follow the setup prompt to enable it on your desktop.
@@ -40,8 +41,7 @@ Talis to your application menu. Keep the extracted folder in place.
 - For help, share **Advanced → Debug info → Copy debug info** and any setup
   error in a [bug report](https://github.com/AzizStark/talis/issues).
 
-GNOME Shell 48 and 50 have been tested. Other versions can attempt setup;
-Talis reports actual load failures rather than refusing untested versions.
+Setup uses your current GNOME Shell version and reports any actual load error.
 
 ## Other installations and development
 

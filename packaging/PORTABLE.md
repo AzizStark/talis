@@ -1,29 +1,30 @@
-# Talis portable Linux runtime
+# Talis portable
 
-Extract into a permanent directory, then run `./talis`.
-No compiler, root installation, or backend selection is needed.
+Extract into a permanent folder, open a terminal there, and run:
 
-- x86-64 Linux with glibc 2.39+, GTK 4.8+ (including its SVG loader), and OpenGL 3.3.
-- X11: Cinnamon, MATE, Xfce and other supported X11 hosts.
-- Wayland: Plasma, Sway and Hyprland. GTK4 layer-shell is included.
-- GNOME Wayland: one monitor; Shell 48/50 tested, other versions may attempt startup.
-  Fresh setup tested on
-  Ubuntu 26.04.1 / GNOME 50.1 with desktop icons enabled.
-  Run `bash setup-gnome.sh` once and
-  launch `./talis` to finish setup. The enabled companion starts Talis at login;
-  `./talis` and the Talis menu entry open its Settings, not a second renderer.
-- `curl` and CA certificates are required for remote artwork.
+```sh
+./talis
+```
 
-GTK, graphics drivers and base system libraries are not bundled. On CachyOS:
-`sudo pacman -S --needed gtk4 librsvg curl ca-certificates`.
-This portable archive is not an AppImage; the system requirements above still apply.
+## GNOME Wayland
 
-Preferences stay in your normal XDG configuration directory. Close Talis before
-switching builds. Keep the extracted directory in place; if moved, re-enable
-login startup and repeat GNOME companion setup where applicable. Nothing is
-added to your menu or login startup just by extracting or running the bundle.
-GNOME setup explicitly adds a per-user menu entry; remove
-`~/.local/share/applications/io.github.azizstark.Talis.desktop` to undo it
-(use your `XDG_DATA_HOME` instead of `~/.local/share` if customized).
+Run this once before launching Talis:
 
-Application and asset notices: `usr/share/doc/talis/`.
+```sh
+bash setup-gnome.sh
+```
+
+Then run `./talis` and follow the setup prompt. Log out/in if asked.
+Setup adds a menu entry; enabling the companion also starts Talis at sign-in.
+This integration currently supports one monitor.
+
+## Requirements
+
+x86-64 Linux, glibc 2.39+, GTK 4.8+ with SVG support, and OpenGL 3.3.
+GTK and graphics drivers come from your system. Remote cover art needs `curl`
+and CA certificates.
+
+Keep the folder in place so startup and GNOME integration continue working.
+Quit Talis before updating; saved settings are kept separately.
+
+Licenses and credits: `usr/share/doc/talis/`.
