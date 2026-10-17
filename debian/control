@@ -2,7 +2,12 @@ Source: talis
 Section: sound
 Priority: optional
 Maintainer: AzizStark <theazizstark@gmail.com>
-Build-Depends: debhelper-compat (= 13), cargo (>= 1.85) | cargo-1.85, rustc (>= 1.85) | rustc-1.85, pkg-config, libgtk-4-dev (>= 4.8)
+Build-Depends: debhelper-compat (= 13),
+ cargo (>= 1.85) | cargo-1.85,
+ rustc (>= 1.85) | rustc-1.85,
+ pkg-config, libgtk-4-dev (>= 4.8),
+ libwayland-dev, libwayland-bin, wayland-protocols (>= 1.16),
+ meson (>= 0.54), ninja-build, binutils
 Standards-Version: 4.6.2
 Homepage: https://github.com/AzizStark/talis
 Rules-Requires-Root: no

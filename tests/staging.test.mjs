@@ -54,7 +54,7 @@ try {
     const invalid = join(temporary,'invalid');
     assert.notEqual(stage(invalid,'--unknown').status,0);
     assert(!existsSync(invalid),'reject unknown options before writing');
-    assert(readFileSync(new URL('../debian/rules',import.meta.url),'utf8').includes('--with-gnome-extension'),
+    assert(readFileSync(new URL('../debian/build.sh',import.meta.url),'utf8').includes('--with-gnome-extension'),
         'Debian packaging must request the included companion');
     console.log('PASS: runtime allowlist, complete system companion, permissions, relative symlinks, quoted paths and non-destructive staging guards');
 } finally {

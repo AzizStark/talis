@@ -1,6 +1,7 @@
 /target/
 /dist/
 /debian/.debhelper/
+/debian/.build/
 /debian/debhelper-build-stamp
 /debian/files
 /debian/talis/

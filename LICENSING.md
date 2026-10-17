@@ -32,6 +32,15 @@ These credits are not a complete third-party asset or dependency audit.
 
 ## Third-party notices
 
+### GTK4 Layer Shell
+
+The Debian package builds a private copy of
+[GTK4 Layer Shell 1.3.0](https://github.com/wmww/gtk4-layer-shell/tree/v1.3.0),
+copyright 2023 Sophie Winter, under the MIT license. Its pinned source and
+notices are in [packaging/third-party/gtk4-layer-shell](packaging/third-party/gtk4-layer-shell/README.md).
+The package includes `gtk4-layer-shell-LICENSE` and `gtk4-layer-shell-NOTICE`
+in `usr/share/doc/talis/`, covering the library and its compiled protocol code.
+
 ### Tabler Icons
 
 Tabler-derived interface icons use the following license. Source:

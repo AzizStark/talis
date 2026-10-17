@@ -1,21 +1,28 @@
 #!/usr/bin/make -f
-export CARGO_TARGET_DIR ?= $(CURDIR)/target
+export CARGO_TARGET_DIR ?= $(CURDIR)/target/packages
 export PATH := /usr/lib/rust-1.85/bin:$(PATH)
 
 %:
 	dh $@
 
 override_dh_auto_configure:
-	pkg-config --atleast-version=4.8 gtk4
+	bash debian/build.sh configure "$(CARGO_TARGET_DIR)"
 
 override_dh_auto_build:
-	cargo build --locked --release --bin talis --bin talis-gnome-scene
+	bash debian/build.sh build "$(CARGO_TARGET_DIR)"
 
 override_dh_auto_test:
-	cargo test --locked --release
+	bash debian/build.sh test "$(CARGO_TARGET_DIR)"
 
 override_dh_auto_install:
-	bash scripts/stage-release.sh "$(CURDIR)/debian/talis" "$(CARGO_TARGET_DIR)/release" --with-gnome-extension
+	bash debian/build.sh install "$(CARGO_TARGET_DIR)"
+
+# The bundled library is private, not a system-wide provider of its SONAME.
+override_dh_makeshlibs:
+	dh_makeshlibs -Xlibgtk4-layer-shell.so
+
+override_dh_shlibdeps:
+	dh_shlibdeps -l"$(CURDIR)/debian/talis/usr/lib/talis"
 
 # Cargo's release profile does not emit DWARF debug information.
 override_dh_dwz:
