@@ -20,10 +20,6 @@ Watch records spin and the tonearm glide in real time as your music plays and co
 
 ## Install
 
-Choose a prebuilt package for your distribution (x86-64). No Rust or build tools
-needed. Run commands from your download folder and replace the example filename
-with the one you downloaded.
-
 ### Ubuntu / Debian / Linux Mint
 
 ```sh
@@ -44,7 +40,7 @@ sudo dnf install ./talis-VERSION.x86_64.rpm
 
 Open **Talis** from your application menu after installation.
 
-### Other distributions — portable archive
+### Other distros
 
 Extract the portable `.tar.gz` into a permanent folder. Open a terminal there:
 
@@ -58,7 +54,7 @@ Keep the extracted folder in place. [Portable setup and dependencies](packaging/
 ## Usage
 
 - Play music in your usual player. Talis follows it automatically; select a
-  specific app under **General → Music source** if needed.
+  specific app under **General → Music source** if needed during playback.
 
 - Use the turntable to control playback and volume. Controls and cover art
   depend on what your player provides.
@@ -75,7 +71,7 @@ Keep the extracted folder in place. [Portable setup and dependencies](packaging/
 | Cinnamon, KDE Plasma (X11) | Native X11 integration. |
 | MATE (X11) | Enable **Advanced → MATE compatibility**. Desktop icons are hidden while active. |
 | Xfce (X11) | Desktop icons are currently covered while Talis runs. |
-| COSMIC, Budgie and other desktops | Testing in progress. You're welcome to try Talis and share feedback. |
+| COSMIC, Budgie and other desktops | Yet to test. You're welcome to try Talis and share feedback. |
 
 ## License
 
