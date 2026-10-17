@@ -1,133 +1,80 @@
 # Talis
 
-An interactive, music-aware desktop turntable that brings the classic vinyl
-experience to your Linux desktop.
+An interactive, music-aware, animated turntable that brings the classic vinyl experience to your Linux desktop.
 
-Watch records spin and the tonearm glide in real time as your music plays—and
-control your playback directly from the turntable.
+Watch records spin and the tonearm glide in real time as your music plays—and control your playback directly from the turntable.
 
-[Install](#install) · [First launch](#first-launch) ·
-[Compatibility](#desktop-compatibility) · [Get help](#help-and-updates)
+| Day scene (4K) | Night scene (4K) |
+| --- | --- |
+| ![Three-quarter view of the Talis turntable in daylight](docs/showcase/day-angle.png) | ![Warm evening view of the Talis turntable](docs/showcase/night-angle.png) |
 
-## Features
+| Live playback controls | Moving tonearm and vinyl |
+| --- | --- |
+| ![Closeup of the turntable's playback buttons](docs/showcase/controls-closeup.png) | ![Closeup of the stylus above the record grooves](docs/showcase/stylus-closeup.png) |
 
-- 🎶 **Music-Reactive Animations:** Real-time vinyl rotation and tonearm movement
-  synced with your audio playback.
+| Player volume control | Album sleeve with live song coverart |
+| --- | --- |
+| ![Closeup of the volume knob on the turntable](docs/showcase/volume-control.png) | ![Album artwork displayed on the sleeve beside the turntable](docs/showcase/album-sleeve.png) |
 
-- 🎛️ **Interactive Controls:** Play, pause, skip, and manage playback directly
-  from the desktop interface.
-
-- 🌓 **Day & Night Themes:** Easily switch between light and dark visual styles
-  to match your desktop setup.
-
-- 🖥️ **Hi-Res Graphics:** Rendered smoothly with high-resolution assets designed
-  for displays up to 4K.
-
-Available options depend on your [desktop integration](#desktop-compatibility).
+> **Live cover art:** During playback, the sleeve and vinyl shows cover art from your music player when available.
 
 ## Install
 
-Use the prebuilt package for your distribution. You do **not** need Rust,
-Cargo, a compiler or Blender to install and use it.
+Choose a prebuilt package for your distribution (x86-64). No Rust or build tools
+needed. Run commands from your download folder and replace the example filename
+with the one you downloaded.
 
-Current prebuilt packages are for x86-64 Linux.
-
-Run the commands below from the folder containing your downloaded package,
-replacing the example filename with its actual name.
-
-### Ubuntu, Linux Mint and Debian-based distributions
-
-For compatible Debian-based systems, install the `.deb` package:
+### Ubuntu / Debian / Linux Mint
 
 ```sh
 sudo apt install ./talis_VERSION_amd64.deb
 ```
 
-APT installs the required runtime libraries. Open **Talis** from your
-application menu when installation finishes.
-
-### Arch Linux and CachyOS
+### Arch / CachyOS
 
 ```sh
 sudo pacman -U ./talis-bin-VERSION-x86_64.pkg.tar.zst
 ```
 
-Pacman installs the required runtime libraries. Open **Talis** from your
-application menu when installation finishes.
+### Fedora
 
-### Portable archive
+```sh
+sudo dnf install ./talis-VERSION.x86_64.rpm
+```
 
-Extract the archive into a permanent folder, then open a terminal there and run:
+Open **Talis** from your application menu after installation.
+
+### Other distributions — portable archive
+
+Extract the portable `.tar.gz` into a permanent folder. Open a terminal there:
 
 ```sh
 ./talis
 ```
 
-On GNOME Wayland, first run `bash setup-gnome.sh` from that folder, then
-`./talis` to finish setup. Keep the extracted folder in place while using Talis.
-See the [portable requirements and setup notes](packaging/PORTABLE.md).
+On GNOME Wayland, run `bash setup-gnome.sh` once before `./talis`.
+Keep the extracted folder in place. [Portable setup and dependencies](packaging/PORTABLE.md).
 
-## First launch
+## Usage
 
-- Start music in a player that shares playback information with the desktop.
-  Talis follows the playing app automatically; choose a specific player under
-  **General → Music source** if you prefer.
+- Play music in your usual player. Talis follows it automatically; select a
+  specific app under **General → Music source** if needed.
 
-- Use the turntable's playback and volume controls when the selected player
-  makes them available. Cover art appears when supplied by the player.
+- Use the turntable to control playback and volume. Controls and cover art
+  depend on what your player provides.
 
-- Open **Settings** to change appearance and performance options. Some options
-  depend on your desktop integration.
+- Adjust appearance and performance in **Settings**. Enable **General → Run on
+  startup** to start at sign-in, where available.
 
-- Enable **Run on startup** in General settings if you want Talis to start
-  when you sign in, where available.
+## Desktop notes
 
-### GNOME Wayland
-
-The Debian and Arch packages include the desktop companion.
-Follow Talis's setup prompt; a fresh installation may need one logout and login.
-Once enabled, the companion starts Talis when you sign in. See
-[GNOME setup and troubleshooting](integrations/gnome/README.md).
-
-### MATE and Xfce
-
-On MATE, enable **Advanced → MATE compatibility** to show Talis on the desktop.
-This mode hides desktop icons while active.
-
-On Xfce, desktop icons are currently covered while Talis runs.
-
-## Desktop compatibility
-
-The following combinations have been tested:
-
-| Distribution | Desktop environments |
+| Desktop or session | Integration |
 | --- | --- |
-| Ubuntu | GNOME, MATE |
-| Linux Mint | Cinnamon |
-| CachyOS | GNOME, KDE Plasma, Hyprland, Xfce |
-
-The `.deb` includes X11 and GNOME Wayland integration. The Arch package and
-portable archive also include native Wayland integration for desktops such as
-KDE Plasma and Hyprland. GNOME integration currently supports one monitor;
-scene and resolution switching are not yet available in that mode.
-
-Talis uses GTK 4.8+ and OpenGL 3.3. Use working graphics drivers for hardware
-acceleration; software rendering may reduce performance. Other distributions
-and desktop versions may work, but the tested combinations are not a guarantee
-for every setup.
-
-## Help and updates
-
-If something goes wrong, open **Advanced → Debug info → Copy debug info** and
-include it with a description or screenshot in a
-[bug report](https://github.com/AzizStark/talis/issues).
-
-Quit Talis before installing an update. Saved settings are preserved.
-
-## Building from source
-
-Want to build or contribute? See the [developer guide](DEVELOPMENT.md).
-Source-build dependencies are separate from the requirements for installed users.
+| GNOME (Wayland) | Follow the setup prompt; log out/in if asked. The enabled companion handles startup. [Setup guide](integrations/gnome/README.md). |
+| KDE Plasma, Hyprland, Sway (Wayland) | Use the RPM, Arch package or portable archive. |
+| Cinnamon, KDE Plasma (X11) | Native X11 integration. |
+| MATE (X11) | Enable **Advanced → MATE compatibility**. Desktop icons are hidden while active. |
+| Xfce (X11) | Desktop icons are currently covered while Talis runs. |
 
 ## License
 
