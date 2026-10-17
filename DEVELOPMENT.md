@@ -64,6 +64,10 @@ Some graphical tests are ignored by default and need an isolated display or
 session; follow each test's stated requirements instead of running them against
 your normal desktop session.
 
+Use the [desktop-first test matrix plan](docs/testing-matrix.md) to record
+release coverage. Keep environment-specific results there, rather than mixing
+them into user installation instructions or treating them as a support allowlist.
+
 ## GNOME companion development
 
 For normal installation, use the [GNOME user guide](integrations/gnome/README.md).
@@ -108,5 +112,5 @@ Errors and visibility transitions are logged normally.
 ## Artwork and release packages
 
 - [Scene baking](blender/README.md): editing and regenerating the artwork.
-- [Release packaging](packaging/README.md): Debian, Arch, portable and GNOME
+- [Release packaging](packaging/README.md): Debian, Arch, RPM, portable and GNOME
   companion builds.
