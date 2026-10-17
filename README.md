@@ -64,6 +64,8 @@ Keep the extracted folder in place. [Portable setup and dependencies](packaging/
 
 ## Desktop notes
 
+See the [desktop support matrix](docs/testing-matrix.md) for test results and known limitations.
+
 | Desktop or session | Integration |
 | --- | --- |
 | GNOME (Wayland) | Follow the setup prompt; log out/in if asked. The enabled companion handles startup. [Setup guide](integrations/gnome/README.md). |
