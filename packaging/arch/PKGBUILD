@@ -2,8 +2,8 @@
 # Package the verified portable release; do not build or download at install time.
 pkgname=talis-bin
 pkgver=0.1.0
-pkgrel=3
-pkgdesc='A music-aware turntable scene for the Linux desktop'
+pkgrel=4
+pkgdesc='An interactive, animated and music-aware desktop turntable'
 arch=('x86_64')
 url='https://github.com/AzizStark/talis'
 license=('GPL-3.0-only' 'CC-BY-4.0' 'MIT' 'LicenseRef-Talis-Artwork')
@@ -15,7 +15,7 @@ conflicts=('talis')
 # These are release binaries; do not create a misleading empty debug package.
 options=('!debug' '!strip')
 source=("talis-$pkgver-portable-linux-x86_64.tar.gz")
-sha256sums=('d744c81baded9009758774bf5642457c47c5c4e9f274f8e53bd498f8b452e75c')
+sha256sums=('c0beed828462d209a6521a56473b36392aea147c00882bfa37ecd2812127735b')
 
 package() {
     local _runtime="$srcdir/talis-linux-x86_64/usr"

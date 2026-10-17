@@ -1,3 +1,12 @@
+talis (0.1.0-7) noble; urgency=medium
+
+  * Report software rendering in debug information and a dismissible notice.
+  * Preserve click-through scene input and Xfce background/patch stacking.
+  * Refresh settings, setup and package descriptions after the text audit.
+  * Size notifications to their messages and improve dismiss-button contrast.
+
+ -- AzizStark <theazizstark@gmail.com>  Sat, 17 Oct 2026 00:40:00 +0530
+
 talis (0.1.0-6) noble; urgency=medium
 
   * Preserve full-size GNOME scene rendering without work-area upscaling.
