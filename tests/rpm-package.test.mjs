@@ -34,6 +34,8 @@ try {
     assert.match(spec, /^Source0:\s+talis-%\{version\}-portable-linux-x86_64\.tar\.gz$/m);
     assert.match(spec, /^Requires:\s+gtk4 >= 4\.8$/m);
     assert.match(spec, /^Requires:\s+gtk4-layer-shell$/m);
+    assert.match(spec, /^Vendor:\s+AzizStark$/m);
+    assert.match(spec, /^Packager:\s+AzizStark <theazizstark@gmail\.com>$/m);
     assert(!/^%(?:pre|post|preun|postun|trigger\w*)(?:\s|$)/m.test(spec), 'No install-time settings mutations');
     assert(!/^AutoReq(?:Prov)?:\s*(?:no|0)/mi.test(spec), 'ELF dependencies must remain automatic');
     const prep = spec.split('\n%prep\n')[1].split('\n%build\n')[0];

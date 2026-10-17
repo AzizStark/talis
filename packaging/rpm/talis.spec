@@ -9,6 +9,8 @@ Name:           talis
 Version:        0.1.0
 Release:        2%{?dist}
 Summary:        An interactive, animated and music-aware desktop turntable
+Vendor:         AzizStark
+Packager:       AzizStark <theazizstark@gmail.com>
 License:        GPL-3.0-only AND CC-BY-4.0 AND MIT AND LicenseRef-Talis-Artwork
 URL:            https://github.com/AzizStark/talis
 Source0:        talis-%{version}-portable-linux-x86_64.tar.gz
@@ -87,6 +89,7 @@ test ! -e "%{buildroot}%{_datadir}/talis/gnome"
 %changelog
 * Sat Oct 17 2026 AzizStark <theazizstark@gmail.com> - 0.1.0-2
 - Keep the symbolic tray icon separate from the launcher.
+- Include publisher metadata.
 
 * Sat Oct 17 2026 AzizStark <theazizstark@gmail.com> - 0.1.0-1
 - Initial RPM with X11, native Wayland and the opt-in GNOME companion.
