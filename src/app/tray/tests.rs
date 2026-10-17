@@ -196,8 +196,10 @@ fn tray_lifecycle_and_protocol_on_private_bus() {
             assert_eq!(pixels.len(), 6);
             assert!(pixels.iter().all(|(w, h, p)| p.len() == (w * h * 4) as usize && p.chunks_exact(4).any(|p| p[0] > 0)));
         } else {
-            assert_eq!(props["IconName"].str().unwrap(), "io.github.azizstark.Talis-symbolic");
-            assert!(icon_path.join("io.github.azizstark.Talis-symbolic.svg").is_file());
+            assert_eq!(props["IconName"].str().unwrap(), "io.github.azizstark.TalisTray-symbolic");
+            assert!(icon_path.join("io.github.azizstark.TalisTray-symbolic.svg").is_file());
+            assert!(icon_path.join("hicolor/index.theme").is_file());
+            assert!(icon_path.join("hicolor/scalable/status/io.github.azizstark.TalisTray-symbolic.svg").is_file());
         }
         assert_eq!(props["Menu"].str().unwrap(), "/TalisMenu");
         let layout = call(&fixture,&destination,"/TalisMenu","com.canonical.dbusmenu","GetLayout",

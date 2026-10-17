@@ -19,6 +19,7 @@ try {
         copyFileSync(new URL(`../packaging/${name}`,import.meta.url),join(repo,'packaging',name));
     for (const name of ['LICENSE','LICENSING.md','packaging/io.github.azizstark.Talis.desktop',
         'packaging/io.github.azizstark.Talis.metainfo.xml','assets/ui/branding/io.github.azizstark.Talis.svg',
+        'assets/ui/branding/io.github.azizstark.TalisTray-symbolic.svg',
         'integrations/gnome/extension.js','integrations/gnome/metadata.json'])
         writeFileSync(join(repo,name),name);
     for (const name of ['talis','talis-gnome-scene'])

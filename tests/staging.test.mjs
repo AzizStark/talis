@@ -19,7 +19,8 @@ try {
         writeFileSync(join(binaries,name),'#!/bin/sh\nexit 0\n',{mode:0o755});
     for (const name of ['LICENSE','LICENSING.md','blender/not-runtime.blend','src/not-runtime.rs',
         'packaging/io.github.azizstark.Talis.desktop','packaging/io.github.azizstark.Talis.metainfo.xml',
-        'assets/ui/branding/io.github.azizstark.Talis.svg'])
+        'assets/ui/branding/io.github.azizstark.Talis.svg',
+        'assets/ui/branding/io.github.azizstark.TalisTray-symbolic.svg'])
         writeFileSync(join(repo,name),name);
     const companion = new URL('../integrations/gnome/',import.meta.url);
     const companionFiles = readdirSync(companion).filter(name => /\.(js|json)$/.test(name));
@@ -32,6 +33,10 @@ try {
     assert.equal(readlinkSync(join(destination,'usr/bin/talis')),'../lib/talis/launch.sh');
     assert.equal(readFileSync(join(destination,'usr/lib/talis/talis-bin'),'utf8'),'#!/bin/sh\nexit 0\n');
     assert(existsSync(join(destination,'usr/share/talis/assets/ui/branding/io.github.azizstark.Talis.svg')));
+    const trayIcon = 'usr/share/icons/hicolor/scalable/status/io.github.azizstark.TalisTray-symbolic.svg';
+    assert.equal(readFileSync(join(destination,trayIcon),'utf8'),
+        'assets/ui/branding/io.github.azizstark.TalisTray-symbolic.svg');
+    assert.equal(statSync(join(destination,trayIcon)).mode & 0o777,0o644);
     for (const path of ['blender','src','scripts','usr/share/talis/blender','usr/share/talis/src'])
         assert(!existsSync(join(destination,path)),path+' leaked into runtime payload');
     assert.notEqual(stage(destination).status,0,'existing staging files must not be overwritten');

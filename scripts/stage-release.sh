@@ -23,6 +23,7 @@ trap - EXIT
 install -d "$talis_destination/usr/bin" "$talis_destination/usr/lib/talis" \
   "$talis_destination/usr/share/talis" "$talis_destination/usr/share/applications" \
   "$talis_destination/usr/share/icons/hicolor/scalable/apps" \
+  "$talis_destination/usr/share/icons/hicolor/scalable/status" \
   "$talis_destination/usr/share/metainfo" "$talis_destination/usr/share/doc/talis"
 install -m755 "$talis_binaries/talis" "$talis_destination/usr/lib/talis/talis-bin"
 install -m755 "$talis_binaries/talis-gnome-scene" "$talis_destination/usr/lib/talis/talis-gnome-scene"
@@ -35,6 +36,7 @@ cp -R -- "$talis_repo/assets" "$talis_destination/usr/share/talis/assets"
 install -m644 "$talis_repo/packaging/io.github.azizstark.Talis.desktop" "$talis_destination/usr/share/applications/"
 install -m644 "$talis_repo/packaging/io.github.azizstark.Talis.metainfo.xml" "$talis_destination/usr/share/metainfo/"
 install -m644 "$talis_repo/assets/ui/branding/io.github.azizstark.Talis.svg" "$talis_destination/usr/share/icons/hicolor/scalable/apps/"
+install -m644 "$talis_repo/assets/ui/branding/io.github.azizstark.TalisTray-symbolic.svg" "$talis_destination/usr/share/icons/hicolor/scalable/status/"
 install -m644 "$talis_repo/LICENSE" "$talis_repo/LICENSING.md" "$talis_destination/usr/share/doc/talis/"
 if [[ ${3:-} == --with-gnome-extension ]]; then
   talis_extension="$talis_destination/usr/share/gnome-shell/extensions/talis@azizstark"

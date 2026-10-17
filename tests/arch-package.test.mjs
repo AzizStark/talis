@@ -17,6 +17,7 @@ try {
         'share/talis/assets/scenes/1080p/day/beauty.png',
         'share/applications/io.github.azizstark.Talis.desktop',
         'share/icons/hicolor/scalable/apps/io.github.azizstark.Talis.svg',
+        'share/icons/hicolor/scalable/status/io.github.azizstark.TalisTray-symbolic.svg',
         'share/metainfo/io.github.azizstark.Talis.metainfo.xml',
         'share/doc/talis/LICENSE', 'share/doc/talis/LICENSING.md',
         'share/doc/talis/gtk4-layer-shell-LICENSE',
@@ -60,6 +61,7 @@ try {
     for (const name of ['LICENSE', 'LICENSING.md'])
         assert(existsSync(join(destination, 'usr/share/licenses/talis-bin', name)));
     assert(existsSync(join(destination, 'usr/share/talis/assets/scenes/1080p/day/beauty.png')));
+    assert(existsSync(join(destination, 'usr/share/icons/hicolor/scalable/status/io.github.azizstark.TalisTray-symbolic.svg')));
     console.log('PASS: Arch release layout, both backends, system companion/library, notices, permissions, quoted paths and no install-time user mutations');
 } finally {
     rmSync(temporary, {recursive:true, force:true});

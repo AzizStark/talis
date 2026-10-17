@@ -19,7 +19,9 @@ try {
     writeFileSync(join(repo,'Cargo.toml'),'[package]\nname = "talis"\nversion = "0.1.0"\n');
     for(const name of ['Cargo.lock','LICENSE','LICENSING.md','src/main.rs',
         'packaging/io.github.azizstark.Talis.desktop','packaging/io.github.azizstark.Talis.metainfo.xml',
-        'assets/ui/branding/io.github.azizstark.Talis.svg','integrations/gnome/extension.js','integrations/gnome/metadata.json'])
+        'assets/ui/branding/io.github.azizstark.Talis.svg',
+        'assets/ui/branding/io.github.azizstark.TalisTray-symbolic.svg',
+        'integrations/gnome/extension.js','integrations/gnome/metadata.json'])
         writeFileSync(join(repo,name),name);
     const call=(program,args,env={})=>spawnSync(program,args,{cwd:repo,encoding:'utf8',timeout:15000,env:{...process.env,...env}});
     const ok=r=>assert.equal(r.status,0,r.stderr||r.stdout);

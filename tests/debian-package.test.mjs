@@ -18,7 +18,8 @@ try {
         `${vendor}/gtk4-layer-shell-1.3.0.tar.gz`,`${vendor}/SHA256SUMS`,`${vendor}/LICENSE`,`${vendor}/NOTICE`])
         copyFileSync(new URL(`../${path}`, import.meta.url), join(repo, path));
     for (const path of ['LICENSE','LICENSING.md','packaging/io.github.azizstark.Talis.desktop',
-        'packaging/io.github.azizstark.Talis.metainfo.xml','assets/ui/branding/io.github.azizstark.Talis.svg'])
+        'packaging/io.github.azizstark.Talis.metainfo.xml','assets/ui/branding/io.github.azizstark.Talis.svg',
+        'assets/ui/branding/io.github.azizstark.TalisTray-symbolic.svg'])
         writeFileSync(join(repo, path), path);
     const companion = new URL('../integrations/gnome/', import.meta.url);
     for (const name of readdirSync(companion).filter(name => /\.(js|json)$/.test(name)))

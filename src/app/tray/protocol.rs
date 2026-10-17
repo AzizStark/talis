@@ -10,9 +10,14 @@ const ITEM: &str = "org.kde.StatusNotifierItem";
 const MENU_PATH: &str = "/TalisMenu";
 type Properties = HashMap<String, glib::Variant>;
 type Layout = (i32, Properties, Vec<glib::Variant>);
-const SYMBOLIC_ICON_NAME: &str = "io.github.azizstark.Talis-symbolic";
+// KDE tries a symbolic name's non-symbolic base in installed themes before
+// consulting a flat IconThemePath. Never share that base with the launcher.
+const SYMBOLIC_ICON_NAME: &str = "io.github.azizstark.TalisTray-symbolic";
 const SYMBOLIC_ICON: &str =
-    include_str!("../../../assets/ui/branding/io.github.azizstark.Talis-symbolic.svg");
+    include_str!("../../../assets/ui/branding/io.github.azizstark.TalisTray-symbolic.svg");
+const SYMBOLIC_THEME_INDEX: &str = "[Icon Theme]\nName=Talis tray\n\
+Comment=Private Talis status icon\nDirectories=scalable/status\n\n\
+[scalable/status]\nSize=22\nMinSize=16\nMaxSize=256\nType=Scalable\nContext=Status\n";
 // XApp resolves our private symbolic name to a file path. Cinnamon then treats
 // that path as a themed symbolic name instead of loading the file. Publishing
 // only pixmaps lets XApp supply the regular PNG path its applet can display.
@@ -448,7 +453,17 @@ impl IconFiles {
             directory: root.join("icons"),
             root,
         };
-        std::fs::create_dir(&icons.directory)?;
+        let status = icons.directory.join("hicolor/scalable/status");
+        std::fs::create_dir_all(&status)?;
+        std::fs::write(
+            icons.directory.join("hicolor/index.theme"),
+            SYMBOLIC_THEME_INDEX,
+        )?;
+        std::fs::write(
+            status.join(format!("{SYMBOLIC_ICON_NAME}.svg")),
+            SYMBOLIC_ICON,
+        )?;
+        // Also retain a flat copy for hosts that do not load hicolor themes.
         std::fs::write(
             icons.directory.join(format!("{SYMBOLIC_ICON_NAME}.svg")),
             SYMBOLIC_ICON,
@@ -458,6 +473,14 @@ impl IconFiles {
 }
 impl Drop for IconFiles {
     fn drop(&mut self) {
+        let theme = self.directory.join("hicolor");
+        let scalable = theme.join("scalable");
+        let status = scalable.join("status");
+        let _ = std::fs::remove_file(status.join(format!("{SYMBOLIC_ICON_NAME}.svg")));
+        let _ = std::fs::remove_file(theme.join("index.theme"));
+        let _ = std::fs::remove_dir(status);
+        let _ = std::fs::remove_dir(scalable);
+        let _ = std::fs::remove_dir(theme);
         let _ = std::fs::remove_file(self.directory.join(format!("{SYMBOLIC_ICON_NAME}.svg")));
         let _ = std::fs::remove_dir(&self.directory);
         let _ = std::fs::remove_dir(&self.root);
@@ -543,6 +566,28 @@ mod tests {
         assert_eq!(icons.directory.file_name().unwrap(), "icons");
         let svg = std::fs::read_to_string(&path).unwrap();
         assert_eq!(svg, SYMBOLIC_ICON);
+        assert_eq!(
+            std::fs::read_to_string(
+                icons
+                    .directory
+                    .join("hicolor/scalable/status")
+                    .join(format!("{SYMBOLIC_ICON_NAME}.svg"))
+            )
+            .unwrap(),
+            svg
+        );
+        assert_eq!(
+            std::fs::read_to_string(icons.directory.join("hicolor/index.theme")).unwrap(),
+            SYMBOLIC_THEME_INDEX
+        );
+        assert!(
+            !SYMBOLIC_ICON_NAME.starts_with(&format!("{}-", crate::app::style::APP_ICON_NAME)),
+            "KDE must not fall back from the tray name to the launcher"
+        );
+        assert!(
+            !svg.contains("<rect"),
+            "The tray must not gain the launcher background"
+        );
         assert!(svg.contains("current-color-scheme") && svg.contains("ColorScheme-Text"));
         assert!(svg.contains("stroke=\"currentColor\""));
         drop(icons);

@@ -16,6 +16,7 @@ try {
         'share/talis/assets/scenes/1080p/day/beauty.png',
         'share/applications/io.github.azizstark.Talis.desktop',
         'share/icons/hicolor/scalable/apps/io.github.azizstark.Talis.svg',
+        'share/icons/hicolor/scalable/status/io.github.azizstark.TalisTray-symbolic.svg',
         'share/metainfo/io.github.azizstark.Talis.metainfo.xml',
         'share/doc/talis/LICENSE', 'share/doc/talis/LICENSING.md',
         'share/doc/talis/gtk4-layer-shell-LICENSE',
@@ -66,6 +67,10 @@ try {
         assert(!existsSync(join(destination, path)), `Unexpected portable/user file: ${path}`);
     assert.match(spec, /^%license usr\/share\/doc\/talis\/LICENSE usr\/share\/doc\/talis\/LICENSING\.md$/m);
     assert(existsSync(join(destination, 'usr/share/talis/assets/scenes/1080p/day/beauty.png')));
+    const trayIcon = 'usr/share/icons/hicolor/scalable/status/io.github.azizstark.TalisTray-symbolic.svg';
+    assert.equal(readFileSync(join(destination,trayIcon),'utf8'),
+        'share/icons/hicolor/scalable/status/io.github.azizstark.TalisTray-symbolic.svg');
+    assert(spec.split('\n%files\n')[1].includes('%{_datadir}/icons/hicolor/scalable/status/io.github.azizstark.TalisTray-symbolic.svg'));
     console.log('PASS: RPM layout, both backends, system companion/library, checksum guard, automatic dependencies and no install-time user mutations');
 } finally {
     rmSync(temporary, {recursive:true, force:true});
