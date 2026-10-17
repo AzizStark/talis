@@ -2,7 +2,7 @@
 
 An interactive, music-aware, animated turntable that brings the classic vinyl experience to your Linux desktop.
 
-Watch records spin and the tonearm glide in real time as your music plays—and control your playback directly from the turntable.
+Watch records spin and the tonearm glide in real time as your music plays and control your playback directly from the turntable.
 
 | Day scene (4K) | Night scene (4K) |
 | --- | --- |
@@ -71,10 +71,11 @@ Keep the extracted folder in place. [Portable setup and dependencies](packaging/
 | Desktop or session | Integration |
 | --- | --- |
 | GNOME (Wayland) | Follow the setup prompt; log out/in if asked. The enabled companion handles startup. [Setup guide](integrations/gnome/README.md). |
-| KDE Plasma, Hyprland, Sway (Wayland) | Use the RPM, Arch package or portable archive. |
+| KDE Plasma, Hyprland, Sway (Wayland) | Native Wayland integration. |
 | Cinnamon, KDE Plasma (X11) | Native X11 integration. |
 | MATE (X11) | Enable **Advanced → MATE compatibility**. Desktop icons are hidden while active. |
 | Xfce (X11) | Desktop icons are currently covered while Talis runs. |
+| COSMIC, Budgie and other desktops | Testing in progress. You're welcome to try Talis and share feedback. |
 
 ## License
 

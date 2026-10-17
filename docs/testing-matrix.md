@@ -14,8 +14,10 @@ For each new test, add the package filename and test date in Notes.
 | GNOME | CachyOS | Pass | Scene and resolution controls remain locked. |
 | GNOME | Fedora | Pass | — |
 | KDE Plasma | CachyOS | Pass | Installation and desktop experience passed. |
-| KDE Plasma | Fedora | Pass | — |
+| KDE Plasma | Fedora | Pass | 17 October 2026: `talis-0.1.0-1.fc44.x86_64.rpm`; revision 2 tray retest pending. |
 | KDE Plasma | NixOS | Pass | — |
+| KDE Plasma | Kubuntu 26.04 LTS | Pass | 17 October 2026: `.deb` installation and use passed; session type not recorded. |
+| KDE Plasma | KDE neon | Pass | 17 October 2026: `talis_0.1.0-9_amd64.deb`; installation and corrected tray appearance confirmed. |
 | Cinnamon | Linux Mint | Pass | — |
 | MATE | Ubuntu | Pass | MATE compatibility enabled; desktop icons hidden. |
 | Xfce | CachyOS | Pass | Controls and stacking work; desktop icons covered. |

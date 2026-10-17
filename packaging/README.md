@@ -30,12 +30,16 @@ Cross-compilation is not supported by this release script.
 Build from source on Ubuntu 24.04:
 
 ```sh
-sudo apt install build-essential debhelper pkg-config libgtk-4-dev rustc-1.85 cargo-1.85
+sudo apt install build-essential debhelper pkg-config libgtk-4-dev libwayland-dev \
+  wayland-protocols meson ninja-build rustc-1.85 cargo-1.85
 dpkg-buildpackage -b -us -uc
 ```
 
-The `.deb` is written to the parent directory. It includes X11 and the GNOME
-companion, but not the native Wayland backend.
+The `.deb` is written to the parent directory. It includes X11, native Wayland
+and the GNOME companion. Debian builds compile the checksum-pinned
+[GTK4 Layer Shell source](third-party/gtk4-layer-shell/README.md) into a private
+runtime library, so Ubuntu 24.04 users need no extra repository or manual library
+installation. X11/GNOME and native Wayland use separate Cargo build directories.
 
 ## Arch / CachyOS package
 
@@ -77,3 +81,9 @@ All native packages leave startup and companion enablement opt-in.
   portable archive and GNOME ZIP.
 - Check installation, upgrade, removal and saved settings. Record desktop
   results in the [test matrix](../docs/testing-matrix.md).
+- Check tray icons on light and dark panels with the launcher icon installed.
+  Keep the symbolic tray name distinct from the launcher to avoid KDE fallbacks.
+
+Discover's local-file view can show a filename, generic icon and unknown author
+even when valid AppStream metadata is included. Package metadata validation does
+not verify that screen, and publisher fields do not imply a signed package.
