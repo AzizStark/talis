@@ -1,8 +1,9 @@
 # Nix package (maintainer build)
 
 For installation, use the **prebuilt NixOS bundle** and run
-`bash install.sh` after extracting it. It imports existing binaries and installs
-them offline, with builders disabled. See [prebuilt installation](PREBUILT.md).
+`bash install.sh` after extracting it. It reuses installed libraries and downloads
+missing signed dependencies from `cache.nixos.org`, with builders disabled.
+See [prebuilt installation](PREBUILT.md).
 Use the bundle for install-only setup; the root flake builds from source.
 
 This builds Talis from source with Nix-provided libraries and reuses the
@@ -42,21 +43,24 @@ This package is not in Nixpkgs.
 
 ## Export an install-only bundle
 
-After building and testing `result`, export its runtime closure:
+After building and testing `result`, export the prebuilt application and scene data:
 
 ```sh
 bash packaging/nix/export-prebuilt.sh "$PWD/result" /absolute/new/output-directory
 ```
 
-The export does not build anything. It produces a self-contained archive with
-the application and runtime libraries, their checksums, and an offline profile
-installer. The output also contains `SHA256SUMS` for the final archive, usable
+The export does not build anything. It bundles store entries that are not signed
+by the official NixOS cache, including Talis and its scene data. Signed runtime
+dependencies are omitted after checking their availability on `cache.nixos.org`.
+The installer fetches only missing dependencies before importing Talis.
+
+The output also contains `SHA256SUMS` for the final archive, usable
 with `sha256sum --check SHA256SUMS` from that directory.
 No Rust compiler, source checkout or build derivations are needed on
 the user's machine. The output directory must not already exist.
 
-These local bundles are not a public binary cache. The root flake remains the
-maintainer's source-build definition; a public `nix run` command must not be
+The bundle is not a public binary cache. The root flake remains the maintainer's
+source-build definition; a public `nix run` command must not be
 advertised as download-only without a matching binary cache or binary package.
 
 The package version follows `Cargo.toml`; scene data stays separately pinned to
@@ -93,5 +97,19 @@ Without that packaging override, other installations keep using their executable
   tests), isolated mock-Nix packaging-script checks, formatting and shell syntax.
   These do not replace the earlier real-store and live desktop tests; the full
   Nix build was not repeated after the temporary stores were cleaned up.
+
+The online bundle was also tested in a fresh isolated store: it downloaded the
+294 signed runtime dependencies, imported only the two Talis-specific entries,
+and installed into a user profile without compiling. A repeat installation
+reused the files and kept one active profile entry. All 294 dependency signatures
+verified. The application store contents match the earlier VM-tested build.
+X11, Wayland and GNOME-renderer command-line checks pass. The user also confirmed
+successful installation and use of the online bundle on NixOS KDE. Reboot/startup
+was separately confirmed for the identical earlier application build; a reboot
+of the online reinstallation was not explicitly reported. The exact multi-user
+daemon/import output was not captured.
+
+Mock-Nix checks also cover cache download failures: installation stops before
+import/profile changes and does not fall back to a source build.
 
 Existing Debian, Arch, RPM and portable releases are unchanged.

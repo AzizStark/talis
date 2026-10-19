@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Import a locally transferred, checksum-verified Nix runtime closure. Never build.
+# Install prebuilt Talis; download missing signed dependencies, never build.
 set -euo pipefail
 talis_bundle=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 if [[ $(uname -s) != Linux || $(uname -m) != x86_64 ]]; then
@@ -22,14 +22,34 @@ if [[ ! $talis_store =~ ^/nix/store/[0-9a-z]{32}-talis-[0-9][0-9A-Za-z.+-]*$ ]];
 fi
 talis_nix_store=$(command -v nix-store)
 mapfile -t talis_runtime_paths < store-paths
+mapfile -t talis_payload_paths < payload-paths
+mapfile -t talis_substitute_paths < substitute-paths
+declare -A talis_manifest=() talis_classified=()
 talis_root_listed=false
 for talis_runtime_path in "${talis_runtime_paths[@]}"; do
-  [[ $talis_runtime_path =~ ^/nix/store/[0-9a-z]{32}-[^/[:space:]]+$ ]] || { echo 'Invalid runtime store path.' >&2; exit 1; }
+  [[ $talis_runtime_path =~ ^/nix/store/[0-9a-z]{32}-[0-9A-Za-z+._?=-]+$ && $talis_runtime_path != *.drv ]] || { echo 'Invalid runtime store path.' >&2; exit 1; }
+  [[ ! -v talis_manifest[$talis_runtime_path] ]] || { echo 'Duplicate runtime store path.' >&2; exit 1; }
+  talis_manifest[$talis_runtime_path]=1
   if [[ $talis_runtime_path == "$talis_store" ]]; then talis_root_listed=true; fi
 done
 [[ $talis_root_listed == true ]] || { echo 'Runtime manifest does not contain Talis.' >&2; exit 1; }
-if ! nix-store --check-validity "${talis_runtime_paths[@]}" 2>/dev/null; then
-  echo 'Importing the prebuilt runtime (no compiling)...'
+for talis_runtime_path in "${talis_payload_paths[@]}" "${talis_substitute_paths[@]}"; do
+  [[ $talis_runtime_path =~ ^/nix/store/[0-9a-z]{32}-[0-9A-Za-z+._?=-]+$ && $talis_runtime_path != *.drv ]] || { echo 'Invalid classified store path.' >&2; exit 1; }
+  [[ -v talis_manifest[$talis_runtime_path] && ! -v talis_classified[$talis_runtime_path] ]] || { echo 'Invalid or duplicate payload/dependency classification.' >&2; exit 1; }
+  talis_classified[$talis_runtime_path]=1
+done
+[[ ${#talis_classified[@]} == ${#talis_manifest[@]} ]] || { echo 'Incomplete dependency manifest.' >&2; exit 1; }
+printf '%s\n' "${talis_payload_paths[@]}" | grep -Fx -- "$talis_store" >/dev/null || { echo 'Talis is missing from the bundled payload.' >&2; exit 1; }
+talis_download_options=(--max-jobs 0 --option builders '' --option substitute true --option fallback false --option substituters https://cache.nixos.org --option require-sigs true)
+if (( ${#talis_substitute_paths[@]} > 0 )) && ! "$talis_nix_store" --check-validity "${talis_substitute_paths[@]}" 2>/dev/null; then
+  echo 'Downloading missing prebuilt dependencies (no compiling)...'
+  if ! "$talis_nix_store" "${talis_download_options[@]}" --realise "${talis_substitute_paths[@]}" >/dev/null; then
+    echo 'Could not download required prebuilt dependencies. Check your connection and cache.nixos.org availability, then retry. No compilation was attempted.' >&2
+    exit 1
+  fi
+fi
+if ! "$talis_nix_store" --check-validity "${talis_payload_paths[@]}" 2>/dev/null; then
+  echo 'Importing the prebuilt Talis application and scenes...'
   if [[ -w /nix/store && -w /nix/var/nix/db/db.sqlite ]]; then
     # Single-user Nix or an isolated store owned by this user.
     gzip -dc -- talis.nar.gz | "$talis_nix_store" --import
@@ -40,8 +60,8 @@ if ! nix-store --check-validity "${talis_runtime_paths[@]}" 2>/dev/null; then
   fi
 fi
 nix-store --check-validity "${talis_runtime_paths[@]}"
-echo 'Installing into your user profile (offline; builders disabled)...'
-talis_nix=(nix --extra-experimental-features 'nix-command flakes' --offline --max-jobs 0 --option builders '' --option substitute false)
+echo 'Installing into your user profile (builders disabled)...'
+talis_nix=(nix --extra-experimental-features 'nix-command flakes' --max-jobs 0 --option builders '' --option substitute true --option fallback false)
 talis_installed=no
 if talis_profile_json=$("${talis_nix[@]}" profile list --json 2>/dev/null); then
   # Parse only local profile metadata, without fetching/evaluating a source flake.
@@ -62,4 +82,4 @@ elif ! "${talis_nix[@]}" profile install "$talis_store"; then
   exit 1
 fi
 echo 'Installed. Quit any older Talis instance, then open Talis from the application menu or run: talis'
-echo 'For the startup fix, turn Run on startup off and on once, then reboot to check the icons.'
+echo 'If startup was enabled with an older package, turn Run on startup off and on once.'

@@ -48,7 +48,8 @@ Extract the prebuilt `talis-VERSION-nixos-x86_64.tar.gz` bundle and run:
 bash install.sh
 ```
 
-No compilation needed. [Installation details](packaging/nix/PREBUILT.md).
+Missing dependencies download automatically; no compilation needed.
+[Installation details](packaging/nix/PREBUILT.md).
 
 ### Other distros
 
