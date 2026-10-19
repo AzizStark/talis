@@ -15,7 +15,7 @@ For each new test, add the package filename in Notes.
 | GNOME | Fedora | Pass | — |
 | KDE Plasma | CachyOS | Pass | Installation and desktop experience passed. |
 | KDE Plasma | Fedora | Pass | `talis-0.1.0-1.fc44.x86_64.rpm`; revision 2 tray retest pending. |
-| KDE Plasma | NixOS | Pass | — |
+| KDE Plasma | NixOS | Issue | Prebuilt Nix installation and sign-in startup pass; Talis icons remain visible after reboot. Plasma desktop icons are covered. |
 | KDE Plasma | Kubuntu 26.04 LTS | Pass | `.deb` installation and use passed; session type not recorded. |
 | KDE Plasma | KDE neon | Pass | `talis_0.1.0-9_amd64.deb`; installation and corrected tray appearance confirmed. |
 | Cinnamon | Linux Mint | Pass | — |

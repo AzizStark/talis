@@ -40,6 +40,16 @@ sudo dnf install ./talis-VERSION.x86_64.rpm
 
 Open **Talis** from your application menu after installation.
 
+### NixOS
+
+Extract the prebuilt `talis-VERSION-nixos-x86_64.tar.gz` bundle and run:
+
+```sh
+bash install.sh
+```
+
+No compilation needed. [Installation details](packaging/nix/PREBUILT.md).
+
 ### Other distros
 
 Extract the portable `.tar.gz` into a permanent folder. Open a terminal there:
