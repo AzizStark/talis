@@ -15,6 +15,33 @@ const CONFIG_HEADER: &str = "# Managed by Talis for desktop startup\n";
 const PROMPT_SEEN: &str = "Talis startup prompt answered v1\n";
 static SERIAL: AtomicU64 = AtomicU64::new(0);
 
+/// Packaging wrappers may supply a backend-specific executable that restores
+/// their runtime environment. Never guess a wrapper from argv[0] or PATH.
+pub fn executable() -> Result<PathBuf> {
+    select_executable(
+        std::env::current_exe().context("Cannot locate Talis executable")?,
+        std::env::var_os("TALIS_STARTUP_EXECUTABLE").map(PathBuf::from),
+    )
+}
+
+fn select_executable(current: PathBuf, installed: Option<PathBuf>) -> Result<PathBuf> {
+    let Some(installed) = installed else {
+        return Ok(current);
+    };
+    ensure!(
+        installed.is_absolute(),
+        "Talis startup executable must be an absolute path"
+    );
+    let metadata = fs::metadata(&installed).context("Talis startup executable is unavailable")?;
+    use std::os::unix::fs::PermissionsExt;
+    ensure!(
+        metadata.is_file() && metadata.permissions().mode() & 0o111 != 0,
+        "Talis startup executable is not an executable file"
+    );
+    // Keep a supplied stable symlink (e.g. an installed profile path) intact.
+    Ok(installed)
+}
+
 pub struct Launch {
     pub executable: PathBuf,
     pub directory: PathBuf,

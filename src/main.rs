@@ -75,9 +75,8 @@ fn run(args: Args) -> Result<()> {
     let mut migration_issue = None;
     if writable && args.desktop && !args.check {
         if let Some(manager) = &manager {
-            if let Err(error) = std::env::current_exe()
-                .map_err(anyhow::Error::from)
-                .and_then(|exe| manager.migrate_preferences(&exe))
+            if let Err(error) =
+                talis::autostart::executable().and_then(|exe| manager.migrate_preferences(&exe))
             {
                 migration_issue = Some(format!(
                     "Startup migration failed; existing entry preserved: {error:#}"

@@ -48,7 +48,7 @@ pub(super) fn controls(options: &Options, state: Rc<RefCell<AppState>>) -> gtk::
             let state = state.borrow();
             let feed = state.playback.borrow();
             Ok(Launch {
-                executable: std::env::current_exe().context("Cannot locate Talis executable")?,
+                executable: crate::autostart::executable()?,
                 directory: launch_directory(&state.config.scene)?,
                 config: state.config.clone(),
                 monitor: options.monitor,

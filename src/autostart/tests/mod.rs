@@ -1,3 +1,4 @@
+mod executable;
 pub(super) mod fixtures;
 use super::*;
 #[test]
