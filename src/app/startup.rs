@@ -55,23 +55,40 @@ pub(super) fn controls(options: &Options, state: Rc<RefCell<AppState>>) -> gtk::
                 following: feed.enabled,
                 player: feed.preferred.clone(),
                 wayland_library: wayland_library.clone(),
-                graphics_environment: if options.experimental_wayland {
-                    vec![]
-                } else {
-                    ["GDK_DEBUG", "GDK_DISABLE"]
-                        .into_iter()
-                        .filter_map(|name| {
-                            std::env::var(name)
-                                .ok()
-                                .filter(|v| !v.is_empty())
-                                .map(|v| (name.into(), v))
-                        })
-                        .collect()
-                },
+                graphics_environment: startup_graphics_environment(
+                    options.experimental_wayland
+                        && std::env::var_os("TALIS_WAYLAND_GL_RETRY").is_some(),
+                    std::env::var("GDK_DEBUG").ok(),
+                    std::env::var("GDK_DISABLE").ok(),
+                ),
             })
         },
         offer_prompt,
     )
+}
+
+fn startup_graphics_environment(
+    retried_wayland: bool,
+    debug: Option<String>,
+    disabled: Option<String>,
+) -> Vec<(String, String)> {
+    // Preserve a user's choices, but not the gles-api flag appended by the
+    // automatic one-time retry. A fresh login can retry only if it needs to.
+    let disabled = if retried_wayland {
+        disabled.and_then(|value| {
+            if value == "gles-api" {
+                None
+            } else {
+                value.strip_suffix(",gles-api").map(str::to_owned)
+            }
+        })
+    } else {
+        disabled
+    };
+    [("GDK_DEBUG", debug), ("GDK_DISABLE", disabled)]
+        .into_iter()
+        .filter_map(|(name, value)| value.filter(|v| !v.is_empty()).map(|v| (name.into(), v)))
+        .collect()
 }
 
 fn launch_directory(scene: &crate::config::SceneSettings) -> Result<std::path::PathBuf> {
@@ -228,6 +245,25 @@ fn build(
 mod tests {
     use super::*;
     use anyhow::bail;
+    #[test]
+    fn startup_keeps_manual_graphics_flags_but_not_the_retry_flag() {
+        let debug = Some("opengl".into());
+        assert_eq!(
+            startup_graphics_environment(false, debug.clone(), Some("gles-api".into())),
+            vec![
+                ("GDK_DEBUG".into(), "opengl".into()),
+                ("GDK_DISABLE".into(), "gles-api".into())
+            ]
+        );
+        assert_eq!(
+            startup_graphics_environment(true, debug.clone(), Some("gles-api".into())),
+            vec![("GDK_DEBUG".into(), "opengl".into())]
+        );
+        assert_eq!(
+            startup_graphics_environment(true, None, Some("vulkan,gles-api".into())),
+            vec![("GDK_DISABLE".into(), "vulkan".into())]
+        );
+    }
     #[test]
     fn layer_preload_resolves_names_in_directories_with_spaces_without_cwd_search() {
         let root =

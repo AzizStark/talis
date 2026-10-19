@@ -40,7 +40,6 @@ talis_layer_name=$(basename -- "$talis_layer_library")
 [[ $talis_layer_dir != *:* && $talis_layer_name != *[[:space:]:]* ]] || {
   echo 'The layer-shell directory cannot contain colons, or its filename whitespace.' >&2; exit 1;
 }
-unset GDK_DEBUG GDK_DISABLE
 exec env GDK_BACKEND=wayland LD_LIBRARY_PATH="$talis_layer_dir${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" \
   LD_PRELOAD="$talis_layer_name${LD_PRELOAD:+:$LD_PRELOAD}" \
   "$talis_binary" "${talis_args[@]}" --experimental-wayland "$@"
