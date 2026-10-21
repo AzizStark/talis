@@ -20,19 +20,19 @@ fn runtime_version_selects_the_right_flag_without_requiring_development_files() 
 }
 
 #[test]
-fn wayland_presentation_uses_modern_gl_without_overriding_user_choice() {
-    for version in [(4, 8), (4, 14)] {
-        assert_eq!(presentation_renderer(true, version, false), None);
+fn presentation_uses_version_appropriate_gl_without_overriding_user_choice() {
+    for version in [(4, 8), (4, 10), (4, 12)] {
+        assert_eq!(presentation_renderer(version, false), Some("gl"));
     }
-    for version in [(4, 16), (4, 17)] {
-        assert_eq!(presentation_renderer(true, version, false), Some("ngl"));
+    for version in [(4, 14), (4, 16), (4, 17)] {
+        assert_eq!(presentation_renderer(version, false), Some("ngl"));
     }
     for version in [(4, 18), (4, 22), (4, 24)] {
-        assert_eq!(presentation_renderer(true, version, false), Some("gl"));
+        assert_eq!(presentation_renderer(version, false), Some("gl"));
     }
-    assert_eq!(presentation_renderer(false, (4, 22), false), None);
-    // Even an empty explicit value belongs to the caller, not Talis.
-    assert_eq!(presentation_renderer(true, (4, 22), true), None);
+    for version in [(4, 8), (4, 14), (4, 22)] {
+        assert_eq!(presentation_renderer(version, true), None);
+    }
 }
 
 #[test]

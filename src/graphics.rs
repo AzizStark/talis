@@ -177,13 +177,34 @@ fn setting(
     }
 }
 
-fn presentation_renderer(wayland: bool, gtk: (u32, u32), overridden: bool) -> Option<&'static str> {
-    if !wayland || overridden || gtk < (4, 16) {
+fn presentation_renderer(gtk: (u32, u32), overridden: bool) -> Option<&'static str> {
+    if overridden {
         return None;
     }
-    // GTK 4.16 made Vulkan the Wayland default. GTK 4.18 removed the old GL
-    // renderer and made `gl` the name of the modern renderer (`ngl` before).
-    Some(if gtk >= (4, 18) { "gl" } else { "ngl" })
+    // GTK 4.14 introduced the unified GL renderer as `ngl`; 4.18 renamed
+    // it to `gl`. Earlier supported GTK versions have the older GL renderer.
+    Some(if ((4, 14)..(4, 18)).contains(&gtk) {
+        "ngl"
+    } else {
+        "gl"
+    })
+}
+
+/// Prefer OpenGL presentation for the GL scene and GTK windows on every desktop.
+/// An explicit GSK_RENDERER, including an empty value, belongs to the caller.
+///
+/// # Safety
+/// Call only during single-threaded process startup, before GTK or workers start.
+pub unsafe fn configure_presentation() {
+    if let Some(renderer) = presentation_renderer(
+        (gtk::major_version(), gtk::minor_version()),
+        std::env::var_os("GSK_RENDERER").is_some(),
+    ) {
+        // SAFETY: the caller guarantees no GTK or worker threads have started.
+        unsafe {
+            std::env::set_var("GSK_RENDERER", renderer);
+        }
+    }
 }
 
 /// # Safety
@@ -196,14 +217,9 @@ pub unsafe fn configure(experimental_wayland: bool) -> Result<()> {
         || (crate::desktop::Session::detect() != crate::desktop::Session::X11
             && std::env::var_os("WAYLAND_DISPLAY").is_some());
     let backend_setting = setting(&mode, wayland, gtk)?;
-    if let Some(renderer) =
-        presentation_renderer(wayland, gtk, std::env::var_os("GSK_RENDERER").is_some())
-    {
-        // SAFETY: main calls this before GTK initialization, logging setup
-        // or any application threads. No other thread reads the environment.
-        unsafe {
-            std::env::set_var("GSK_RENDERER", renderer);
-        }
+    // SAFETY: configure has the same single-threaded startup precondition.
+    unsafe {
+        configure_presentation();
     }
     if let Some((key, flag)) = backend_setting {
         let existing = std::env::var(key).unwrap_or_default();

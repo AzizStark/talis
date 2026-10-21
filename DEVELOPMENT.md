@@ -48,6 +48,24 @@ bash scripts/build.sh
 Use `bash scripts/build.sh wayland` for the native Wayland build or
 `bash scripts/build.sh gnome` for the GNOME renderer and client.
 
+### GTK presentation renderer
+
+Talis defaults GTK's presentation renderer to OpenGL on both X11 and Wayland,
+including the GNOME scene client and setup dialog. The runtime GTK version
+selects the name: `gl` on GTK 4.8–4.12, `ngl` on 4.14–4.17, and `gl` on 4.18+.
+The scene itself continues to use its existing OpenGL renderer.
+
+An explicit `GSK_RENDERER` is preserved, including an empty value that leaves
+selection to GTK. For example:
+
+```sh
+GSK_RENDERER= bash scripts/run.sh
+```
+
+The default is local to Talis; it does not change system settings or other apps.
+This avoids the non-GL presentation path implicated in issue #2; the underlying
+NVIDIA memory-growth report still needs confirmation from the reporter.
+
 ### Wayland scene placement
 
 On Hyprland, Talis uses the background layer so bottom-layer bar decorations
