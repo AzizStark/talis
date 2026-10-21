@@ -20,6 +20,22 @@ fn runtime_version_selects_the_right_flag_without_requiring_development_files() 
 }
 
 #[test]
+fn wayland_presentation_uses_modern_gl_without_overriding_user_choice() {
+    for version in [(4, 8), (4, 14)] {
+        assert_eq!(presentation_renderer(true, version, false), None);
+    }
+    for version in [(4, 16), (4, 17)] {
+        assert_eq!(presentation_renderer(true, version, false), Some("ngl"));
+    }
+    for version in [(4, 18), (4, 22), (4, 24)] {
+        assert_eq!(presentation_renderer(true, version, false), Some("gl"));
+    }
+    assert_eq!(presentation_renderer(false, (4, 22), false), None);
+    // Even an empty explicit value belongs to the caller, not Talis.
+    assert_eq!(presentation_renderer(true, (4, 22), true), None);
+}
+
+#[test]
 fn recovery_is_only_for_automatic_native_x11_context_creation() {
     let error = context_error(DisplayBackend::X11).context("scene startup");
     assert!(eligible(&error, "auto", false, "gl,gl-shaders", "vulkan"));

@@ -177,17 +177,35 @@ fn setting(
     }
 }
 
+fn presentation_renderer(wayland: bool, gtk: (u32, u32), overridden: bool) -> Option<&'static str> {
+    if !wayland || overridden || gtk < (4, 16) {
+        return None;
+    }
+    // GTK 4.16 made Vulkan the Wayland default. GTK 4.18 removed the old GL
+    // renderer and made `gl` the name of the modern renderer (`ngl` before).
+    Some(if gtk >= (4, 18) { "gl" } else { "ngl" })
+}
+
 /// # Safety
 /// Call only during single-threaded process startup, before GTK or workers start.
 pub unsafe fn configure(experimental_wayland: bool) -> Result<()> {
     let mode = std::env::var("TALIS_GL_BACKEND").unwrap_or_else(|_| "auto".into());
+    let gtk = (gtk::major_version(), gtk::minor_version());
     let wayland = experimental_wayland
         || crate::desktop::Session::detect() == crate::desktop::Session::Wayland
         || (crate::desktop::Session::detect() != crate::desktop::Session::X11
             && std::env::var_os("WAYLAND_DISPLAY").is_some());
-    if let Some((key, flag)) =
-        setting(&mode, wayland, (gtk::major_version(), gtk::minor_version()))?
+    let backend_setting = setting(&mode, wayland, gtk)?;
+    if let Some(renderer) =
+        presentation_renderer(wayland, gtk, std::env::var_os("GSK_RENDERER").is_some())
     {
+        // SAFETY: main calls this before GTK initialization, logging setup
+        // or any application threads. No other thread reads the environment.
+        unsafe {
+            std::env::set_var("GSK_RENDERER", renderer);
+        }
+    }
+    if let Some((key, flag)) = backend_setting {
         let existing = std::env::var(key).unwrap_or_default();
         if !existing.split(',').any(|value| value == flag) {
             let value = if existing.is_empty() {
