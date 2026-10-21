@@ -48,6 +48,23 @@ bash scripts/build.sh
 Use `bash scripts/build.sh wayland` for the native Wayland build or
 `bash scripts/build.sh gnome` for the GNOME renderer and client.
 
+### Wayland scene placement
+
+On Hyprland, Talis uses the background layer so bottom-layer bar decorations
+remain visible. Other layer-shell desktops keep the bottom layer by default.
+To choose a layer explicitly, quit Talis and launch with:
+
+```sh
+TALIS_WAYLAND_LAYER=bottom bash scripts/run.sh
+# Or: TALIS_WAYLAND_LAYER=background bash scripts/run.sh
+```
+
+Installed packages accept the same variable before `talis`; portable builds
+accept it before `./talis`. A wallpaper daemon that recreates its background
+surface may cover Talis. Use the bottom override in that case, or restart Talis
+after the wallpaper daemon. Surfaces sharing a layer have no guaranteed order.
+The selected layer is shown in the startup log and debug information.
+
 Debug launch on X11:
 
 ```sh
