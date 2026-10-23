@@ -77,10 +77,6 @@ impl Launch {
                 !text.contains(':') && !name.as_encoded_bytes().iter().any(u8::is_ascii_whitespace),
                 "Wayland library directory cannot contain colons, or its filename whitespace"
             );
-            ensure!(
-                self.graphics_environment.is_empty(),
-                "Wayland startup cannot capture X11 graphics overrides"
-            );
         }
         for path in [
             &mut config.scene.background,
@@ -142,14 +138,17 @@ impl Launch {
     }
     fn entry(&self, snapshot: &Path) -> Result<String> {
         let mut command = Vec::new();
+        if self.wayland_library.is_some() || !self.graphics_environment.is_empty() {
+            command.push("/usr/bin/env".into());
+        }
+        for (name, value) in &self.graphics_environment {
+            ensure!(
+                matches!(name.as_str(), "GDK_DEBUG" | "GDK_DISABLE"),
+                "Unsupported startup environment variable"
+            );
+            command.push(format!("{name}={value}"));
+        }
         if let Some(library) = &self.wayland_library {
-            command.extend([
-                "/usr/bin/env".into(),
-                "-u".into(),
-                "GDK_DEBUG".into(),
-                "-u".into(),
-                "GDK_DISABLE".into(),
-            ]);
             command.push("GDK_BACKEND=wayland".into());
             command.push(format!(
                 "LD_PRELOAD={}",
@@ -167,15 +166,6 @@ impl Launch {
                         .context("Missing layer-shell library directory")?
                 )?
             ));
-        } else if !self.graphics_environment.is_empty() {
-            command.push("/usr/bin/env".into());
-            for (name, value) in &self.graphics_environment {
-                ensure!(
-                    matches!(name.as_str(), "GDK_DEBUG" | "GDK_DISABLE"),
-                    "Unsupported startup environment variable"
-                );
-                command.push(format!("{name}={value}"));
-            }
         }
         command.push(path_text(&self.executable)?);
         command.extend(self.arguments(snapshot)?);

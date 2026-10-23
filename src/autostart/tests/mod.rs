@@ -102,10 +102,20 @@ fn wayland_startup_is_no_build_session_scoped_and_has_explicit_loader() {
     assert!(fixture.manager().enable(&launch).is_err());
     assert_eq!(entry, fs::read_to_string(&fixture.manager().entry).unwrap());
     launch.wayland_library = Some(library);
+    launch.graphics_environment.extend([
+        ("GDK_DEBUG".into(), "opengl".into()),
+        ("GDK_DISABLE".into(), "gles-api".into()),
+    ]);
+    fixture.manager().enable(&launch).unwrap();
+    let entry = fs::read_to_string(&fixture.manager().entry).unwrap();
+    assert!(entry.contains("GDK_DEBUG=opengl"));
+    assert!(entry.contains("GDK_DISABLE=gles-api"));
+    assert!(!entry.contains("-u GDK_DISABLE") && !entry.contains("-u GDK_DEBUG"));
     launch
         .graphics_environment
-        .push(("GDK_DEBUG".into(), "gl-glx".into()));
+        .push(("LD_PRELOAD".into(), "untrusted".into()));
     assert!(fixture.manager().enable(&launch).is_err());
+    assert_eq!(entry, fs::read_to_string(&fixture.manager().entry).unwrap());
 }
 
 #[test]
@@ -238,7 +248,7 @@ fn desktop_launcher_preserves_reserved_paths_arguments_and_graphics_flags() {
     fs::create_dir(&root).unwrap();
     let output = fixture.root.join("arguments.json");
     let helper = root.join("fake talis");
-    fs::write(&helper, format!("#!/usr/bin/python3\nimport json, os, sys\nfrom pathlib import Path\nPath({}).write_text(json.dumps([sys.argv[1:], os.getcwd(), os.environ.get('GDK_DEBUG')]))\n", serde_json::to_string(&output).unwrap())).unwrap();
+    fs::write(&helper, format!("#!/usr/bin/python3\nimport json, os, sys\nfrom pathlib import Path\nPath({}).write_text(json.dumps([sys.argv[1:], os.getcwd(), os.environ.get('GDK_DEBUG'), os.environ.get('GDK_DISABLE')]))\n", serde_json::to_string(&output).unwrap())).unwrap();
     fs::set_permissions(&helper, fs::Permissions::from_mode(0o700)).unwrap();
     let manager = Manager::new(root.clone()).unwrap();
     let mut launch = fixture.launch();
@@ -256,9 +266,32 @@ fn desktop_launcher_preserves_reserved_paths_arguments_and_graphics_flags() {
     while !output.exists() && std::time::Instant::now() < deadline {
         std::thread::sleep(std::time::Duration::from_millis(10));
     }
-    let captured: (Vec<String>, String, String) =
-        serde_json::from_str(&fs::read_to_string(output).unwrap()).unwrap();
+    let captured: (Vec<String>, String, String, Option<String>) =
+        serde_json::from_str(&fs::read_to_string(&output).unwrap()).unwrap();
     assert_eq!(captured.0, launch.arguments(&manager.snapshot).unwrap());
     assert_eq!(captured.1, root.to_str().unwrap());
     assert_eq!(captured.2, "gl-glx");
+    fs::remove_file(&output).unwrap();
+
+    let library = root.join("libgtk4-layer-shell.so.0");
+    fs::write(&library, b"fixture").unwrap();
+    launch.wayland_library = Some(library);
+    launch.graphics_environment = vec![
+        ("GDK_DEBUG".into(), "opengl".into()),
+        ("GDK_DISABLE".into(), "gles-api".into()),
+    ];
+    manager.enable(&launch).unwrap();
+    let app = gtk::gio::DesktopAppInfo::from_filename(&manager.entry).expect("valid Wayland entry");
+    app.launch(&[], None::<&gtk::gio::AppLaunchContext>)
+        .unwrap();
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(3);
+    while !output.exists() && std::time::Instant::now() < deadline {
+        std::thread::sleep(std::time::Duration::from_millis(10));
+    }
+    let captured: (Vec<String>, String, String, String) =
+        serde_json::from_str(&fs::read_to_string(&output).unwrap()).unwrap();
+    assert_eq!(captured.0, launch.arguments(&manager.snapshot).unwrap());
+    assert_eq!(captured.1, root.to_str().unwrap());
+    assert_eq!(captured.2, "opengl");
+    assert_eq!(captured.3, "gles-api");
 }

@@ -104,7 +104,11 @@ fn connect_realize(
             } else {
                 crate::graphics::ContextInitializationError::new(
                     error.to_string(),
-                    gtk::prelude::WidgetExt::display(area).type_().name() == "GdkX11Display",
+                    match gtk::prelude::WidgetExt::display(area).type_().name() {
+                        "GdkX11Display" => crate::graphics::DisplayBackend::X11,
+                        "GdkWaylandDisplay" => crate::graphics::DisplayBackend::Wayland,
+                        _ => crate::graphics::DisplayBackend::Other,
+                    },
                 )
                 .into()
             };

@@ -13,7 +13,7 @@ try {
     mkdirSync(commands);
     for (const name of ['run.sh','launch.sh','session.sh','build.sh','check-deps.sh'])
         copyFileSync(new URL(`../scripts/${name}`,import.meta.url),join(root,'scripts',name));
-    const executable = '#!/usr/bin/env bash\nprintf "APP=%s\\n" "$PWD"\nprintf "%s\\n" "$@"\nprintf "BACKEND=%s\\n" "${GDK_BACKEND:-x11}"\n';
+    const executable = '#!/usr/bin/env bash\nprintf "APP=%s\\n" "$PWD"\nprintf "%s\\n" "$@"\nprintf "BACKEND=%s\\n" "${GDK_BACKEND:-x11}"\nprintf "GDK_DEBUG=%s\\n" "${GDK_DEBUG:-}"\nprintf "GDK_DISABLE=%s\\n" "${GDK_DISABLE:-}"\n';
     writeFileSync(join(temporary,'fake-talis'), executable, {mode:0o755});
     writeFileSync(join(commands,'cargo'), `#!/usr/bin/env bash
 set -e
@@ -102,6 +102,11 @@ cp "$FAKE_TALIS" "\${CARGO_TARGET_DIR:-target}/release/talis"
         assert(!result.stderr.includes('cannot be preloaded (cannot open shared object file)'),
             'LD_PRELOAD must not split a relocated bundle path containing spaces');
     }
+    result = installedRun({XDG_SESSION_TYPE:'wayland',XDG_CURRENT_DESKTOP:'Hyprland',
+        GDK_DEBUG:'opengl',GDK_DISABLE:'gles-api'}); ok(result);
+    assert(result.stdout.includes('GDK_DEBUG=opengl\n'));
+    assert(result.stdout.includes('GDK_DISABLE=gles-api\n'),
+        'installed Wayland launches must preserve an explicit GL workaround');
     for (const [changes,wayland] of [
         [{XDG_SESSION_TYPE:'',WAYLAND_DISPLAY:''},false],
         [{XDG_SESSION_TYPE:'',WAYLAND_DISPLAY:'wayland-test'},true],

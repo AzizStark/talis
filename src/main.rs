@@ -13,7 +13,11 @@ fn main() -> Result<()> {
     let args = Args::parse();
     if args.gnome_setup {
         #[cfg(feature = "desktop")]
-        return talis::app::run_gnome_setup();
+        {
+            // SAFETY: no GTK, logging or worker threads have started yet.
+            unsafe { graphics::configure_presentation() };
+            return talis::app::run_gnome_setup();
+        }
         #[cfg(not(feature = "desktop"))]
         anyhow::bail!("GNOME setup requires the desktop build feature");
     }

@@ -27,6 +27,43 @@ For each new test, add the package filename in Notes.
 Use **Pass**, **Issue** or **Not checked**. Describe any issue or limitation in
 Notes. Keep automated checks separate from manual desktop results.
 
+## Wayland layer regression — 21 October 2026
+
+These are user-reported checks of the issue #3 test builds, which also include
+the GL context retry and GTK renderer selection changes.
+
+| Desktop | Distro | Result | Package and scope |
+| --- | --- | --- | --- |
+| Hyprland (Wayland) | CachyOS | Pass | `talis-bin-0.1.0-5.1-x86_64.pkg.tar.zst`; user confirmed normal operation and placement above the wallpaper with the new Background default. |
+| KDE Plasma (Wayland) | NixOS | Pass | `talis-0.1.0-issue3-test-nixos-x86_64.tar.gz`; user confirmed normal operation with the existing Bottom default. Plasma desktop icons remain covered. |
+
+Wallpaper-daemon recreation and login ordering were not explicitly retested.
+The reporter's Rice Bar setup and NVIDIA-specific startup/memory issues still
+need confirmation on that hardware. The passes above cover the tested desktop
+behavior, not resolution of every reported issue.
+
+Automated headless Sway checks separately verified the layer-shell requests,
+scene rendering, and Bottom-layer overlay visibility above the Background
+scene, including both explicit layer overrides. These do not replace live
+Hyprland or KDE compositor checks.
+
+## OpenGL presentation default — automated checks, 21 October 2026
+
+The expanded X11/Wayland default passed the Wayland-feature library suite
+(278 passed, 90 ignored), all-target Clippy, formatting,
+and a build without default features. Native and Nix release builds passed.
+
+Isolated X11 smoke tests on GTK 4.14.5 and 4.22.5 rendered day/night scenes
+under Muffin and Metacity, preview with Settings, and the GNOME scene client.
+Sixteen framebuffer captures contained rendered scene pixels. Logs confirmed
+`ngl` on 4.14 and `gl` on 4.22; explicit `gl` and empty `GSK_RENDERER` values
+were preserved.
+
+These used Mesa software rendering, not live desktop or NVIDIA tests. Muffin
+crashed during forced test-session shutdown, after the scene renders and
+window-manager liveness checks had passed. The reporter's NVIDIA memory-growth
+case remains unconfirmed; the manual results above were not rerun for this change.
+
 ## Quick test
 
 - [ ] Install and open Talis from the menu or portable folder.

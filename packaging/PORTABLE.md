@@ -18,6 +18,17 @@ Then run `./talis` and follow the setup prompt. Log out/in if asked.
 Setup adds a menu entry; enabling the companion also starts Talis at sign-in.
 This integration currently supports one monitor.
 
+## Hyprland
+
+Talis appears below bar decorations by default. If your wallpaper covers Talis,
+quit Talis and try:
+
+```sh
+TALIS_WAYLAND_LAYER=bottom ./talis
+```
+
+To return to the default, quit Talis and launch `./talis` normally.
+
 ## Requirements
 
 x86-64 Linux, glibc 2.39+, GTK 4.8+ with SVG support, and OpenGL 3.3.

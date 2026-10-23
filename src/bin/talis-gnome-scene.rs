@@ -103,6 +103,9 @@ fn config(args: &Args) -> Result<Config> {
 }
 
 fn main() -> Result<()> {
+    let args = Args::parse();
+    // SAFETY: no GTK, logging or worker threads have started yet.
+    unsafe { talis::graphics::configure_presentation() };
     tracing_subscriber::fmt()
         .with_env_filter(
             tracing_subscriber::EnvFilter::try_from_default_env()
@@ -110,7 +113,6 @@ fn main() -> Result<()> {
         )
         .with_writer(std::io::stderr)
         .init();
-    let args = Args::parse();
     let render_size = if args.standalone {
         args.size
     } else {
