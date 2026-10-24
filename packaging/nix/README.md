@@ -112,4 +112,7 @@ daemon/import output was not captured.
 Mock-Nix checks also cover cache download failures: installation stops before
 import/profile changes and does not fall back to a source build.
 
-Existing Debian, Arch, RPM and portable releases are unchanged.
+For the 0.1.1 package rebuild, current desktop/AppStream metadata is installed
+from source rather than the older scene-data archive. The package check verifies
+the release version. The historical 0.1.0 results above are not a fresh manual
+desktop pass.

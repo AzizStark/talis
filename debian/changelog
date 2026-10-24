@@ -1,3 +1,11 @@
+talis (0.1.1-1) noble; urgency=medium
+
+  * Retry failed automatic Wayland GL context creation with desktop OpenGL.
+  * Default GTK presentation to OpenGL while preserving explicit overrides.
+  * Keep Hyprland bar overlays visible and add a saved desktop layer preference.
+
+ -- AzizStark <theazizstark@gmail.com>  Sat, 24 Oct 2026 13:20:00 +0530
+
 talis (0.1.0-9) noble; urgency=medium
 
   * Give the symbolic tray icon a separate name and a complete private theme.

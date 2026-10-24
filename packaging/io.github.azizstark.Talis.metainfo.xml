@@ -15,4 +15,11 @@
   <url type="bugtracker">https://github.com/AzizStark/talis/issues</url>
   <provides><binary>talis</binary></provides>
   <content_rating type="oars-1.1"/>
+  <releases>
+    <release version="0.1.1" date="2026-10-24">
+      <description>
+        <p>Improves OpenGL startup compatibility and GTK presentation, keeps Hyprland bar overlays visible, and adds a saved Wayland desktop layer setting.</p>
+      </description>
+    </release>
+  </releases>
 </component>

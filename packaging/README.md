@@ -12,7 +12,7 @@ Build on x86-64 Linux with the release baseline of glibc 2.39 and GTK 4.8.
 Also install GTK4 layer-shell development/runtime packages and `zip`.
 
 ```sh
-bash scripts/release.sh "$PWD/dist/0.1.0" /path/to/gtk4-layer-shell/LICENSE
+bash scripts/release.sh "$PWD/dist/0.1.1" /path/to/gtk4-layer-shell/LICENSE
 ```
 
 This builds both backends and produces the portable `.tar.gz`, GNOME extension
@@ -61,7 +61,7 @@ Use the portable release archive matching [`rpm/talis.spec`](rpm/talis.spec):
 ```sh
 sudo dnf install rpm-build desktop-file-utils
 mkdir -p dist/rpm/SOURCES
-cp /path/to/talis-0.1.0-portable-linux-x86_64.tar.gz dist/rpm/SOURCES/
+cp /path/to/talis-0.1.1-portable-linux-x86_64.tar.gz dist/rpm/SOURCES/
 rpmbuild -bb packaging/rpm/talis.spec --define "_topdir $PWD/dist/rpm"
 ```
 
