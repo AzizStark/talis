@@ -26,6 +26,7 @@ mod thumbnail;
 mod transport;
 mod tray;
 mod visibility;
+mod wayland_layer;
 mod window;
 
 use crate::playback::{PlaybackFeed, mpris::Monitor};
@@ -134,6 +135,7 @@ pub fn run_with_preferences(
         let host = crate::desktop::DesktopHost::new_for_session(
             options.monitor,
             options.experimental_wayland,
+            config.render.wayland_layer,
         )?;
         host.set_initial_mate_overlay(config.render.experimental_mate_overlay);
         Some(host)

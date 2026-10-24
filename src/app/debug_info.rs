@@ -35,6 +35,16 @@ pub(super) fn attach(
     else {
         return;
     };
+    // Capture the applied layer before edits can change the saved preference.
+    let layer_at_launch = super::wayland_layer::available(options).then(|| {
+        crate::desktop::layer::environment_override().map(|environment| {
+            crate::desktop::layer::resolve(
+                &std::env::var("XDG_CURRENT_DESKTOP").unwrap_or_default(),
+                state.borrow().config.render.wayland_layer,
+                environment,
+            )
+        })
+    });
     let (parent, area) = (parent.downgrade(), area.downgrade());
     let (renderer, state, running) = (
         Rc::downgrade(renderer),
@@ -109,6 +119,15 @@ pub(super) fn attach(
             "Wayland layer-shell build",
             cfg!(feature = "wayland-desktop"),
         );
+        if let Some(layer) = &layer_at_launch {
+            report.field(
+                "Wayland layer at launch",
+                match layer {
+                    Ok(layer) => layer.id(),
+                    Err(_) => "Unavailable",
+                },
+            );
+        }
         report.field(
             "Scene output (logical)",
             format!(

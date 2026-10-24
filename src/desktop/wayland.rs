@@ -1,4 +1,5 @@
 //! Experimental native layer-shell placement; no foreign-window mutation.
+use crate::config::WaylandLayer;
 use anyhow::{Context, Result, ensure};
 use gtk::{gdk, prelude::*};
 use gtk4_layer_shell::{Edge, KeyboardMode, Layer, LayerShell};
@@ -14,20 +15,14 @@ fn scene_namespace(desktops: &str) -> &'static str {
     }
 }
 
-fn scene_layer(desktops: &str, preference: Option<&str>) -> Result<Layer> {
-    match preference {
-        Some("background") => Ok(Layer::Background),
-        Some("bottom") => Ok(Layer::Bottom),
-        Some(_) => anyhow::bail!("TALIS_WAYLAND_LAYER must be background or bottom"),
-        // Hyprland bars can place their decorations in the bottom layer. Keep
-        // the scene below them; preserve other desktops' existing placement.
-        None if desktops
-            .split(':')
-            .any(|desktop| desktop.eq_ignore_ascii_case("Hyprland")) =>
-        {
-            Ok(Layer::Background)
-        }
-        None => Ok(Layer::Bottom),
+fn scene_layer(
+    desktops: &str,
+    preference: WaylandLayer,
+    environment: Option<WaylandLayer>,
+) -> Layer {
+    match super::layer::resolve(desktops, preference, environment) {
+        WaylandLayer::Background => Layer::Background,
+        WaylandLayer::Bottom | WaylandLayer::Automatic => Layer::Bottom,
     }
 }
 
@@ -38,16 +33,12 @@ pub(super) struct DesktopPlacement {
     layer: Layer,
 }
 impl DesktopPlacement {
-    pub fn new(index: u32) -> Result<Self> {
-        let preference = match std::env::var("TALIS_WAYLAND_LAYER") {
-            Ok(value) => Some(value),
-            Err(std::env::VarError::NotPresent) => None,
-            Err(error) => return Err(error).context("Cannot read TALIS_WAYLAND_LAYER"),
-        };
+    pub fn new(index: u32, preference: WaylandLayer) -> Result<Self> {
         let layer = scene_layer(
             &std::env::var("XDG_CURRENT_DESKTOP").unwrap_or_default(),
-            preference.as_deref(),
-        )?;
+            preference,
+            super::layer::environment_override()?,
+        );
         let display = gdk::Display::default().context("No GTK display")?;
         ensure!(
             display.type_().name() == "GdkWaylandDisplay",
@@ -125,31 +116,34 @@ impl DesktopPlacement {
 
 #[cfg(test)]
 mod tests {
-    use super::{Layer, scene_layer, scene_namespace};
+    use super::{Layer, WaylandLayer, scene_layer, scene_namespace};
 
     #[test]
     fn hyprland_scene_stays_below_bottom_layer_bar_decorations() {
         for desktop in ["Hyprland", "hyprland", "wlroots:Hyprland"] {
-            assert_eq!(scene_layer(desktop, None).unwrap(), Layer::Background);
+            assert_eq!(
+                scene_layer(desktop, WaylandLayer::Automatic, None),
+                Layer::Background
+            );
         }
         for desktop in ["", "KDE", "sway", "GNOME", "notHyprland"] {
-            assert_eq!(scene_layer(desktop, None).unwrap(), Layer::Bottom);
+            assert_eq!(
+                scene_layer(desktop, WaylandLayer::Automatic, None),
+                Layer::Bottom
+            );
         }
     }
 
     #[test]
     fn explicit_layer_can_resolve_wallpaper_or_overlay_conflicts() {
         assert_eq!(
-            scene_layer("Hyprland", Some("bottom")).unwrap(),
+            scene_layer("Hyprland", WaylandLayer::Bottom, None),
             Layer::Bottom
         );
         assert_eq!(
-            scene_layer("KDE", Some("background")).unwrap(),
+            scene_layer("KDE", WaylandLayer::Bottom, Some(WaylandLayer::Background)),
             Layer::Background
         );
-        for value in ["", "auto", "top", "overlay", "invalid"] {
-            assert!(scene_layer("Hyprland", Some(value)).is_err());
-        }
     }
 
     #[test]

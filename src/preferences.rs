@@ -1,7 +1,7 @@
 //! Versioned user preferences, independent of GTK, renderer state and scene paths.
 mod storage;
 mod worker;
-use crate::config::{Config, SceneResolution, SceneVariant};
+use crate::config::{Config, SceneResolution, SceneVariant, WaylandLayer};
 use anyhow::{Context, Result, ensure};
 use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
@@ -44,6 +44,8 @@ pub struct Document {
     pub arm_range_end: Option<f32>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub experimental_mate_overlay: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub wayland_layer: Option<WaylandLayer>,
     /// "automatic" explicitly clears a formerly pinned player.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub preferred_player: Option<String>,
@@ -65,6 +67,7 @@ impl Default for Document {
             arm_range_start: None,
             arm_range_end: None,
             experimental_mate_overlay: None,
+            wayland_layer: None,
             preferred_player: None,
         }
     }
@@ -101,6 +104,7 @@ impl Document {
             experimental_mate_overlay,
             config.render.experimental_mate_overlay
         );
+        apply!(wayland_layer, config.render.wayland_layer);
     }
     pub fn player(&self) -> Result<Option<String>> {
         match self.preferred_player.as_deref() {
@@ -136,6 +140,7 @@ impl Document {
             arm_range_start: Some(config.render.arm_range_start),
             arm_range_end: Some(config.render.arm_range_end),
             experimental_mate_overlay: Some(config.render.experimental_mate_overlay),
+            wayland_layer: Some(config.render.wayland_layer),
             preferred_player: Some(player.unwrap_or("automatic").into()),
         }
     }

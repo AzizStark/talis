@@ -16,11 +16,40 @@ pub enum Finish {
     Gold,
 }
 
+/// Native Wayland scene placement; Automatic follows the desktop default.
+#[derive(Clone, Copy, Debug, Default, Deserialize, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum WaylandLayer {
+    #[default]
+    Automatic,
+    Background,
+    Bottom,
+}
+impl WaylandLayer {
+    pub fn id(self) -> &'static str {
+        match self {
+            Self::Automatic => "automatic",
+            Self::Background => "background",
+            Self::Bottom => "bottom",
+        }
+    }
+    pub fn from_id(value: &str) -> Option<Self> {
+        match value {
+            "automatic" => Some(Self::Automatic),
+            "background" => Some(Self::Background),
+            "bottom" => Some(Self::Bottom),
+            _ => None,
+        }
+    }
+}
+
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct RenderSettings {
     /// Opt-in MATE placement workaround; covers Caja's desktop icons.
     pub experimental_mate_overlay: bool,
+    /// Applied at startup, only by the native Wayland layer-shell host.
+    pub wayland_layer: WaylandLayer,
     pub fps: u32,
     /// Desktop-only, conservative visibility gate; unknown visibility stays active.
     pub pause_when_hidden: bool,
@@ -38,6 +67,7 @@ impl Default for RenderSettings {
     fn default() -> Self {
         Self {
             experimental_mate_overlay: false,
+            wayland_layer: WaylandLayer::Automatic,
             fps: 60,
             pause_when_hidden: true,
             rotate_artwork: true,
