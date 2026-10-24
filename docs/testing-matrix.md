@@ -38,9 +38,8 @@ the GL context retry and GTK renderer selection changes.
 | KDE Plasma (Wayland) | NixOS | Pass | `talis-0.1.0-issue3-test-nixos-x86_64.tar.gz`; user confirmed normal operation with the existing Bottom default. Plasma desktop icons remain covered. |
 
 Wallpaper-daemon recreation and login ordering were not explicitly retested.
-The reporter's Rice Bar setup and NVIDIA-specific startup/memory issues still
-need confirmation on that hardware. The passes above cover the tested desktop
-behavior, not resolution of every reported issue.
+The passes above cover the tested desktop behavior, not resolution of every
+reported issue. The reporter's separate hardware confirmation is recorded below.
 
 Automated headless Sway checks separately verified the layer-shell requests,
 scene rendering, and Bottom-layer overlay visibility above the Background
@@ -61,8 +60,59 @@ were preserved.
 
 These used Mesa software rendering, not live desktop or NVIDIA tests. Muffin
 crashed during forced test-session shutdown, after the scene renders and
-window-manager liveness checks had passed. The reporter's NVIDIA memory-growth
-case remains unconfirmed; the manual results above were not rerun for this change.
+window-manager liveness checks had passed. The manual results above were not
+rerun for this change; the reporter's separate hardware confirmation follows.
+
+## Reporter confirmation — 21 October 2026
+
+@mickes66 tested an RTX 3080 Ti with NVIDIA 615.78.08 proprietary drivers,
+Hyprland and GTK 4.22:
+
+- [Issue #1](https://github.com/AzizStark/talis/issues/1#issuecomment-6321324294):
+  without a manual `GDK_DISABLE` override, the initial context creation failed
+  and the fresh-process desktop-OpenGL retry rendered the scene successfully.
+- [Issue #2](https://github.com/AzizStark/talis/issues/2#issuecomment-6321324683):
+  without a manual `GSK_RENDERER` override, Talis selected `gl` and memory stayed
+  at about 270 MB for several minutes.
+- [Issue #3](https://github.com/AzizStark/talis/issues/3#issuecomment-6321325106):
+  the Background default kept Rice Bar overlays visible.
+
+These confirm the compatibility changes on the reported setup, not the root
+cause of the original Vulkan/Cairo memory growth. Wallpaper-daemon recreation
+and login ordering remain separate, unverified cases.
+
+## Saved Wayland layer setting — automated checks, 21 October 2026
+
+The Advanced → Compatibility → Desktop layer setting passed the Wayland-feature
+library suite (284 passed, 91 ignored), the non-desktop library suite (93 passed),
+and all-target Clippy with and without the Wayland feature. All desktop binaries
+built with the Wayland feature.
+
+Isolated GTK tests verified autosave, reload, reset to Automatic, read-only
+environment overrides, unchanged preferences on opening Settings, and debug
+information separating the launch layer from the pending preference. X11 window
+and existing preferences UI regressions passed; both new UI states were visually
+checked.
+
+Headless Sway launches using private saved preferences verified Hyprland and KDE
+automatic defaults, explicit saved layers, a relaunch, both environment overrides,
+and proper rejection of an invalid override. Protocol traces confirmed the
+requested layer and existing namespace; all seven launches rendered a scene and
+left the saved preferences unchanged. These are automated software-rendering
+checks, not additional live Hyprland/KDE passes.
+
+The NixOS release build and package checks also passed with GTK 4.22.5. Five
+additional headless Sway launches verified saved choices and environment
+precedence without changing the preferences file.
+
+### Saved layer setting — manual NixOS check
+
+The user tested `talis-0.1.0-wayland-layer-ui-test-nixos-x86_64.tar.gz` on
+NixOS/KDE Wayland and confirmed the selector appeared and the layer requests
+worked. Automatic requests Bottom on KDE; explicit Background and Bottom request
+their respective layers. The `WAYLAND_DEBUG=client` layer-shell trace verifies
+the requested layer, not compositor ordering or desktop icon visibility.
+This is a focused setting check, not a full rerun of the desktop matrix.
 
 ## Quick test
 
