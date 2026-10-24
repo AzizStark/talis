@@ -114,6 +114,5 @@ import/profile changes and does not fall back to a source build.
 
 For the 0.1.1 package rebuild, current desktop/AppStream metadata is installed
 from source rather than the older scene-data archive. The package check verifies
-the release version. See [0.1.1 release validation](../../docs/release-validation-0.1.1.md)
-for the new build, export, isolated profile and rendering checks; the historical
-0.1.0 results above are not a fresh manual desktop pass.
+the release version. The historical 0.1.0 results above are not a fresh manual
+desktop pass.
