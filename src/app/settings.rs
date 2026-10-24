@@ -192,6 +192,10 @@ pub(super) fn build(
             "Required on MATE to show Talis on the desktop.",
             &overlay,
         ));
+        if let Some(layer) = super::wayland_layer::controls(options, state.clone()) {
+            style::separator(&advanced);
+            advanced.append(&layer);
+        }
         advanced_page.append(&style::section("Compatibility", &advanced));
         advanced_page.append(&super::debug_info::controls());
         mate_overlay = Some(overlay);

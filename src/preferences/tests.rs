@@ -14,6 +14,36 @@ fn patch(key: &str, value: impl Into<toml::Value>) -> Patch {
 }
 
 #[test]
+fn wayland_layer_round_trips_without_rewriting_older_preferences() {
+    let (_fixture, store) = fixture();
+    store.write(&patch("fps", 30_i64)).unwrap();
+    let before = fs::read_to_string(store.path()).unwrap();
+    let loaded = load(Config::default(), None, Some(store.clone())).unwrap();
+    assert_eq!(loaded.config.render.wayland_layer, WaylandLayer::Automatic);
+    assert!(loaded.document.wayland_layer.is_none());
+    assert_eq!(fs::read_to_string(store.path()).unwrap(), before);
+    for layer in [
+        WaylandLayer::Background,
+        WaylandLayer::Bottom,
+        WaylandLayer::Automatic,
+    ] {
+        store.write(&patch("wayland_layer", layer.id())).unwrap();
+        let loaded = load(Config::default(), None, Some(store.clone())).unwrap();
+        assert_eq!(loaded.config.render.wayland_layer, layer);
+        assert_eq!(loaded.config.render.fps, 30);
+        assert_eq!(
+            Document::from_config(&loaded.config, None).wayland_layer,
+            Some(layer)
+        );
+    }
+    assert!(store.write(&patch("wayland_layer", "overlay")).is_err());
+    assert_eq!(
+        store.read().unwrap().wayland_layer,
+        Some(WaylandLayer::Automatic)
+    );
+}
+
+#[test]
 fn resolution_preference_is_optional_typed_and_round_trips() {
     let (_fixture, store) = fixture();
     assert_eq!(
@@ -190,11 +220,13 @@ fn startup_values_are_live_and_legacy_import_never_overwrites_preferences() {
     let (_fixture, store) = fixture();
     let mut snapshot = Config::default();
     snapshot.render.fps = 15;
+    snapshot.render.wayland_layer = WaylandLayer::Bottom;
     snapshot.artwork.size_percent = 42.0;
     snapshot.scene.mode = crate::config::PreviewMode::Arm;
     snapshot.render.arm_interpolation = true;
     let baseline = startup_base(snapshot.clone());
     assert_eq!(baseline.render.fps, 60);
+    assert_eq!(baseline.render.wayland_layer, WaylandLayer::Automatic);
     assert_eq!(baseline.artwork.size_percent, 36.0);
     assert_eq!(baseline.scene.mode, crate::config::PreviewMode::Arm);
     assert!(baseline.render.arm_interpolation);
@@ -203,13 +235,19 @@ fn startup_values_are_live_and_legacy_import_never_overwrites_preferences() {
         .unwrap();
     let imported = load(baseline, None, Some(store.clone())).unwrap();
     assert_eq!(imported.config.render.fps, 15);
+    assert_eq!(imported.config.render.wayland_layer, WaylandLayer::Bottom);
     assert_eq!(imported.config.artwork.size_percent, 42.0);
     store.write(&patch("fps", 30_i64)).unwrap();
+    store.write(&patch("wayland_layer", "background")).unwrap();
     store
         .import_if_missing(&Document::from_config(&snapshot, None))
         .unwrap();
     let current = load(startup_base(snapshot), None, Some(store)).unwrap();
     assert_eq!(current.config.render.fps, 30);
+    assert_eq!(
+        current.config.render.wayland_layer,
+        WaylandLayer::Background
+    );
     assert_eq!(
         current.document.player().unwrap().as_deref(),
         Some("org.mpris.MediaPlayer2.spotify")

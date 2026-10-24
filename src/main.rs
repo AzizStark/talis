@@ -174,6 +174,7 @@ fn run(args: Args) -> Result<()> {
                 let placement = talis::desktop::DesktopHost::new_for_session(
                     args.monitor.unwrap_or(0),
                     args.experimental_wayland,
+                    config.render.wayland_layer,
                 )?;
                 println!("Placement: {}", placement.description());
                 println!(

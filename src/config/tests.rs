@@ -79,6 +79,7 @@ fn shipped_defaults_match_fresh_config_and_preserve_explicit_preferences() {
         toml::to_string(&shipped).unwrap()
     );
     assert_eq!(fresh.render.fps, 60);
+    assert_eq!(fresh.render.wayland_layer, WaylandLayer::Automatic);
     assert!(fresh.render.pause_when_hidden && fresh.minimize_to_tray);
     assert_eq!(fresh.artwork.size_percent, 36.0);
     assert_eq!(fresh.artwork.rotation_rpm, 33.33);
@@ -94,6 +95,23 @@ fn shipped_defaults_match_fresh_config_and_preserve_explicit_preferences() {
     assert_eq!(explicit.render.fps, 30);
     assert_eq!(explicit.artwork.size_percent, 35.0);
     assert_eq!(explicit.artwork.rotation_rpm, 45.0);
+}
+
+#[test]
+fn wayland_layer_is_typed_optional_and_round_trips_in_config() {
+    for layer in [
+        WaylandLayer::Automatic,
+        WaylandLayer::Background,
+        WaylandLayer::Bottom,
+    ] {
+        assert_eq!(WaylandLayer::from_id(layer.id()), Some(layer));
+        let config: Config =
+            toml::from_str(&format!("[render]\nwayland_layer = {:?}", layer.id())).unwrap();
+        assert_eq!(config.render.wayland_layer, layer);
+        let decoded: Config = toml::from_str(&toml::to_string(&config).unwrap()).unwrap();
+        assert_eq!(decoded.render.wayland_layer, layer);
+    }
+    assert!(toml::from_str::<Config>("[render]\nwayland_layer = 'top'").is_err());
 }
 #[cfg(feature = "assets")]
 #[test]

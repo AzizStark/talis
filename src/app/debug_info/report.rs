@@ -52,6 +52,7 @@ impl Report {
             "MATE compatibility preference",
             config.render.experimental_mate_overlay,
         );
+        self.field("Wayland layer preference", config.render.wayland_layer.id());
         self.field("Animate arm", config.render.animate_arm);
         self.field("Scene controls enabled", config.transport.enabled);
         self.field("Arm interpolation", config.render.arm_interpolation);

@@ -124,18 +124,25 @@ impl DesktopHost {
             backend: HostBackend::X11(x11::DesktopPlacement::new(monitor)?),
         })
     }
-    pub fn new_for_session(monitor: u32, experimental_wayland: bool) -> Result<Self> {
+    pub fn new_for_session(
+        monitor: u32,
+        experimental_wayland: bool,
+        layer: crate::config::WaylandLayer,
+    ) -> Result<Self> {
         if !experimental_wayland {
             return Self::new(monitor);
         }
         #[cfg(feature = "wayland-desktop")]
         {
             Ok(Self {
-                backend: HostBackend::LayerShell(super::wayland::DesktopPlacement::new(monitor)?),
+                backend: HostBackend::LayerShell(super::wayland::DesktopPlacement::new(
+                    monitor, layer,
+                )?),
             })
         }
         #[cfg(not(feature = "wayland-desktop"))]
         {
+            let _ = layer;
             anyhow::bail!(
                 "Experimental Wayland desktop requires a build with --features wayland-desktop"
             )

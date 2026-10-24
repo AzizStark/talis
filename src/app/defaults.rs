@@ -128,13 +128,21 @@ fn restore(root: &gtk::Widget, state: &Rc<RefCell<AppState>>) -> Patch {
     for (name, id) in [
         ("frame-rate", config.render.fps.to_string()),
         ("playback-source", "auto".into()),
+        ("desktop-layer", config.render.wayland_layer.id().into()),
     ] {
         if let Some(combo) =
             style::find_widget(root, name).and_then(|w| w.downcast::<gtk::ComboBoxText>().ok())
         {
+            if name == "desktop-layer" && !combo.is_sensitive() {
+                // Clear the saved preference below, without changing the
+                // displayed environment override or its active scene layer.
+                continue;
+            }
             combo.set_active_id(Some(&id));
             if name == "frame-rate" {
                 missing.fps = None;
+            } else if name == "desktop-layer" {
+                missing.wayland_layer = None;
             }
         }
     }

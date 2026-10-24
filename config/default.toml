@@ -12,6 +12,8 @@ next = [0.3994382620, 0.6451604068, 0.0100741386, 0.0073829293]
 fps = 60
 # MATE-only experimental placement; covers desktop icons when enabled.
 experimental_mate_overlay = false
+# Native Wayland only: automatic, background or bottom. Applied at startup.
+wayland_layer = "automatic"
 pause_when_hidden = true
 rotate_artwork = true
 # False holds the arm; artwork/dust can still rotate and media controls still work.

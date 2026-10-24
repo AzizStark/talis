@@ -243,6 +243,18 @@ pub(super) fn attach(
             }
         });
     }
+    if let Some(combo) = style::find_widget(&root, "desktop-layer")
+        .and_then(|w| w.downcast::<gtk::ComboBoxText>().ok())
+    {
+        let weak = Rc::downgrade(&saver);
+        combo.connect_changed(move |combo| {
+            if combo.is_sensitive() {
+                if let (Some(saver), Some(id)) = (weak.upgrade(), combo.active_id()) {
+                    saver.update(one("wayland_layer", id.as_str()));
+                }
+            }
+        });
+    }
     if let Some(ui) = &preview.arm_ui {
         for name in ["arm-range-start", "arm-range-end"] {
             if let Some(spin) =

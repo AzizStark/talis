@@ -63,14 +63,24 @@ GSK_RENDERER= bash scripts/run.sh
 ```
 
 The default is local to Talis; it does not change system settings or other apps.
-This avoids the non-GL presentation path implicated in issue #2; the underlying
-NVIDIA memory-growth report still needs confirmation from the reporter.
+This avoids the non-GL presentation path implicated in issue #2. The reporter
+confirmed stable memory with the OpenGL default on proprietary NVIDIA; the root
+cause of the original Vulkan/Cairo memory growth remains unconfirmed. See the
+[test matrix](docs/testing-matrix.md) for the hardware confirmation and scope.
 
 ### Wayland scene placement
 
 On Hyprland, Talis uses the background layer so bottom-layer bar decorations
 remain visible. Other layer-shell desktops keep the bottom layer by default.
-To choose a layer explicitly, quit Talis and launch with:
+In a native Wayland desktop session, **Advanced → Compatibility → Desktop layer**
+offers Automatic, Background and Bottom. The saved choice applies after restarting
+Talis, including sign-in launches; it does not remap the running scene. This
+control is not shown for X11, preview or the GNOME companion. Restore defaults
+resets the saved choice to Automatic.
+
+An environment override takes priority over the saved choice. The dropdown shows
+the override and is read-only until Talis is relaunched without it. To choose a
+layer this way, quit Talis and launch with:
 
 ```sh
 TALIS_WAYLAND_LAYER=bottom bash scripts/run.sh
@@ -81,7 +91,8 @@ Installed packages accept the same variable before `talis`; portable builds
 accept it before `./talis`. A wallpaper daemon that recreates its background
 surface may cover Talis. Use the bottom override in that case, or restart Talis
 after the wallpaper daemon. Surfaces sharing a layer have no guaranteed order.
-The selected layer is shown in the startup log and debug information.
+The applied layer is shown in the startup log and debug information separately
+from the saved preference, which may be pending a restart.
 
 Debug launch on X11:
 

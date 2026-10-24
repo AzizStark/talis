@@ -3,6 +3,8 @@ pub(crate) mod geometry;
 #[cfg(feature = "desktop")]
 mod host;
 #[cfg(feature = "desktop")]
+pub(crate) mod layer;
+#[cfg(feature = "desktop")]
 pub mod screensaver;
 #[cfg(feature = "desktop")]
 pub(crate) mod visibility;

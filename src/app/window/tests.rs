@@ -96,6 +96,10 @@ fn scene_and_controls_are_independent_windows() {
     assert!(!controls.has_css_class("talis-controls"));
     assert!(controls.child().unwrap().has_css_class("talis-controls"));
     assert!(style::find_widget(&controls.clone().upcast(), "debug-info").is_some());
+    assert!(
+        style::find_widget(&controls.clone().upcast(), "desktop-layer").is_none(),
+        "not shown on X11"
+    );
     // Exercise the real Advanced callback before any renderer/context exists.
     let debug_renderer = Rc::new(RefCell::new(None));
     let debug_running = Rc::new(Cell::new(false));
