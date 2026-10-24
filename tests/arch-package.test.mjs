@@ -42,7 +42,9 @@ try {
     assert.equal(result.status, 0, result.stderr);
     assert(result.stdout.includes('talis-bin') && result.stdout.includes('x86_64'));
     assert(result.stdout.includes('gtk4-layer-shell') && result.stdout.includes('glibc>=2.39'));
-    assert(result.stdout.includes('talis-0.1.0-portable-linux-x86_64.tar.gz'));
+    const version = readFileSync(new URL('../Cargo.toml', import.meta.url), 'utf8')
+        .match(/^version = "([^"]+)"$/m)[1];
+    assert(result.stdout.includes(`talis-${version}-portable-linux-x86_64.tar.gz`));
     assert.match(result.stdout, /sha256sums=.*[a-f0-9]{64}/);
     for (const name of ['talis-bin','talis-wayland-bin','talis-gnome-scene','launch.sh']) {
         const path = join(destination, 'usr/lib/talis', name);

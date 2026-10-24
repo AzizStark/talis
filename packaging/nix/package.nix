@@ -61,6 +61,8 @@ rustPlatform.buildRustPackage {
       ../../scripts/launch.sh
       ../../scripts/session.sh
       ../../integrations/gnome/metadata.json
+      ../../packaging/io.github.azizstark.Talis.desktop
+      ../../packaging/io.github.azizstark.Talis.metainfo.xml
     ];
   };
   cargoLock.lockFile = ../../Cargo.lock;
@@ -111,6 +113,10 @@ rustPlatform.buildRustPackage {
     runHook preInstall
     mkdir -p "$out/lib/talis" "$out/bin" "$out/share/talis"
     cp -a ${releaseData}/share/{applications,icons,metainfo,doc} "$out/share/"
+    # Only scene data is pinned to an older release; use current app metadata.
+    chmod u+w "$out/share/applications" "$out/share/metainfo"
+    install -m644 packaging/io.github.azizstark.Talis.desktop "$out/share/applications/"
+    install -m644 packaging/io.github.azizstark.Talis.metainfo.xml "$out/share/metainfo/"
     ln -s ${releaseData}/share/talis/assets "$out/share/talis/assets"
     cp artifacts/* scripts/{launch.sh,session.sh} "$out/lib/talis/"
     chmod +x "$out/lib/talis/launch.sh"

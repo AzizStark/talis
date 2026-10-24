@@ -1,8 +1,8 @@
 # Maintainer: AzizStark <theazizstark@gmail.com>
 # Package the verified portable release; do not build or download at install time.
 pkgname=talis-bin
-pkgver=0.1.0
-pkgrel=5
+pkgver=0.1.1
+pkgrel=1
 pkgdesc='An interactive, animated and music-aware desktop turntable'
 arch=('x86_64')
 url='https://github.com/AzizStark/talis'
@@ -15,7 +15,7 @@ conflicts=('talis')
 # These are release binaries; do not create a misleading empty debug package.
 options=('!debug' '!strip')
 source=("talis-$pkgver-portable-linux-x86_64.tar.gz")
-sha256sums=('43f78510f362795d30629b08a0f4591f1bca9d30c77cffe01225580bb0b2ffa3')
+sha256sums=('d1b9eabd44fe9deae6f0ed5f435501e5a9ca5b324967bfdfaf6496e4d04b24c8')
 
 package() {
     local _runtime="$srcdir/talis-linux-x86_64/usr"

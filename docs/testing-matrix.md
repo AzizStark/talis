@@ -116,6 +116,10 @@ This is a focused setting check, not a full rerun of the desktop matrix.
 
 ## Quick test
 
+The [0.1.1 release validation](release-validation-0.1.1.md) records the rebuilt
+packages, isolated upgrade checks and rendering scope separately from the manual
+desktop results above.
+
 - [ ] Install and open Talis from the menu or portable folder.
 - [ ] Check the scene, desktop clicks and normal app windows.
 - [ ] Play music; check playback buttons, volume and cover art where available.

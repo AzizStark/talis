@@ -19,6 +19,7 @@ runCommand "talis-nix-package-check"
     grep -q 'Usage:' wayland-help
     grep -q 'Usage:' gnome-help
     desktop-file-validate ${talis}/share/applications/io.github.azizstark.Talis.desktop
+    grep -Fq '<release version="${talis.version}"' ${talis}/share/metainfo/io.github.azizstark.Talis.metainfo.xml
     for resolution in 1080p 1440p 4k; do
       for scene in day night; do
         test -s ${talis}/share/talis/assets/scenes/$resolution/$scene/beauty.png

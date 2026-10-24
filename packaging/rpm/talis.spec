@@ -6,8 +6,8 @@
 %global __brp_strip_comment_note %{nil}
 
 Name:           talis
-Version:        0.1.0
-Release:        2%{?dist}
+Version:        0.1.1
+Release:        1%{?dist}
 Summary:        An interactive, animated and music-aware desktop turntable
 Vendor:         AzizStark
 Packager:       AzizStark <theazizstark@gmail.com>
@@ -41,7 +41,7 @@ X11 and native Wayland integration, and the GNOME desktop companion.
 
 %prep
 # Check before extracting. A new portable release needs a matching checksum.
-echo '43f78510f362795d30629b08a0f4591f1bca9d30c77cffe01225580bb0b2ffa3  %{SOURCE0}' | sha256sum --check --status
+echo 'd1b9eabd44fe9deae6f0ed5f435501e5a9ca5b324967bfdfaf6496e4d04b24c8  %{SOURCE0}' | sha256sum --check --status
 %setup -q -n talis-linux-x86_64
 
 %build
@@ -87,6 +87,10 @@ test ! -e "%{buildroot}%{_datadir}/talis/gnome"
 %{_datadir}/gnome-shell/extensions/talis@azizstark/
 
 %changelog
+* Sat Oct 24 2026 AzizStark <theazizstark@gmail.com> - 0.1.1-1
+- Improve OpenGL startup compatibility and default GTK presentation to OpenGL.
+- Keep Hyprland bar overlays visible and add a saved desktop layer preference.
+
 * Sat Oct 17 2026 AzizStark <theazizstark@gmail.com> - 0.1.0-2
 - Keep the symbolic tray icon separate from the launcher.
 - Include publisher metadata.
